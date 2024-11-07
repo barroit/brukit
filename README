@@ -1,0 +1,13 @@
+Brstarter
+=========
+
+Brstarter is a lightweight utility tailored for quickly setting up and running
+command-line programs. Designed with flexibility in mind, it offers a
+streamlined build system that allows you to get up and running in minimal time.
+Brstarter is adaptable to different environments, including Windows and Linux,
+with the potential to support other platforms as well.
+
+The build system provides an easily customizable foundation, making it
+straightforward to adapt Brstarter to new operating systems or environments as
+needed. For guidance on adding support for additional platforms, see
+platform-expansion.
