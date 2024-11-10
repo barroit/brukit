@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: GPL-3.0-or-later or MIT
+
+file(STRINGS ${ARCH}/.map lines ENCODING UTF-8)
+
+string(TOLOWER ${arch} arch)
+foreach(line ${lines})
+  if(${line} MATCHES "[ \t]*#")
+    continue()
+  endif()
+
+  string(REGEX REPLACE "[ \t]+" ";" line ${line})
+  if(NOT arch IN_LIST line)
+    continue()
+  endif()
+
+  list(GET line 0 arch)
+  set(arch ${arch} PARENT_SCOPE)
+  set(found 1)
+endforeach()
+
+if(NOT found)
+  set(arch generic PARENT_SCOPE)
+endif()
+
+file(CREATE_LINK ${ROOT}/arch/${arch} ${ROOT}/include/arch SYMBOLIC)

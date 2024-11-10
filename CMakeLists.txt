@@ -15,3 +15,7 @@ set(version $ENV{BSVERSION})
 include(${TOOL}/include)
 
 include_scp(${TOOL}/kconfig)
+
+if(NOT CONFIG_NO_ARCHSPEC AND EXISTS ${ROOT}/arch/generic)
+  include_scp(${TOOL}/arch)
+endif()
