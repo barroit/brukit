@@ -1,0 +1,30 @@
+// SPDX-License-Identifier: GPL-3.0-or-later or MIT
+{
+	"fileHeaderComment.parameter": {
+		"*": {
+			"license": "GPL-3.0-or-later or MIT",
+			"year": "2024"
+		}
+	},
+	"files.associations": {
+		"DRAFT": "plaintext",
+		"TAGGING": "plaintext",
+		"**/cmake/*": "cmake"
+	},
+	"search.exclude": {
+		"**/locale/**": true
+	},
+	"C_Cpp.files.exclude": {
+		"**/sandbox/*": true,
+	},
+	"C_Cpp.default.includePath": [
+		"${workspaceFolder}/include"
+	],
+	"C_Cpp.default.forcedInclude": [
+		"${workspaceFolder}/include/generated/autoconf.h"
+	],
+	"C_Cpp.default.defines": [
+		"_GNU_SOURCE",
+		"HAVE_INTL"
+	]
+}

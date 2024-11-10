@@ -1,0 +1,22 @@
+// SPDX-License-Identifier: GPL-3.0-or-later or MIT
+{
+	"configurations": [
+		{
+			"name": "gcc",
+			"intelliSenseMode": "linux-gcc-x64",
+			"compilerPath": "${env:HOME}/.local/bin/gcc"
+		},
+		{
+			"name": "mingw64",
+			"defines": [
+				"${default}",
+				"NTDDI_WIN7",
+				"WINVER=_WIN32_WINNT_WIN7",
+				"_WIN32_WINNT=_WIN32_WINNT_WIN7"
+			],
+			"intelliSenseMode": "windows-gcc-x64",
+			"compilerPath": "/usr/bin/x86_64-w64-mingw32-gcc"
+		}
+	],
+	"version": 4
+}

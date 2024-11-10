@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: GPL-3.0-or-later or MIT
+
+.gdbinit
+
+.config
+.config.old
+
+build/*
+!build/locale
+
+include/generated
+include/arch
+
+locale/*~
+locale/generated.pot
+
+.tmp
+DRAFT
