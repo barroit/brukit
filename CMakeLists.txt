@@ -11,3 +11,7 @@ set(name    $ENV{BSNAME})
 set(arch    $ENV{BSARCH})
 set(build   $ENV{BSBUILD})
 set(version $ENV{BSVERSION})
+
+include(${TOOL}/include)
+
+include_scp(${TOOL}/kconfig)

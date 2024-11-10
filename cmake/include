@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: GPL-3.0-or-later or MIT
+
+# Not that SCP, scoped instead :)
+function(include_scp name)
+  include(${name})
+endfunction()
+
+function(test_add_compile_options pass)
+  if(${pass})
+    list(POP_FRONT ARGV)
+    add_compile_options(${ARGV})
+  endif()
+endfunction()
+
+function(test_add_compile_definitions pass)
+  if(${pass})
+    list(POP_FRONT ARGV)
+    add_compile_definitions(${ARGV})
+  endif()
+endfunction()
+
+function(test_add_link_options pass)
+  if(${pass})
+    list(POP_FRONT ARGV)
+    add_link_options(${ARGV})
+  endif()
+endfunction()

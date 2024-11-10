@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-3.0-or-later or MIT
+
+execute_process(COMMAND genconfig
+		--header-path ${GEN}/autoconf.h --config-out ${ROOT}/.config)
+
+file(STRINGS ${ROOT}/.config lines ENCODING UTF-8)
+
+foreach(line ${lines})
+  if(line MATCHES "^(CONFIG_[^=]+)=(\"?)([^\"]*)(\"?)$")
+    set(${CMAKE_MATCH_1} ${CMAKE_MATCH_3} PARENT_SCOPE)
+  endif()
+endforeach()
