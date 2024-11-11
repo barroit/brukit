@@ -83,3 +83,12 @@ test_add_link_options(CONFIG_USE_MSAN -fsanitize=memory)
 if(WIN32 AND CONFIG_USE_ASAN)
   add_compile_options(-U_DLL)
 endif()
+
+string(REPLACE -rc . version_cmake ${version})
+project(${name} VERSION ${version_cmake} LANGUAGES C)
+
+if(CONFIG_EXPORT_COMPILE_COMMAND)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+endif()
+
+configure_file(${ROOT}/include/program.h.in ${GEN}/program.h)

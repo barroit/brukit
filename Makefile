@@ -8,11 +8,11 @@ export UNIX := y
 ROOT  := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 BUILD := $(ROOT)/build
 
-BSNAME    := $(shell grep name $(ROOT)/project | cut -f2)
-BSVERSION := $(shell grep version $(ROOT)/project | cut -f2)
+BSNAME    := $(shell grep name $(ROOT)/program | cut -f2)
+BSVERSION := $(shell grep version $(ROOT)/program | cut -f2)
 BSARCH    := $(shell uname -m)
 BSBUILD   := $(shell uname -s)
-export BSNAME BSARCH BSBUILD BSVERSION
+export BSNAME BSVERSION BSARCH BSBUILD
 
 .PHONY: config build
 

@@ -77,4 +77,11 @@ config OPTIMIZE_O3
 
 endchoice
 
+config EXPORT_COMPILE_COMMAND
+	bool "export compile command"
+
+config NO_ARCHSPEC
+	bool "do not build arch-specific part"
+	default y if "$(WIN32)"
+
 endmenu # "Compiling"
