@@ -2,6 +2,9 @@
 
 cmake_minimum_required(VERSION 3.21)
 
+# Do not use relative paths. In certain scenarios, such as when the tree is
+# under z:, a relative path may cause CMake to misinterpret it, leading to
+# unexpected behavior.
 set(TREE ${CMAKE_SOURCE_DIR})
 set(TOOL ${TREE}/cmake)
 set(GEN  ${TREE}/include/generated)
@@ -105,18 +108,18 @@ if(UNIX)
   elseif(BSD)
     list(APPEND plat bsd)
   elseif(APPLE)
-    list(APPEND plat apple)
+    list(APPEND plat darwin)
   endif()
 elseif(WIN32)
   list(APPEND plat win32)
 endif()
 
-foreach(name ${plat})
-  include_directoires(${TREE}/${name})
+foreach(p ${plat})
+  include_directories(${TREE}/${p})
 endforeach()
 
-foreach(name ${plat})
-  list(APPEND platspec ${TREE}/${name}/*.c)
+foreach(p ${plat})
+  list(APPEND platspec ${TREE}/${p}/*.c)
 endforeach()
 
 file(GLOB source LIST_DIRECTORIES false ${pathspec})
@@ -136,7 +139,7 @@ elseif(WIN32)
     set(source WIN32)
     list(APPEND source ${TREE}/win32/main.gui.c)
   endif()
-  list(APPEND source ${TREE}/program.rc)
+  list(APPEND source ${TREE}/${name}.rc)
 endif()
 
 add_executable(${name} ${source})

@@ -3,15 +3,7 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-#ifndef PROGRAM_H
-#define PROGRAM_H
-
 #define PROGRAM_NAME	"@name@"
-
 #define PROGRAM_VERSION	"@version@"
-
 #define PROGRAM_ARCH	"@arch@"
-
 #define PROGRAM_BUILD	"@build@"
-
-#endif /* PROGRAM_H */
