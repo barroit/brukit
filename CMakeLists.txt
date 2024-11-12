@@ -92,3 +92,53 @@ if(CONFIG_EXPORT_COMPILE_COMMAND)
 endif()
 
 configure_file(${TREE}/include/program.h.in ${GEN}/program.h)
+
+cc_include(${GEN}/autoconf.h)
+cc_include(${GEN}/program.h)
+
+include_directories(${TREE}/include)
+
+if(UNIX)
+  list(APPEND plat unix)
+  if(LINUX)
+    list(APPEND plat linux)
+  elseif(BSD)
+    list(APPEND plat bsd)
+  elseif(APPLE)
+    list(APPEND plat apple)
+  endif()
+elseif(WIN32)
+  list(APPEND plat win32)
+endif()
+
+foreach(name ${plat})
+  include_directoires(${TREE}/${name})
+endforeach()
+
+foreach(name ${plat})
+  list(APPEND platspec ${TREE}/${name}/*.c)
+endforeach()
+
+file(GLOB source LIST_DIRECTORIES false ${pathspec})
+list(FILTER source EXCLUDE REGEX main\.)
+add_library(platspec OBJECT ${source})
+
+file(GLOB source LIST_DIRECTORIES false ${TREE}/generic/*.c
+					${TREE}/commands/*.c)
+add_library(platfree OBJECT ${source})
+
+if(UNIX)
+  set(source ${TREE}/unix/main.c)
+elseif(WIN32)
+  if(CONFIG_NO_GUI)
+    set(source ${TREE}/win32/main.tui.c)
+  else()
+    set(source WIN32)
+    list(APPEND source ${TREE}/win32/main.gui.c)
+  endif()
+  list(APPEND source ${TREE}/program.rc)
+endif()
+
+add_executable(${name} ${source})
+
+target_link_libraries(${name} platfree platspec)
