@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
 execute_process(COMMAND genconfig
-		--header-path ${GEN}/autoconf.h --config-out ${ROOT}/.config)
+		--header-path ${GEN}/autoconf.h
+		--config-out ${TREE}/.config)
 
-file(STRINGS ${ROOT}/.config lines ENCODING UTF-8)
+file(STRINGS ${TREE}/.config lines ENCODING UTF-8)
 
 foreach(line ${lines})
   if(line MATCHES "^(CONFIG_[^=]+)=(\"?)([^\"]*)(\"?)$")

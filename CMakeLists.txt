@@ -2,21 +2,21 @@
 
 cmake_minimum_required(VERSION 3.21)
 
-set(ROOT ${CMAKE_SOURCE_DIR})
-set(TOOL ${ROOT}/cmake)
-set(GEN  ${ROOT}/include/generated)
-set(ARCH ${ROOT}/arch)
+set(TREE ${CMAKE_SOURCE_DIR})
+set(TOOL ${TREE}/cmake)
+set(GEN  ${TREE}/include/generated)
+set(ARCH ${TREE}/arch)
 
 set(name    $ENV{BSNAME})
+set(version $ENV{BSVERSION})
 set(arch    $ENV{BSARCH})
 set(build   $ENV{BSBUILD})
-set(version $ENV{BSVERSION})
 
 include(${TOOL}/include)
 
 include_scp(${TOOL}/kconfig)
 
-if(NOT CONFIG_NO_ARCHSPEC AND EXISTS ${ROOT}/arch/generic)
+if(NOT CONFIG_NO_ARCHSPEC AND EXISTS ${TREE}/arch/generic)
   include_scp(${TOOL}/arch)
 endif()
 
@@ -91,4 +91,4 @@ if(CONFIG_EXPORT_COMPILE_COMMAND)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
-configure_file(${ROOT}/include/program.h.in ${GEN}/program.h)
+configure_file(${TREE}/include/program.h.in ${GEN}/program.h)

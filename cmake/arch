@@ -22,4 +22,4 @@ if(NOT found)
   set(arch generic PARENT_SCOPE)
 endif()
 
-file(CREATE_LINK ${ROOT}/arch/${arch} ${ROOT}/include/arch SYMBOLIC)
+file(CREATE_LINK ${TREE}/arch/${arch} ${TREE}/include/arch SYMBOLIC)
