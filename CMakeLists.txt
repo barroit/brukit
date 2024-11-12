@@ -142,3 +142,10 @@ endif()
 add_executable(${name} ${source})
 
 target_link_libraries(${name} platfree platspec)
+
+if(NOT CONFIG_NO_I18N)
+  find_package(Intl)
+  if(Intl_FOUND)
+    include_scp(${TOOL}/gettext)
+  endif()
+endif()

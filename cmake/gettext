@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-3.0-or-later or MIT
+
+link_libraries(Intl::Intl)
+have(INTL)
+
+if(Intl_VERSION)
+  set(GETTEXT_VERSION ${Intl_VERSION})
+else()
+  find_package(Gettext)
+  if(GETTEXT_FOUND)
+    set(GETTEXT_VERSION ${GETTEXT_VERSION_STRING})
+  else()
+    set(GETTEXT_VERSION unknown)
+  endif()
+endif()
