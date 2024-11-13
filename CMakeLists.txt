@@ -177,3 +177,15 @@ if(WIN32)
 			  _WIN32_WINNT=_WIN32_WINNT_WIN7
 			  _CRT_SECURE_NO_WARNINGS)
 endif()
+
+install(TARGETS ${name} DESTINATION .)
+
+if(NOT CONFIG_NO_I18N)
+  install(DIRECTORY ${TREE}/locale/ DESTINATION locale
+	  FILES_MATCHING PATTERN *.mo PERMISSIONS OWNER_READ)
+endif()
+
+if(WIN32)
+  file(GLOB dll ${CMAKE_BINARY_DIR}/*.dll)
+  install(FILES ${dll} DESTINATION .)
+endif()
