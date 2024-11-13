@@ -12,7 +12,7 @@ if [[ -n $inv ]]; then
 	exit 1
 fi
 
-bash ./scripts/dtypo.sh
+git diff-index --cached --name-only HEAD | xargs -P$(nproc) -n1 codespell
 if [[ $? -ne 0 ]]; then
 	exit 1
 fi
