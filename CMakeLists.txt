@@ -164,3 +164,16 @@ if(WIN32)
     have(RPHK)
   endif()
 endif()
+
+add_compile_definitions(_GNU_SOURCE)
+
+if(NOT CONFIG_DEBUG_ON)
+  add_compile_definitions(NDEBUG)
+endif()
+
+if(WIN32)
+  add_compile_definitions(NTDDI_WIN7
+			  WINVER=_WIN32_WINNT_WIN7
+			  _WIN32_WINNT=_WIN32_WINNT_WIN7
+			  _CRT_SECURE_NO_WARNINGS)
+endif()
