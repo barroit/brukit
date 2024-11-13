@@ -1,0 +1,9 @@
+set(version_manifest ${version_cmake})
+string(REPLACE . ; ver ${version_manifest})
+
+list(LENGTH ver len)
+math(EXPR len "4 - ${len}")
+string(REPEAT 0. ${len} pad)
+
+string(PREPEND version_manifest ${pad})
+configure_file(${TREE}/${name}.manifest.in ${TREE}/${name}.manifest)
