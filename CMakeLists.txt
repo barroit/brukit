@@ -2,11 +2,11 @@
 
 cmake_minimum_required(VERSION 3.21)
 
-# Do not use relative paths. In certain scenarios, such as when the tree is
+# Never use relative paths. In certain scenarios, such as when the tree is
 # under z:, a relative path may cause CMake to misinterpret it, leading to
 # unexpected behavior.
 set(TREE ${CMAKE_SOURCE_DIR})
-set(TOOL ${TREE}/cmake)
+set(LIB  ${TREE}/lib)
 set(GEN  ${TREE}/include/generated)
 set(ARCH ${TREE}/arch)
 
@@ -15,12 +15,12 @@ set(version $ENV{BSVERSION})
 set(arch    $ENV{BSARCH})
 set(build   $ENV{BSBUILD})
 
-include(${TOOL}/include)
+include(${LIB}/cmake.include)
 
-include_scp(${TOOL}/kconfig)
+include_scp(${LIB}/cmake.kconfig)
 
 if(NOT CONFIG_NO_ARCH AND EXISTS ${TREE}/arch/generic)
-  include_scp(${TOOL}/arch)
+  include_scp(${LIB}/cmake.arch)
   have(ARCH)
 endif()
 
@@ -148,7 +148,7 @@ elseif(WIN32)
     set(source WIN32)
     list(APPEND source ${TREE}/win32/main.gui.c)
   endif()
-  include_scp(${TOOL}/manifest)
+  include_scp(${LIB}/cmake.manifest)
   list(APPEND source ${TREE}/${name}.rc)
 endif()
 
@@ -159,7 +159,7 @@ target_link_libraries(${name} platfree platspec)
 if(NOT CONFIG_NO_I18N)
   find_package(Intl)
   if(Intl_FOUND)
-    include_scp(${TOOL}/gettext)
+    include_scp(${LIB}/cmake.gettext)
   endif()
 endif()
 
