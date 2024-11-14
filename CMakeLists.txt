@@ -25,8 +25,10 @@ endif()
 
 if(CONFIG_CC_IS_GCC)
   set(CMAKE_C_COMPILER gcc)
+  set(cc_min_ver 9)
 else()
   set(CMAKE_C_COMPILER clang)
+  set(cc_min_ver 6)
 endif()
 
 set(CMAKE_C_STANDARD 17)
@@ -89,6 +91,10 @@ endif()
 
 string(REPLACE -rc . version_cmake ${version})
 project(${name} VERSION ${version_cmake} LANGUAGES C)
+
+if(CMAKE_C_COMPILER_VERSION VERSION_LESS cc_min_ver)
+  message(FATAL_ERROR "compiler version ${cc_min_ver} or higher is required")
+endif()
 
 if(CONFIG_EXPORT_COMPILE_COMMAND)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
