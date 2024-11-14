@@ -7,20 +7,30 @@ fi
 
 source scripts/libutil
 
-license=$(jvalue license .vscode/settings.json)
-year=$(jvalue year .vscode/settings.json)
+section()
+{
+	perl -ne "print if /^\[$1\]$/ .. /^\[end$1\]$/ and !/^\[.*\]$/" $2
+}
+
+setting=$(jq -r '."fileHeaderComment.parameter"."*"' .vscode/settings.json)
+
+license=$(echo $setting | jq -r .license)
+year=$(echo $setting | jq -r .year)
 
 if [[ ! -f .program.in ]]; then
 	die 'missing .program.in'
 elif [[ -f .program ]]; then
 	die "you've already set $(cvalue name .program) up"
 elif [[ $license = 'GPL-3.0-or-later or MIT' ]]; then
-	# die 'you probably forgot to update license'
-	:
+	die 'you probably forgot to update license'
 fi
 
-name=$(cvalue name .program.in)
-no_arch=$(grep no_arch .program.in)
+name=$(section name .program.in)
+conf=$(section conf .program.in)
+
+no_arch=$(echo $conf | grep no_arch)
+
+section readme .program.in > README
 
 cat <<EOF > .program
 name	$name

@@ -1,3 +1,14 @@
-name	brstarter
+[name]
+program name
+[endname]
 
+[conf]
 no_arch
+[endconf]
+
+[readme]
+Program name
+============
+
+Brief description...
+[endreadme]

@@ -27,16 +27,3 @@ warn()
 	>&2 echo $*
 	return 1
 }
-
-# json value of
-jvalue()
-{
-	echo {$(grep "\"$1\"\: " $2 | sed 's/,$//')} | jq -r ".$1"
-	
-}
-
-# column value of
-cvalue()
-{
-	grep $1 $2 | cut -f2
-}
