@@ -19,8 +19,9 @@ include(${TOOL}/include)
 
 include_scp(${TOOL}/kconfig)
 
-if(NOT CONFIG_NO_ARCHSPEC AND EXISTS ${TREE}/arch/generic)
+if(NOT CONFIG_NO_ARCH AND EXISTS ${TREE}/arch/generic)
   include_scp(${TOOL}/arch)
+  have(ARCH)
 endif()
 
 if(CONFIG_CC_IS_GCC)
@@ -104,6 +105,8 @@ configure_file(${TREE}/include/program.h.in ${GEN}/program.h)
 
 cc_include(${GEN}/autoconf.h)
 cc_include(${GEN}/program.h)
+cc_include(${TREE}/include/attrdecl.h)
+cc_include(${TREE}/include/attrdecl.h)
 
 include_directories(${TREE}/include)
 

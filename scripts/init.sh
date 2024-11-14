@@ -10,16 +10,20 @@ source scripts/libutil
 license=$(jvalue license .vscode/settings.json)
 year=$(jvalue year .vscode/settings.json)
 
-if [[ ! $1 ]]; then
-	die 'missing program name'
+if [[ ! -f .program.in ]]; then
+	die 'missing .program.in'
 elif [[ -f .program ]]; then
 	die "you've already set $(cvalue name .program) up"
 elif [[ $license = 'GPL-3.0-or-later or MIT' ]]; then
-	die 'you probably forgot to update license'
+	# die 'you probably forgot to update license'
+	:
 fi
 
+name=$(cvalue name .program.in)
+no_arch=$(grep no_arch .program.in)
+
 cat <<EOF > .program
-name	$1
+name	$name
 version	0.0
 EOF
 
@@ -54,7 +58,7 @@ int WinMain(HINSTANCE app, HINSTANCE _, char *cmdline, int __)
 }
 EOF
 
-cat <<EOF > $1.manifest.in
+cat <<EOF > $name.manifest.in
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- SPDX-License-Identifier: $license -->
 <assembly
@@ -109,3 +113,19 @@ cat <<EOF > $1.manifest.in
   </asmv3:application>
 </assembly>
 EOF
+
+if [[ ! $no_arch ]]; then
+	mkdir arch arch/x86 arch/arm64 arch/riscv
+
+	cat <<EOF > arch/.map
+riscv	riscv	riscv64
+arm64	arm64	aarch64
+x86	x86_64	amd64	x64
+EOF
+fi
+
+rm .program.in*
+(rm $0) &
+
+git add .
+git commit -sm 'INITIAL CONSUMER'

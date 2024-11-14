@@ -80,7 +80,7 @@ endchoice
 config EXPORT_COMPILE_COMMAND
 	bool "Export compile command"
 
-config NO_ARCHSPEC
+config NO_ARCH
 	bool "Do not build arch-specific part"
 	default y if "$(WIN32)"
 
