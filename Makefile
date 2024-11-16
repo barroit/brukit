@@ -3,49 +3,53 @@
 MAKEFLAGS += -rR
 MAKEFLAGS += --no-print-directory
 
-export UNIX := y
+export TREE := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
-ROOT  := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
-BUILD := $(ROOT)/build
+ifneq ($(LLVM),)
+CC := clang
+LD := ld.lld
+else
+CC := gcc
+LD := ld
+endif
 
-BSNAME    := $(shell grep name $(ROOT)/.program | cut -f2)
-BSVERSION := $(shell grep version $(ROOT)/.program | cut -f2)
-BSARCH    := $(shell uname -m)
-BSBUILD   := $(shell uname -s)
-export BSNAME BSVERSION BSARCH BSBUILD
+export CC LD
 
-.PHONY: config build
+.PHONY: configure build
 
-config:
-	@cmake -S $(ROOT) -B $(BUILD)
+configure:
+	@cmake -S $(TREE) -B $(TREE)/build
 
-build: config
-	@cmake --build $(BUILD) --parallel
+build: configure
+	@cmake --build $(TREE)/build --parallel
 
-# .PHONY: clean distclean
+.PHONY: clean distclean
 
-# clean:
-# 	@make -C $(abs_build) clean
+clean:
+	@make -C $(TREE)/build clean
 
-# distclean:
-# 	@rm -rf $(abs_root)/include/generated
-# 	@git ls-files --directory -o $(abs_root)/build | xargs rm -rf
-# 	@rm -f $(abs_root)/.config*
+distclean:
+	@rm -rf $(TREE)/include/generated
+	@git ls-files --directory -o $(TREE)/build | xargs rm -rf
+	@rm -f $(TREE)/.config*
 
 .PHONY: menuconfig
 
 menuconfig:
-	@MENUCONFIG_STYLE=aquatic menuconfig
+	@PYTHONPATH=$(PWD)/lib \
+	 PYTHONDONTWRITEBYTECODE=y \
+	 KCONFIG_FUNCTIONS=Kinclude \
+	 MENUCONFIG_STYLE=aquatic menuconfig
 
-# scripts := $(notdir $(wildcard scripts/*.sh))
-# args    := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
+scripts := $(notdir $(wildcard scripts/*.sh))
+args    := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 
-# .PHONY: $(args)
+.PHONY: $(args)
 
-# $(args):
-# 	@:
+$(args):
+	@:
 
-# .PHONY: $(scripts)
+.PHONY: $(scripts)
 
-# $(scripts):
-# 	@bash scripts/$@ $(args)
+$(scripts):
+	@bash scripts/$@ $(args)

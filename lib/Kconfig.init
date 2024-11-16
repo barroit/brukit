@@ -1,0 +1,95 @@
+# SPDX-License-Identifier: GPL-3.0-or-later or MIT
+
+comma  := ,
+
+# I do this my way
+$(warn-off)
+
+# check if .program exists
+$(error-if,$(not-exist,.program),.program not found$(comma) `make init.sh`?)
+
+# check if $(CC) and $(LD) exist
+$(error-if,$(failure,$(CC) -v),C compiler '$(CC)' not found)
+$(error-if,$(failure,$(LD) -v),linker '$(LD)' not found)
+
+pg_info    := $(pg-info)
+pg-name    := $(word,$(pg_info),1)
+pg-version := $(word,$(pg_info),2)
+pg-arch    := $(word,$(pg_info),3)
+pg-build   := $(word,$(pg_info),4)
+
+cc_info    := $(cc-info)
+cc-name    := $(word,$(cc_info),1)
+cc-version := $(word,$(cc_info),2)
+cc-minver  := $(word,$(cc_info),3)
+
+ld_info    := $(ld-info)
+ld-name    := $(word,$(ld_info),1)
+ld-version := $(word,$(ld_info),2)
+
+# check if $(CC) is not too old
+$(error-if,$(less,$(cc-version),$(cc-minver)),\
+C compiler '$(CC)' is too old (min v$(to-sver,$(cc-minver))))
+
+config PROG_NAME
+	def_string $(pg-name)
+
+config PROG_VERSION
+	def_string $(pg-version)
+
+config PROG_ARCH
+	def_string $(pg-arch)
+
+config PROG_BUILD
+	def_string $(pg-build)
+
+config CC_NAME
+	def_string $(cc-name)
+
+config CC_VERSION
+	def_int $(cc-version)
+
+config LD_NAME
+	def_string $(ld-name)
+
+config LD_VERSION
+	def_int $(ld-version)
+
+config CC_IS_CLNAG
+	def_bool CC_NAME = "Clang"
+
+config CC_IS_GCC
+	def_bool CC_NAME = "GCC"
+
+menu "General setup"
+
+choice
+	prompt "Compiler optimization level"
+	default CC_OPTIMIZE_SIZE if DEBUG_PROG
+	default CC_OPTIMIZE_PERF
+
+config CC_OPTIMIZE_PERF
+	bool "Optimize for performance (-O2)"
+
+config CC_OPTIMIZE_SIZE
+	bool "Optimize for size (-Os)"
+
+config CC_OPTIMIZE_O3
+	bool "Further optimizing performance (-O3)"
+
+endchoice
+
+config I18N_SUPP
+	bool "Enable i18n support"
+
+config ARCH_SPEC
+	bool "Add arch-specific code"
+	depends on $(exist,arch/.map)
+
+config WIN_GUI
+	bool "Build program with gui"
+	depends on $(is-win32)
+
+config WIN_GUI
+
+endmenu # General setup

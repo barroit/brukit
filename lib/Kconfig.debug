@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: GPL-3.0-or-later or MIT
+
+menu "Hacking"
+
+config DEBUG_PROG
+	bool "Program debugging"
+
+config DEBUG_INFO
+	bool
+
+choice
+	prompt "Debug information"
+	depends on DEBUG_PROG
+	default DEBUG_INFO_DWARF5 if CC_IS_GCC || \
+				     (CC_IS_CLANG && CC_VERSION > 11000)
+	default DEBUG_INFO_DWARF4
+
+config DEBUG_INFO_NONE
+	bool "Disable debug information"
+
+config DEBUG_INFO_DWARF4
+	bool "Generate DWARF Version 4 debug information"
+	select DEBUG_INFO
+
+config DEBUG_INFO_DWARF5
+	bool "Generate DWARF Version 5 debug information"
+	select DEBUG_INFO
+
+endchoice # Debug information
+
+choice
+	prompt "Compressed debug information"
+	depends on DEBUG_INFO
+
+config DEBUG_INFO_COMPRESSED_NONE
+	bool "Don't compress debug information"
+
+config DEBUG_INFO_COMPRESSED_ZLIB
+	bool "Compress debugging information with zlib"
+	depends on $(cc-option,-gz=zlib)
+	depends on $(ld-option,--compress-debug-sections=zlib)
+
+config DEBUG_INFO_COMPRESSED_ZSTD
+	bool "Compress debugging information with zstd"
+	depends on $(cc-option,-gz=zstd)
+	depends on $(ld-option,--compress-debug-sections=zstd)
+
+endchoice # Compressed Debug information
+
+config SANITIZE_PROG
+	bool "Build program with asan and ubsan"
+	default DEBUG_PROG
+
+config DUMP_COMPILE_CMD
+	bool "Dump compile command"
+	default DEBUG_PROG
+
+config CONFIG_REPORT_HOOK
+	bool "Mount runtime report hook"
+	default DEBUG_PROG
+	depends on $(is-win32)
+
+endmenu # Hacking
