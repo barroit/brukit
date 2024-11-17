@@ -5,51 +5,51 @@ cmake_minimum_required(VERSION 3.21)
 # Never use relative paths. In certain scenarios, such as when the tree is
 # under z:, a relative path may cause CMake to misinterpret it, leading to
 # unexpected behavior.
-set(TREE ${CMAKE_SOURCE_DIR})
+set(TREE $ENV{TREE})
 set(LIB  ${TREE}/lib)
 set(GEN  ${TREE}/include/generated)
-set(ARCH ${TREE}/arch)
 
-set(name    $ENV{BSNAME})
-set(version $ENV{BSVERSION})
-set(arch    $ENV{BSARCH})
-set(build   $ENV{BSBUILD})
+file(MAKE_DIRECTORY ${GEN})
 
 include(${LIB}/cmake.include)
 
+if(NOT EXISTS ${TREE}/.config)
+  set(ENV{KCONFIG_CONFIG} ${TREE}/.config.def)
+  if(NOT EXISTS ${TREE}/.config.def)
+    execute_process(COMMAND ${TREE}/scripts/kconfig.py alldefconfig)
+  endif()
+endif()
+
+execute_process(COMMAND ${TREE}/scripts/kconfig.py
+		genconfig --header-path ${GEN}/autoconf.h)
 include_scp(${LIB}/cmake.kconfig)
 
-if(NOT CONFIG_NO_ARCH AND EXISTS ${TREE}/arch/generic)
+string(TOLOWER ${CONFIG_PROG_NAME} name)
+set(version ${CONFIG_PROG_VERSION})
+
+if(CONFIG_ARCH_SPEC)
   include_scp(${LIB}/cmake.arch)
-  have(ARCH)
 endif()
 
-if(CONFIG_CC_IS_GCC)
-  set(CMAKE_C_COMPILER gcc)
-  set(cc_min_ver 9)
-else()
-  set(CMAKE_C_COMPILER clang)
-  set(cc_min_ver 6)
-endif()
+set(CMAKE_C_COMPILER $ENV{CC})
+set(CMAKE_C_COMPILER_LINKER $ENV{LD})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_EXTENSIONS true)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-if(CONFIG_DEBUG_INFO_NONE)
-  add_compile_options(-g0)
-elseif(CONFIG_DEBUG_INFO_EXTENDED)
-  add_compile_options(-g3)
-else()
-  add_compile_options(-g)
+if(CONFIG_DEBUG_INFO_DWARF4)
+  add_compile_options(-gdwarf-4)
+elseif(CONFIG_DEBUG_INFO_DWARF5)
+  add_compile_options(-gdwarf-5)
 endif()
 
-if(CONFIG_OPTIMIZE_DEBUG)
-  add_compile_options(-Og)
-elseif(CONFIG_OPTIMIZE_O3)
+if(CONFIG_CC_OPTIMIZE_PERF)
+  add_compile_options(-O2)
+elseif(CONFIG_CC_OPTIMIZE_SIZE)
+  add_compile_options(-Os)
+elseif(CONFIG_CC_OPTIMIZE_O3)
   add_compile_options(-O3)
-else()
-  add_compile_options(-O)
 endif()
 
 add_compile_options(-Wall
@@ -71,22 +71,13 @@ add_compile_options(-fshort-wchar
 		    -funsigned-char
 		    -fno-common)
 
-test_add_compile_options(CONFIG_DEBUG_ON -fno-omit-frame-pointer)
+test_add_compile_options(CONFIG_DEBUG_PROG -fno-omit-frame-pointer)
 
-test_add_compile_options(CONFIG_USE_ASAN -fsanitize=address)
-test_add_link_options(CONFIG_USE_ASAN -fsanitize=address)
-
-test_add_compile_options(CONFIG_USE_UBSAN -fsanitize=undefined)
-test_add_link_options(CONFIG_USE_UBSAN -fsanitize=undefined)
-
-test_add_compile_options(CONFIG_USE_TSAN -fsanitize=thread)
-test_add_link_options(CONFIG_USE_TSAN -fsanitize=thread)
-
-test_add_compile_options(CONFIG_USE_MSAN -fsanitize=memory)
-test_add_link_options(CONFIG_USE_MSAN -fsanitize=memory)
+test_add_compile_options(CONFIG_SANITIZE_PROG -fsanitize=address,undefined)
+test_add_link_options(CONFIG_SANITIZE_PROG -fsanitize=address,undefined)
 
 # ASAN library lacks certain C library functions.
-if(WIN32 AND CONFIG_USE_ASAN)
+if(WIN32 AND CONFIG_SANITIZE_PROG)
   add_compile_options(-U_DLL)
 endif()
 
@@ -97,7 +88,7 @@ if(CMAKE_C_COMPILER_VERSION VERSION_LESS cc_min_ver)
   message(FATAL_ERROR "compiler version ${cc_min_ver} or higher is required")
 endif()
 
-if(CONFIG_EXPORT_COMPILE_COMMAND)
+if(CONFIG_DUMP_COMPILE_CMD)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
@@ -111,42 +102,40 @@ cc_include(${TREE}/include/attrdecl.h)
 include_directories(${TREE}/include)
 
 if(UNIX)
-  list(APPEND plat unix)
+  list(APPEND platlist unix)
   if(LINUX)
-    list(APPEND plat linux)
+    list(APPEND platlist linux)
   elseif(BSD)
-    list(APPEND plat bsd)
+    list(APPEND platlist bsd)
   elseif(APPLE)
-    list(APPEND plat darwin)
+    list(APPEND platlist darwin)
   endif()
 elseif(WIN32)
-  list(APPEND plat win32)
+  list(APPEND platlist win32)
 endif()
 
-foreach(p ${plat})
-  include_directories(${TREE}/${p})
-endforeach()
-
-foreach(p ${plat})
-  list(APPEND platspec ${TREE}/${p}/*.c)
+foreach(plat ${platlist})
+  include_directories(${TREE}/${plat})
+  list(APPEND pathspec ${TREE}/${plat}/*.c)
 endforeach()
 
 file(GLOB source LIST_DIRECTORIES false ${pathspec})
 list(FILTER source EXCLUDE REGEX main\.)
+
 add_library(platspec OBJECT ${source})
 
-file(GLOB source LIST_DIRECTORIES false ${TREE}/generic/*.c
+file(GLOB source LIST_DIRECTORIES false ${TREE}/platfree/*.c
 					${TREE}/commands/*.c)
 add_library(platfree OBJECT ${source})
 
 if(UNIX)
   set(source ${TREE}/unix/main.c)
 elseif(WIN32)
-  if(CONFIG_NO_GUI)
-    set(source ${TREE}/win32/main.tui.c)
-  else()
+  if(CONFIG_WIN_GUI)
     set(source WIN32)
     list(APPEND source ${TREE}/win32/main.gui.c)
+  else()
+    set(source ${TREE}/win32/main.tui.c)
   endif()
   include_scp(${LIB}/cmake.manifest)
   list(APPEND source ${TREE}/${name}.rc)
@@ -156,7 +145,7 @@ add_executable(${name} ${source})
 
 target_link_libraries(${name} platfree platspec)
 
-if(NOT CONFIG_NO_I18N)
+if(CONFIG_I18N_SUPP)
   find_package(Intl)
   if(Intl_FOUND)
     include_scp(${LIB}/cmake.gettext)
@@ -165,18 +154,17 @@ endif()
 
 if(WIN32)
   target_link_libraries(${name} shlwapi)
-  if(NOT CONFIG_NO_GUI)
+  if(CONFIG_WIN_GUI)
     target_link_libraries(${name} comctl32)
   endif()
-  if(CONFIG_DEBUG_ON AND NOT CONFIG_NO_REPORT_HOOK)
+  if(CONFIG_DEBUG_PROG AND CONFIG_REPORT_HOOK)
     target_link_libraries(${name} dbghelp)
-    have(RPHK)
   endif()
 endif()
 
 add_compile_definitions(_GNU_SOURCE)
 
-if(NOT CONFIG_DEBUG_ON)
+if(NOT CONFIG_DEBUG_PROG)
   add_compile_definitions(NDEBUG)
 endif()
 
@@ -189,7 +177,7 @@ endif()
 
 install(TARGETS ${name} DESTINATION .)
 
-if(NOT CONFIG_NO_I18N)
+if(CONFIG_I18N_SUPP)
   install(DIRECTORY ${TREE}/locale/ DESTINATION locale
 	  FILES_MATCHING PATTERN *.mo PERMISSIONS OWNER_READ)
 endif()

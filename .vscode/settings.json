@@ -8,7 +8,7 @@
 	"files.associations": {
 		"DRAFT": "plaintext",
 		"TAGGING": "plaintext",
-		"**/cmake/*": "cmake"
+		"**/lib/cmake.*": "cmake"
 	},
 	"search.exclude": {
 		"**/locale/**": true

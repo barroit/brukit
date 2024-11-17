@@ -4,6 +4,7 @@
 
 .config
 .config.old
+.config.def
 
 build/*
 !build/locale

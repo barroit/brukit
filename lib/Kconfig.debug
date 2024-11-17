@@ -55,7 +55,7 @@ config DUMP_COMPILE_CMD
 	bool "Dump compile command"
 	default DEBUG_PROG
 
-config CONFIG_REPORT_HOOK
+config REPORT_HOOK
 	bool "Mount runtime report hook"
 	default DEBUG_PROG
 	depends on $(is-win32)

@@ -5,11 +5,6 @@ function(include_scp name)
   include(${name})
 endfunction()
 
-function(have name)
-  set(HAVE_${name} 1)
-  add_compile_definitions(HAVE_${name})
-endfunction()
-
 function(cc_include name)
   # By including our header this way, we avoid option de-duplication by CMake.
   add_compile_options("SHELL:-include ${name}")

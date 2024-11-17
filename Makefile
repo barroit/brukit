@@ -15,13 +15,15 @@ endif
 
 export CC LD
 
-.PHONY: configure build
+.PHONY: configure build all
+
+build:
+	@cmake --build $(TREE)/build --parallel
 
 configure:
 	@cmake -S $(TREE) -B $(TREE)/build
 
-build: configure
-	@cmake --build $(TREE)/build --parallel
+all: configure build
 
 .PHONY: clean distclean
 
@@ -36,10 +38,7 @@ distclean:
 .PHONY: menuconfig
 
 menuconfig:
-	@PYTHONPATH=$(PWD)/lib \
-	 PYTHONDONTWRITEBYTECODE=y \
-	 KCONFIG_FUNCTIONS=Kinclude \
-	 MENUCONFIG_STYLE=aquatic menuconfig
+	@$(TREE)/scripts/kconfig.py menuconfig
 
 scripts := $(notdir $(wildcard scripts/*.sh))
 args    := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
