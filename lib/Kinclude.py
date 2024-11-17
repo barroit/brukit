@@ -111,7 +111,7 @@ def cc_info(kconf, name):
 	res = run(cmd, text=True, input=file, capture_output=True)
 
 	if not res.stdout:
-		die_kconf(kconf, f"compiler '{cc}' is not supported")
+		return ''
 	sl = res.stdout.split()
 
 	name = sl[0]
@@ -143,11 +143,19 @@ def ld_info(kconf, name):
 		name = 'BFD'
 		version = sl[-1]
 	elif sl[0] == 'GNU' and sl[1] == 'gold':
-		die_kconf('ld.gold is not supported')
+		return ''
 	else:
 		# Ubuntu LLD 18.1.3 (compatible with GNU linkers)
+		# or the unsupported
+		# Microsoft (R) Incremental Linker Version 14.40.33812.0
+		while len(ls) > 1 and ls[0] != "LLD":
+			sl.pop(0)
+
+		if ls[0] != 'LLD':
+			return ''
+
 		name = 'LLD'
-		version = sl[2]
+		version = sl[1]
 
 	version = re.match(r'^[0-9.]*', version).group(0)
 	sl = version.split('.')
@@ -174,28 +182,33 @@ def is_win32(kconf, name):
 def is_unix(kconf, name):
 	return 'y' if is_plat('Windows') == 'n' else 'n'
 
+def is_empty(kconf, name, val):
+	return 'y' if not val.strip() else 'n'
+
 functions = {
-	"word":      (word,      2, 2),
-	"warn-off":  (warn_off,  0, 0),
-	"to-sver":   (to_sver,   1, 1),
-	"is-win32":  (is_win32,  0, 0),
-	"is-unix":   (is_unix,   0, 0),
+	'word':      (word,      2, 2),
+	'warn-off':  (warn_off,  0, 0),
+	'to-sver':   (to_sver,   1, 1),
 
-	"success":   (success,   1, 1),
-	"failure":   (failure,   1, 1),
-	"error-if":  (error_if,  2, 2),
+	'WIN32':     (is_win32,  0, 0),
+	'UNIX':      (is_unix,   0, 0),
 
-	"exist":     (exist,     1, 1),
-	"not-exist": (not_exist, 1, 1),
+	'success':   (success,   1, 1),
+	'failure':   (failure,   1, 1),
+	'error-if':  (error_if,  2, 2),
 
-	"less":      (less,      2, 2),
-	"greater":   (greater,   2, 2),
+	'exist':     (exist,     1, 1),
+	'not-exist': (not_exist, 1, 1),
 
-	"pg-info":   (pg_info,   0, 0),
+	'empty':     (is_empty,  1, 1),
+	'less':      (less,      2, 2),
+	'greater':   (greater,   2, 2),
 
-	"cc-info":   (cc_info,   0, 0),
-	"cc-option": (cc_option, 1, 1),
+	'pg-info':   (pg_info,   0, 0),
 
-	"ld-info":   (ld_info,   0, 0),
-	"ld-option": (ld_option, 1, 1),
+	'cc-info':   (cc_info,   0, 0),
+	'cc-option': (cc_option, 1, 1),
+
+	'ld-info':   (ld_info,   0, 0),
+	'ld-option': (ld_option, 1, 1),
 }

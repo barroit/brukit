@@ -19,17 +19,21 @@ pg-arch    := $(word,$(pg_info),3)
 pg-build   := $(word,$(pg_info),4)
 
 cc_info    := $(cc-info)
+$(error-if,$(empty,$(cc_info)),compiler '$(CC)' is not supported)
+
 cc-name    := $(word,$(cc_info),1)
 cc-version := $(word,$(cc_info),2)
+
 cc-minver  := $(word,$(cc_info),3)
+$(error-if,$(less,$(cc-version),$(cc-minver)),compiler '$(CC)' is too old)
 
 ld_info    := $(ld-info)
+$(error-if,$(empty,$(ld_info)),linker '$(LD)' is not supported)
+
 ld-name    := $(word,$(ld_info),1)
 ld-version := $(word,$(ld_info),2)
 
 # check if $(CC) is not too old
-$(error-if,$(less,$(cc-version),$(cc-minver)),\
-C compiler '$(CC)' is too old (min v$(to-sver,$(cc-minver))))
 
 config PROG_NAME
 	def_string $(pg-name)
@@ -88,7 +92,7 @@ config ARCH_SPEC
 
 config WIN_GUI
 	bool "Build program with gui"
-	depends on $(is-win32)
+	depends on $(WIN32)
 
 config WIN_GUI
 

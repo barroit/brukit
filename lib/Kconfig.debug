@@ -58,6 +58,6 @@ config DUMP_COMPILE_CMD
 config REPORT_HOOK
 	bool "Mount runtime report hook"
 	default DEBUG_PROG
-	depends on $(is-win32)
+	depends on $(WIN32)
 
 endmenu # Hacking
