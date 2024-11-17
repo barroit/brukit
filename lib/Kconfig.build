@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: GPL-3.0-or-later or MIT
+
+menu "Build options"
+
+choice
+	prompt "Compiler optimization level"
+	default CC_OPTIMIZE_SIZE if DEBUG_PROG
+	default CC_OPTIMIZE_PERF
+
+config CC_OPTIMIZE_PERF
+	bool "Optimize for performance (-O2)"
+
+config CC_OPTIMIZE_SIZE
+	bool "Optimize for size (-Os)"
+
+config CC_OPTIMIZE_O3
+	bool "Further optimizing performance (-O3)"
+
+endchoice
+
+config ARCH_SPEC
+	bool "Add arch-specific code"
+	depends on $(exist,arch/.map)
+
+config EXEC_NAME
+	string "Executable name"
+	default $(lower,$(pg-name))
+
+config WIN_GUI
+	bool "Build program with gui"
+	depends on $(WIN32)
+
+endmenu # Executable build options

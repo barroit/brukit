@@ -135,7 +135,7 @@ def ld_info(kconf, name):
 	res = run(cmd, text=True, capture_output=True)
 
 	if not res.stdout:
-		die_kconf(f'ld ‘{ld}’ is not supported')
+		return ''
 	sl = res.stdout.split()
 
 	if sl[0] == 'GNU' and sl[1] == 'ld':
@@ -146,12 +146,14 @@ def ld_info(kconf, name):
 		return ''
 	else:
 		# Ubuntu LLD 18.1.3 (compatible with GNU linkers)
+		# or
+		# LLD 18.1.8 (compatible with GNU linkers)
 		# or the unsupported
 		# Microsoft (R) Incremental Linker Version 14.40.33812.0
-		while len(ls) > 1 and ls[0] != "LLD":
+		while len(sl) > 1 and sl[0] != "LLD":
 			sl.pop(0)
 
-		if ls[0] != 'LLD':
+		if sl[0] != 'LLD':
 			return ''
 
 		name = 'LLD'
@@ -167,12 +169,6 @@ def ld_option(kconf, name, opt):
 	res = run(cmd, stdout=DEVNULL, stderr=DEVNULL)
 	return 'y' if res.returncode == 0 else 'n'
 
-def to_sver(kconf, name, val):
-	val = int(val)
-	major = val // 1000
-	minor = val % 1000
-	return f'{major}.{minor}'
-
 def is_plat(name):
 	return 'y' if platform.system() == name else 'n'
 
@@ -185,10 +181,18 @@ def is_unix(kconf, name):
 def is_empty(kconf, name, val):
 	return 'y' if not val.strip() else 'n'
 
+def to_lower(kconf, name, val):
+	return val.lower()
+
+def to_upper(kconf, name, val):
+	return val.upper()
+
 functions = {
 	'word':      (word,      2, 2),
 	'warn-off':  (warn_off,  0, 0),
-	'to-sver':   (to_sver,   1, 1),
+
+	'lower':     (to_lower,  1, 1),
+	'upper':     (to_upper,  1, 1),
 
 	'WIN32':     (is_win32,  0, 0),
 	'UNIX':      (is_unix,   0, 0),

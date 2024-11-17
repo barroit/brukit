@@ -1,7 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
-source "lib/Kconfig.init"
+source "lib/Kconfig.include"
 
 mainmenu "$(pg-name)/$(pg-build)-$(pg-arch) $(pg-version) Configuration"
+
+source "lib/Kconfig.build"
+
+source "lib/Kconfig.feat"
 
 source "lib/Kconfig.debug"

@@ -1,9 +1,17 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
+ifneq ($(filter check-symlink,$(.FEATURES)),check-symlink)
+$(error GNU Make >= 4.0 is required. Your Make version is $(MAKE_VERSION))
+endif
+
 MAKEFLAGS += -rR
 MAKEFLAGS += --no-print-directory
 
 export TREE := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+
+ifneq ($(PWD),$(TREE))
+$(error you need to be inside the source tree ($(TREE)))
+endif
 
 ifneq ($(LLVM),)
 CC := clang
@@ -28,12 +36,12 @@ all: configure build
 .PHONY: clean distclean
 
 clean:
-	@make -C $(TREE)/build clean
+	@cmake --build $(TREE)/build --target clean
 
 distclean:
 	@rm -rf $(TREE)/include/generated
-	@git ls-files --directory -o $(TREE)/build | xargs rm -rf
 	@rm -f $(TREE)/.config*
+	@git ls-files --directory -o $(TREE)/build | xargs rm -rf
 
 .PHONY: menuconfig
 

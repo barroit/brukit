@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
-set(version_manifest ${version_cmake})
-string(REPLACE . ; ver ${version_manifest})
+set(prog_name_manifest ${prog_name})
+set(prog_version_manifest ${prog_version_cmake})
+string(REPLACE "." ";" ver ${prog_version_manifest})
 
 list(LENGTH ver len)
 math(EXPR len "4 - ${len}")
 string(REPEAT 0. ${len} pad)
 
-string(PREPEND version_manifest ${pad})
-configure_file(${TREE}/${name}.manifest.in ${TREE}/${name}.manifest)
+string(PREPEND prog_version_manifest ${pad})
+configure_file(${TREE}/${prog_name}.manifest.in ${TREE}/${prog_name}.manifest)

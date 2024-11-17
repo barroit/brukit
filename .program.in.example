@@ -1,14 +1,19 @@
 [name]
-program name
+program_name
 [endname]
 
 [conf]
+# available pre-options
 no_arch
 [endconf]
 
+[icon]
+name.ico
+[endicon]
+
 [readme]
-Program name
-============
+Program
+=======
 
 Brief description...
 [endreadme]

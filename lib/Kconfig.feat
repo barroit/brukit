@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later or MIT
+
+menu "Core functionality"
+
+config I18N_SUPP
+	bool "Enable i18n support"
+
+endmenu # Program features

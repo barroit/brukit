@@ -1,7 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
+#!/usr/bin/env bash
 
-if [[ ! -d .git ]]; then
-	>&2 echo you need to be on the source tree
+TREE=$(dirname $(dirname $(readlink -f $BASH_SOURCE)))
+if [[ $TREE != $PWD ]]; then
+	>&2 echo you need to be inside the source tree
 	exit 1
 fi
 
@@ -27,6 +29,7 @@ fi
 
 name=$(section name .program.in)
 conf=$(section conf .program.in)
+icon=$(section icon .program.in)
 
 no_arch=$(echo $conf | grep no_arch)
 
@@ -77,8 +80,8 @@ cat <<EOF > $name.manifest.in
   manifestVersion="1.0">
   <assemblyIdentity
     type="win32"
-    name="@name@"
-    version="@version_manifest@"/>
+    name="@prog_name_manifest@"
+    version="@prog_version_manifest@"/>
   <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
     <maxversiontested Id="10.0.22621.1778"/>
     <!-- Windows 10 and Windows 11 -->
@@ -122,6 +125,13 @@ cat <<EOF > $name.manifest.in
     </asmv3:windowsSettings>
   </asmv3:application>
 </assembly>
+EOF
+
+cat <<EOF > $name.rc
+// SPDX-License-Identifier: $license
+#include "resdecl.h"
+
+RES_PROG_ICON	ICON	"$icon"
 EOF
 
 if [[ ! $no_arch ]]; then

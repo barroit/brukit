@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
+find_package(Python3 3.6 REQUIRED)
+
 # Not that SCP, scoped instead :)
 function(include_scp name)
   include(${name})
@@ -10,23 +12,25 @@ function(cc_include name)
   add_compile_options("SHELL:-include ${name}")
 endfunction()
 
+function(python3)
+  execute_process(COMMAND ${Python3_EXECUTABLE}
+		  ${ARGV} COMMAND_ERROR_IS_FATAL ANY)
+endfunction()
+
 function(test_add_compile_options pass)
   if(${pass})
-    list(POP_FRONT ARGV)
-    add_compile_options(${ARGV})
+    add_compile_options(${ARGN})
   endif()
 endfunction()
 
 function(test_add_compile_definitions pass)
   if(${pass})
-    list(POP_FRONT ARGV)
-    add_compile_definitions(${ARGV})
+    add_compile_definitions(${ARGN})
   endif()
 endfunction()
 
 function(test_add_link_options pass)
   if(${pass})
-    list(POP_FRONT ARGV)
-    add_link_options(${ARGV})
+    add_link_options(${ARGN})
   endif()
 endfunction()

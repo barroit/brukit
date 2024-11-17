@@ -16,23 +16,27 @@ include(${LIB}/cmake.include)
 if(NOT EXISTS ${TREE}/.config)
   set(ENV{KCONFIG_CONFIG} ${TREE}/.config.def)
   if(NOT EXISTS ${TREE}/.config.def)
-    execute_process(COMMAND ${TREE}/scripts/kconfig.py alldefconfig)
+    python3(${TREE}/scripts/kconfig.py alldefconfig)
   endif()
 endif()
 
-execute_process(COMMAND ${TREE}/scripts/kconfig.py
-		genconfig --header-path ${GEN}/autoconf.h)
+python3(${TREE}/scripts/kconfig.py genconfig --header-path ${GEN}/autoconf.h)
 include_scp(${LIB}/cmake.kconfig)
 
-string(TOLOWER ${CONFIG_PROG_NAME} name)
-set(version ${CONFIG_PROG_VERSION})
+set(prog_name ${CONFIG_PROG_NAME})
+set(exec_name ${CONFIG_EXEC_NAME})
+set(prog_version ${CONFIG_PROG_VERSION})
 
 if(CONFIG_ARCH_SPEC)
   include_scp(${LIB}/cmake.arch)
 endif()
 
 set(CMAKE_C_COMPILER $ENV{CC})
-set(CMAKE_C_COMPILER_LINKER $ENV{LD})
+if($ENV{LD} STREQUAL ld.lld)
+  add_link_options(-fuse-ld=lld)
+else()
+  add_link_options(-fuse-ld=$ENV{LD})
+endif()
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_EXTENSIONS true)
@@ -81,12 +85,8 @@ if(WIN32 AND CONFIG_SANITIZE_PROG)
   add_compile_options(-U_DLL)
 endif()
 
-string(REPLACE -rc . version_cmake ${version})
-project(${name} VERSION ${version_cmake} LANGUAGES C)
-
-if(CMAKE_C_COMPILER_VERSION VERSION_LESS cc_min_ver)
-  message(FATAL_ERROR "compiler version ${cc_min_ver} or higher is required")
-endif()
+string(REPLACE -rc . prog_version_cmake ${prog_version})
+project(${prog_name} VERSION ${prog_version_cmake} LANGUAGES C)
 
 if(CONFIG_DUMP_COMPILE_CMD)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -96,8 +96,7 @@ configure_file(${TREE}/include/program.h.in ${GEN}/program.h)
 
 cc_include(${GEN}/autoconf.h)
 cc_include(${GEN}/program.h)
-cc_include(${TREE}/include/attrdecl.h)
-cc_include(${TREE}/include/attrdecl.h)
+# cc_include(${TREE}/include/attrdecl.h)
 
 include_directories(${TREE}/include)
 
@@ -138,12 +137,12 @@ elseif(WIN32)
     set(source ${TREE}/win32/main.tui.c)
   endif()
   include_scp(${LIB}/cmake.manifest)
-  list(APPEND source ${TREE}/${name}.rc)
+  list(APPEND source ${TREE}/${prog_name}.rc)
 endif()
 
-add_executable(${name} ${source})
+add_executable(${exec_name} ${source})
 
-target_link_libraries(${name} platfree platspec)
+target_link_libraries(${exec_name} platfree platspec)
 
 if(CONFIG_I18N_SUPP)
   find_package(Intl)
@@ -153,12 +152,12 @@ if(CONFIG_I18N_SUPP)
 endif()
 
 if(WIN32)
-  target_link_libraries(${name} shlwapi)
+  target_link_libraries(${exec_name} shlwapi)
   if(CONFIG_WIN_GUI)
-    target_link_libraries(${name} comctl32)
+    target_link_libraries(${exec_name} comctl32)
   endif()
   if(CONFIG_DEBUG_PROG AND CONFIG_REPORT_HOOK)
-    target_link_libraries(${name} dbghelp)
+    target_link_libraries(${exec_name} dbghelp)
   endif()
 endif()
 
@@ -175,7 +174,7 @@ if(WIN32)
 			  _CRT_SECURE_NO_WARNINGS)
 endif()
 
-install(TARGETS ${name} DESTINATION .)
+install(TARGETS ${exec_name} DESTINATION .)
 
 if(CONFIG_I18N_SUPP)
   install(DIRECTORY ${TREE}/locale/ DESTINATION locale
