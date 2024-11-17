@@ -32,11 +32,8 @@ if(CONFIG_ARCH_SPEC)
 endif()
 
 set(CMAKE_C_COMPILER $ENV{CC})
-if($ENV{LD} STREQUAL ld.lld)
-  add_link_options(-fuse-ld=lld)
-else()
-  add_link_options(-fuse-ld=$ENV{LD})
-endif()
+string(TOLOWER ${CONFIG_LD_NAME} ld)
+add_link_options(-fuse-ld=${ld})
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_EXTENSIONS true)

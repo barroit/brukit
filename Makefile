@@ -18,7 +18,7 @@ CC := clang
 LD := ld.lld
 else
 CC := gcc
-LD := ld
+LD := ld.bfd
 endif
 
 export CC LD
