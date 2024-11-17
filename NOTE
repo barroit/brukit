@@ -1,0 +1,37 @@
+Note
+====
+
+Compiler and linker compatibility
+---------------------------------
+This framework only supports GCC (>= 9) and Clang (>= 6), as well as BFD and
+LLD. There are no plans to support additional compilers or linkers in the
+future.
+
+Modularizing platform-specific functionality
+--------------------------------------------
+Well, it's not implemented in this framework as it's not that generic, but
+there's an idea for it.
+
+  For structures under platspec directories, make each module its own
+  directory. This makes it easier to include the modules in the build system.
+
+  Define a Kconfig symbol to control whether the module should be enabled.
+
+  In CMakeLists.txt, collect the module sources and either make them a target
+  or add them to platspec.
+
+GNU Make behaviors
+------------------
+When running make, the default target is not a complete "one-stop" build but
+only handles the build operation. Configuration is not included, as it involves
+calling kconfiglib commands, which can be problematic. This can cause the
+configuration to get stuck for a few moments due to some additional overhead of
+Kconfig functions.
+
+No redundant quotes in Kconfig symbol values
+--------------------------------------------
+For some symbols like PROG_NAME and CC_NAME, there are no quotes around the
+value retrieved by $(). This is intentional, as these symbols must have a
+non-empty value. Quoting them may cause unexpected behavior if, let's say,
+there's a bug. By not quoting them, the behavior is correct even if a bug
+occurs, since a non-empty value will make kconfiglib panic.
