@@ -74,18 +74,18 @@ add_compile_options(-fshort-wchar
 
 test_add_compile_options(CONFIG_DEBUG_PROG -fno-omit-frame-pointer)
 
-test_add_compile_options(CONFIG_SANITIZE_PROG -fsanitize=address,undefined)
-test_add_link_options(CONFIG_SANITIZE_PROG -fsanitize=address,undefined)
+test_add_compile_options(CONFIG_SAN_PROG -fsanitize=address,undefined)
+test_add_link_options(CONFIG_SAN_PROG -fsanitize=address,undefined)
 
 # ASAN library lacks certain C library functions.
-if(WIN32 AND CONFIG_SANITIZE_PROG)
+if(WIN32 AND CONFIG_SAN_PROG)
   add_compile_options(-U_DLL)
 endif()
 
 string(REPLACE -rc . prog_version_cmake ${prog_version})
 project(${prog_name} VERSION ${prog_version_cmake} LANGUAGES C)
 
-if(CONFIG_DUMP_COMPILE_CMD)
+if(CONFIG_DUMP_CPL_CMD)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
@@ -93,7 +93,8 @@ configure_file(${TREE}/include/program.h.in ${GEN}/program.h)
 
 cc_include(${GEN}/autoconf.h)
 cc_include(${GEN}/program.h)
-# cc_include(${TREE}/include/attrdecl.h)
+cc_include(${TREE}/include/attrdecl.h)
+cc_include(${TREE}/include/prelude.h)
 
 include_directories(${TREE}/include)
 
@@ -153,7 +154,7 @@ if(WIN32)
   if(CONFIG_WIN_GUI)
     target_link_libraries(${exec_name} comctl32)
   endif()
-  if(CONFIG_DEBUG_PROG AND CONFIG_REPORT_HOOK)
+  if(CONFIG_DEBUG_PROG AND CONFIG_REP_HOOK)
     target_link_libraries(${exec_name} dbghelp)
   endif()
 endif()

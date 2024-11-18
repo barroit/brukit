@@ -47,17 +47,21 @@ config DEBUG_INFO_COMPRESSED_ZSTD
 
 endchoice # Compressed Debug information
 
-config SANITIZE_PROG
+config SAN_PROG
 	bool "Build program with asan and ubsan"
 	default DEBUG_PROG
 
-config DUMP_COMPILE_CMD
+config DUMP_CPL_CMD
 	bool "Dump compile command"
 	default DEBUG_PROG
 
-config REPORT_HOOK
+config REP_HOOK
 	bool "Mount runtime report hook"
 	default DEBUG_PROG
 	depends on $(WIN32)
+
+config DEBUG_INTL
+	bool "Build Gettext without inline functions"
+	depends on I18N_SUPP
 
 endmenu # Hacking
