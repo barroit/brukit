@@ -94,6 +94,7 @@ configure_file(${TREE}/include/program.h.in ${GEN}/program.h)
 cc_include(${GEN}/autoconf.h)
 cc_include(${GEN}/program.h)
 cc_include(${TREE}/include/attrdecl.h)
+cc_include(${TREE}/include/compiler.h)
 cc_include(${TREE}/include/prelude.h)
 
 include_directories(${TREE}/include)

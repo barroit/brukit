@@ -8,7 +8,8 @@
 	"files.associations": {
 		"DRAFT": "plaintext",
 		"TAGGING": "plaintext",
-		"**/lib/cmake.*": "cmake"
+		"**/lib/cmake.*": "cmake",
+		"NOTE": "plaintext"
 	},
 	"search.exclude": {
 		"**/locale/**": true
@@ -20,7 +21,11 @@
 		"${workspaceFolder}/include"
 	],
 	"C_Cpp.default.forcedInclude": [
-		"${workspaceFolder}/include/generated/autoconf.h"
+		"${workspaceFolder}/include/generated/autoconf.h",
+		"${workspaceFolder}/include/generated/program.h",
+		"${workspaceFolder}/include/attrdecl.h",
+		"${workspaceFolder}/include/compiler.h",
+		"${workspaceFolder}/include/prelude.h",
 	],
 	"C_Cpp.default.defines": [
 		"_GNU_SOURCE",
