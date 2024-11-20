@@ -42,6 +42,15 @@
 
 #define TC_RESET __fmtcol(0)
 
+#define TC_BLACK   __fmtcol(30)
+#define TC_RED     __fmtcol(31)
+#define TC_GREEN   __fmtcol(32)
+#define TC_YELLOW  __fmtcol(33)
+#define TC_BLUE    __fmtcol(34)
+#define TC_MAGENTA __fmtcol(35)
+#define TC_CYAN    __fmtcol(36)
+#define TC_WHITE   __fmtcol(37)
+
 #define TC_BOLD_BLACK   __fmtcol(1, 30)
 #define TC_BOLD_RED     __fmtcol(1, 31)
 #define TC_BOLD_GREEN   __fmtcol(1, 32)
@@ -51,6 +60,10 @@
 #define TC_BOLD_CYAN    __fmtcol(1, 36)
 #define TC_BOLD_WHITE   __fmtcol(1, 37)
 
-#define H_(x, c) TC_BOLD_##c x TC_RESET
+/*
+ * This is a xgettext keyword. Do not wrap text with N_() or _()
+ */
+#define HB_(x, c) M_(TC_BOLD_##c x TC_RESET)
+#define H_(x, c)  M_(TC_##c x TC_RESET)
 
 #endif /* NG39_TERCOL_H */
