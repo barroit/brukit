@@ -24,3 +24,4 @@ DRAFT
 *.ico
 *.rc
 *.manifest.in
+**/main*.c
