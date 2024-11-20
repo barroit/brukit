@@ -5,6 +5,7 @@
 .config
 .config.old
 .config.def
+*.manifest
 
 build/*
 !build/locale
@@ -17,3 +18,9 @@ locale/generated.pot
 
 .tmp
 DRAFT
+
+# みくみくにしてあげる♪
+.program
+*.ico
+*.rc
+*.manifest.in
