@@ -49,6 +49,7 @@
 # include <basetsd.h>
 # include <shlwapi.h>
 # include <process.h>
+# include <userenv.h>
 # ifdef CONFIG_REP_HOOK
 #  include <dbghelp.h>
 #  include <crtdbg.h>

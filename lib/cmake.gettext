@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
 link_libraries(Intl::Intl)
-have(INTL)
+add_compile_definitions(HAVE_INTL)
 
 if(Intl_VERSION)
   set(GETTEXT_VERSION ${Intl_VERSION})

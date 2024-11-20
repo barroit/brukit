@@ -1,0 +1,8 @@
+                                  TODO LIST
+
+----
+Apply xgettext to macro like H_(N_("warning: "), MAGENTA)
+To do so:
+
+	run preprocessor on files
+	use xgettext with -E and custom keyword (like HN_)

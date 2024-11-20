@@ -1,6 +1,10 @@
 Note
 ====
 
+Meaning of NG39
+---------------
+NG39 stands for ネギミク, where ネギ (negi) is NG and ミク (miku) is 39 ;)
+
 Compiler and linker compatibility
 ---------------------------------
 This framework only supports GCC (>= 9) and Clang (>= 6), as well as BFD and

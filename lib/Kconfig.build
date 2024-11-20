@@ -4,14 +4,14 @@ menu "Build options"
 
 choice
 	prompt "Compiler optimization level"
-	default CC_OPTIMIZE_SIZE if DEBUG_PROG
+	default CC_OPTIMIZE_NONE if DEBUG_PROG
 	default CC_OPTIMIZE_PERF
+
+config CC_OPTIMIZE_NONE
+	bool "Disable optimization (-O0)"
 
 config CC_OPTIMIZE_PERF
 	bool "Optimize for performance (-O2)"
-
-config CC_OPTIMIZE_SIZE
-	bool "Optimize for size (-Os)"
 
 config CC_OPTIMIZE_O3
 	bool "Further optimizing performance (-O3)"
@@ -22,9 +22,17 @@ config ARCH_SPEC
 	bool "Add arch-specific code"
 	depends on $(exist,arch/.map)
 
+menuconfig SPEC_EXEC_NAME
+	bool "Customize executable name"
+	default y
+
+if SPEC_EXEC_NAME
+
 config EXEC_NAME
 	string "Executable name"
 	default $(lower,$(pg-name))
+
+endif
 
 config WIN_GUI
 	bool "Build program with gui"

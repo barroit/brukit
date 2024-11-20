@@ -61,7 +61,7 @@ config REP_HOOK
 	depends on $(WIN32)
 
 config DEBUG_INTL
-	bool "Build Gettext without inline functions"
+	bool "Link with the non-inline function call version of intl"
 	depends on I18N_SUPP
 
 endmenu # Hacking
