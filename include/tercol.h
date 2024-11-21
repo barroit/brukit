@@ -37,28 +37,28 @@
 #define __fmtcol_2(x, y)    __tc_beg #x __tc_sep #y __tc_end
 #define __fmtcol_3(x, y, z) __tc_beg #x __tc_sep #y __tc_sep #z __tc_end
 
-#define TC_RESET 0
-#define TC_BOLD  1
+#define RESET 0
+#define BOLD  1
 
-#define TC_BLACK   30
-#define TC_RED     31
-#define TC_GREEN   32
-#define TC_YELLOW  33
-#define TC_BLUE    34
-#define TC_MAGENTA 35
-#define TC_CYAN    36
-#define TC_WHITE   37
+#define BLACK   30
+#define RED     31
+#define GREEN   32
+#define YELLOW  33
+#define BLUE    34
+#define MAGENTA 35
+#define CYAN    36
+#define WHITE   37
 
-#define TC_BRIGHT_BLACK   90
-#define TC_BRIGHT_RED     91
-#define TC_BRIGHT_GREEN   92
-#define TC_BRIGHT_YELLOW  93
-#define TC_BRIGHT_BLUE    94
-#define TC_BRIGHT_MAGENTA 95
-#define TC_BRIGHT_CYAN    96
-#define TC_BRIGHT_WHITE   97
+#define BRIGHT_BLACK   90
+#define BRIGHT_RED     91
+#define BRIGHT_GREEN   92
+#define BRIGHT_YELLOW  93
+#define BRIGHT_BLUE    94
+#define BRIGHT_MAGENTA 95
+#define BRIGHT_CYAN    96
+#define BRIGHT_WHITE   97
 
-#define H(x, ...) __fmtcol(__VA_ARGS__) x __fmtcol(TC_RESET)
+#define H(x, ...) __fmtcol(__VA_ARGS__) x __fmtcol(RESET)
 
 /*
  * This is a xgettext keywords. Do not wrap text with N_() or _()

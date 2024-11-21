@@ -134,7 +134,7 @@ static void fdputs(int fd, const char *tag,
 		u64 us = ts.tv_nsec / 1000;
 		const char *mas = "[%" PRIu64 ".%" PRIu64 "] ";
 		if (cc_use_tercol)
-			mas = H("[%" PRIu64 ".%" PRIu64 "] ", TC_GREEN);
+			mas = H("[%" PRIu64 ".%" PRIu64 "] ", GREEN);
 
 		nr = snprintf(&buf[size], avail + 1, mas, s, us);
 		BUG_ON(nr < 0);
@@ -147,7 +147,7 @@ static void fdputs(int fd, const char *tag,
 		long pid = getpid();
 		char *mas = ">%ld ";
 		if (cc_use_tercol)
-			mas = H(">", TC_BOLD) "%ld ";
+			mas = H(">", BOLD) "%ld ";
 
 		nr = snprintf(&buf[size], avail + 1, mas, pid);
 		BUG_ON(nr < 0);
@@ -225,7 +225,7 @@ void __log(const char *hint, const char *fmt, ...)
 void __note(const char *hint, const char *fmt, ...)
 {
 	va_list ap;
-	const char *tag = H_("note: ", TC_BOLD, TC_CYAN);
+	const char *tag = H_("note: ", BOLD, CYAN);
 
 	va_start(ap, fmt);
 	if (!cc_use_tercol)
@@ -238,7 +238,7 @@ void __note(const char *hint, const char *fmt, ...)
 int __warn(const char *hint, const char *fmt, ...)
 {
 	va_list ap;
-	const char *tag = H_("warning: ", TC_BOLD, TC_MAGENTA);
+	const char *tag = H_("warning: ", BOLD, MAGENTA);
 
 	va_start(ap, fmt);
 	if (!cc_use_tercol)
@@ -252,7 +252,7 @@ int __warn(const char *hint, const char *fmt, ...)
 int __cold __error(const char *hint, const char *fmt, ...)
 {
 	va_list ap;
-	const char *tag = H_("error: ", TC_BOLD, TC_RED);
+	const char *tag = H_("error: ", BOLD, RED);
 
 	va_start(ap, fmt);
 	if (!cc_use_tercol)
@@ -266,7 +266,7 @@ int __cold __error(const char *hint, const char *fmt, ...)
 void __cold __die(const char *hint, const char *fmt, ...)
 {
 	va_list ap;
-	const char *tag = H_("fatal: ", TC_BOLD, TC_RED);
+	const char *tag = H_("fatal: ", BOLD, RED);
 
 	va_start(ap, fmt);
 	if (!cc_use_tercol)
