@@ -13,11 +13,11 @@
 #else
 # define _(masid)  (masid)
 # define N_(masid) masid
-# define textdomain(...)     do {} while (0)
-# define bindtextdomain(...) do {} while (0)
+# define textdomain     NOOP
+# define bindtextdomain	NOOP
 #endif
 
-#ifndef CONFIG_INTL_PREP_MASMAP
+#ifndef __INTL_PREP_MASMAP_NOT_IMPLEMENTED
 # define M_ _
 #endif
 

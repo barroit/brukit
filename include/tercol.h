@@ -32,10 +32,7 @@
 #define __tc_end "m"
 #define __tc_sep ";"
 
-#define __fmtcol(...)      ___fmtcol(ARGCOF(__VA_ARGS__), __VA_ARGS__)
-#define ___fmtcol(...)     ____fmtcol(__VA_ARGS__)
-#define ____fmtcol(x, ...) __fmtcol_##x(__VA_ARGS__)
-
+#define __fmtcol(...) ADAP_CALL(__fmtcol_, __VA_ARGS__)
 #define __fmtcol_1(x)       __tc_beg #x __tc_end
 #define __fmtcol_2(x, y)    __tc_beg #x __tc_sep #y __tc_end
 #define __fmtcol_3(x, y, z) __tc_beg #x __tc_sep #y __tc_sep #z __tc_end
