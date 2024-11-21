@@ -15,12 +15,6 @@ enum mbstatus {
 	MB_LBT4,
 };
 
-/**
- * mbstatus - get the mbstatus of a character
- * @c: character to check
- *
- * Returns the status as an enum mbstatus value.
- */
 enum mbstatus mbstatus(char c);
 
 #endif
