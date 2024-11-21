@@ -17,10 +17,4 @@ typedef uint64_t u64;
 # define xchar char
 #endif
 
-enum term_color_mode {
-	COLMOD_AUTO,
-	COLMOD_ALWAYS,
-	COLMOD_NEVER,
-};
-
 #endif /* NG39_TYPES_H */

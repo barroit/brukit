@@ -40,30 +40,32 @@
 #define __fmtcol_2(x, y)    __tc_beg #x __tc_sep #y __tc_end
 #define __fmtcol_3(x, y, z) __tc_beg #x __tc_sep #y __tc_sep #z __tc_end
 
-#define TC_RESET __fmtcol(0)
+#define TC_RESET 0
+#define TC_BOLD  1
 
-#define TC_BLACK   __fmtcol(30)
-#define TC_RED     __fmtcol(31)
-#define TC_GREEN   __fmtcol(32)
-#define TC_YELLOW  __fmtcol(33)
-#define TC_BLUE    __fmtcol(34)
-#define TC_MAGENTA __fmtcol(35)
-#define TC_CYAN    __fmtcol(36)
-#define TC_WHITE   __fmtcol(37)
+#define TC_BLACK   30
+#define TC_RED     31
+#define TC_GREEN   32
+#define TC_YELLOW  33
+#define TC_BLUE    34
+#define TC_MAGENTA 35
+#define TC_CYAN    36
+#define TC_WHITE   37
 
-#define TC_BOLD_BLACK   __fmtcol(1, 30)
-#define TC_BOLD_RED     __fmtcol(1, 31)
-#define TC_BOLD_GREEN   __fmtcol(1, 32)
-#define TC_BOLD_YELLOW  __fmtcol(1, 33)
-#define TC_BOLD_BLUE    __fmtcol(1, 34)
-#define TC_BOLD_MAGENTA __fmtcol(1, 35)
-#define TC_BOLD_CYAN    __fmtcol(1, 36)
-#define TC_BOLD_WHITE   __fmtcol(1, 37)
+#define TC_BRIGHT_BLACK   90
+#define TC_BRIGHT_RED     91
+#define TC_BRIGHT_GREEN   92
+#define TC_BRIGHT_YELLOW  93
+#define TC_BRIGHT_BLUE    94
+#define TC_BRIGHT_MAGENTA 95
+#define TC_BRIGHT_CYAN    96
+#define TC_BRIGHT_WHITE   97
+
+#define H(x, ...) __fmtcol(__VA_ARGS__) x __fmtcol(TC_RESET)
 
 /*
- * This is a xgettext keyword. Do not wrap text with N_() or _()
+ * This is a xgettext keywords. Do not wrap text with N_() or _()
  */
-#define HB_(x, c) M_(TC_BOLD_##c x TC_RESET)
-#define H_(x, c)  M_(TC_##c x TC_RESET)
+#define H_(x, ...) M_(H(x, __VA_ARGS__))
 
 #endif /* NG39_TERCOL_H */
