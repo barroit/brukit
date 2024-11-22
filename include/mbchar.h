@@ -3,8 +3,8 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-#ifndef MBCHAR_H
-#define MBCHAR_H
+#ifndef NG39_MBCHAR_H
+#define NG39_MBCHAR_H
 
 enum mbstatus {
 	MB_INVAL = -1,	/* unrecognized character */
@@ -17,4 +17,4 @@ enum mbstatus {
 
 enum mbstatus mbstatus(char c);
 
-#endif
+#endif /* NG39_MBCHAR_H */
