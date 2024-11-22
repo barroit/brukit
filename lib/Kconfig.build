@@ -38,4 +38,20 @@ config WIN_GUI
 	bool "Build program with gui"
 	depends on $(WIN32)
 
+menu "Memory allocation"
+
+config PANIC_NOMEM
+	bool "Abort execution when memory allocation fails"
+	default DEBUG_PROG
+	help
+	  This is unlikely to happen on modern systems, as running out
+	  of memory is rare in most cases.
+
+config WARN_HUGE_ALLOC
+	bool "Warn when allocating a large amount of memory"
+	default PANIC_NOMEM
+	depends on PANIC_NOMEM
+
+endmenu # Memory allocation
+
 endmenu # Executable build options
