@@ -21,7 +21,7 @@
 
 #define __cold __attribute__((cold))
 
-#ifndef __clang__
+#if __has_attribute(access)
 # define __read_only(...) __attribute__((access(read_only, __VA_ARGS__)))
 #else
 # define __read_only(...)
