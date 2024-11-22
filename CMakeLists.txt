@@ -100,8 +100,8 @@ cc_include(${GEN}/program.h)
 cc_include(${TREE}/include/prelude.h)
 cc_include(${TREE}/include/attr.h)
 cc_include(${TREE}/include/size.h)
-cc_include(${TREE}/include/compiler.h)
 cc_include(${TREE}/include/types.h)
+cc_include(${TREE}/include/compiler.h)
 cc_include(${TREE}/include/gettext.h)
 
 include_directories(${TREE}/include)
@@ -158,7 +158,7 @@ if(CONFIG_I18N_SUPP)
 endif()
 
 if(WIN32)
-  target_link_libraries(${exec_name} shlwapi)
+  target_link_libraries(${exec_name} shlwapi userenv)
   if(CONFIG_WIN_GUI)
     target_link_libraries(${exec_name} comctl32)
   endif()
@@ -177,6 +177,7 @@ if(WIN32)
   add_compile_definitions(NTDDI_WIN7
 			  WINVER=_WIN32_WINNT_WIN7
 			  _WIN32_WINNT=_WIN32_WINNT_WIN7
+			  _CRT_NONSTDC_NO_DEPRECATE
 			  _CRT_SECURE_NO_WARNINGS)
 endif()
 
