@@ -6,6 +6,8 @@
 #ifndef NG39_TIME_H
 #define NG39_TIME_H
 
+#include_next <time.h>
+
 typedef uint64_t timestamp_t;
 
 timestamp_t __timestamp(void);
@@ -17,7 +19,5 @@ timestamp_t __timestamp(void);
 #endif
 
 void monotime(struct timespec *ts);
-
-#include_next <time.h>
 
 #endif /* NG39_TIME_H */

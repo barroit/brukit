@@ -19,13 +19,11 @@
 #include <stdio.h>
 #include <wchar.h>
 #include <string.h>
-#include <time.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
 #if defined(__unix__)
-# include <unistd.h>
 # include <pwd.h>
 # include <libgen.h>
 # include <dirent.h>
@@ -63,5 +61,8 @@
 # include <libintl.h>
 # include <locale.h>
 #endif
+
+#include <unistd.h>
+#include <time.h>
 
 #endif /* NG39_HPRELUDE_H */
