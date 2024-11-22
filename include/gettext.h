@@ -18,7 +18,8 @@
 #endif
 
 #ifndef __INTL_PREP_MASMAP_NOT_IMPLEMENTED
-# define M_ _
+# define M_  _
+# define MN_ N_
 #endif
 
 #endif /* NG39_GETTEXT_H */

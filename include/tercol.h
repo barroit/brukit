@@ -58,11 +58,21 @@
 #define BRIGHT_CYAN    96
 #define BRIGHT_WHITE   97
 
+#define BG_BLACK   40
+#define BG_RED     41
+#define BG_GREEN   42
+#define BG_YELLOW  43
+#define BG_BLUE    44
+#define BG_MAGENTA 45
+#define BG_CYAN    46
+#define BG_WHITE   47
+
 #define H(x, ...) __fmtcol(__VA_ARGS__) x __fmtcol(RESET)
 
 /*
- * This is a xgettext keywords. Do not wrap text with N_() or _()
+ * These are xgettext keywords. Do not wrap text with N_() or _()
  */
-#define H_(x, ...) M_(H(x, __VA_ARGS__))
+#define H_(x, ...)  M_(H(x, __VA_ARGS__))
+#define HN_(x, ...) MN_(H(x, __VA_ARGS__))
 
 #endif /* NG39_TERCOL_H */

@@ -6,6 +6,18 @@
 #ifndef NG39_TERMAS_H
 #define NG39_TERMAS_H
 
+enum tm_level {
+	TM_LOG,
+	TM_WARN,
+	TM_ERROR,
+	TM_FATAL,
+	TM_BUG,
+};
+
+#define TM_FLLN  (1 << 0)	/* show file name and line number */
+#define TM_FUNC  (1 << 1)	/* show function name */
+#define TM_WROUT (1 << 2)	/* output to stdout */
+
 /*
  * For 'hint' parameter in __warn(), __error(), and __die(). This argument
  * provides additional information for the message. The output will look like
@@ -13,18 +25,33 @@
  * will be '<tag>: <message>'.
  */
 
-void __log(const char *hint, const char *fmt, ...) __printf(2, 3);
+#define ___termas(...) __termas(__FILE__, __LINE__, __func__, __VA_ARGS__)
 
-void __note(const char *hint, const char *fmt, ...) __printf(2, 3);
+int __termas(const char *file, int line,
+	     const char *func, enum tm_level level,
+	     const char *hint, u32 flags, const char *fmt, ...) __printf(7, 8);
 
-int __warn(const char *hint, const char *fmt, ...) __printf(2, 3);
+#define __tm_log(hint, flags, fmt, ...) \
+	___termas(TM_LOG, hint, flags | TM_WROUT, fmt, ##__VA_ARGS__)
 
-int __error(const char *hint, const char *fmt, ...) __printf(2, 3);
+#define __tm_warn(hint, flags, fmt, ...) \
+	___termas(TM_WARN, hint, flags, fmt, ##__VA_ARGS__)
 
-void __noreturn __die(const char *hint, const char *fmt, ...) __printf(2, 3);
+#define __tm_error(hint, flags, fmt, ...) \
+	___termas(TM_ERROR, hint, flags, fmt, ##__VA_ARGS__)
 
-void __noreturn __bug(const char *file,
-		      int line, const char *fmt, ...) __printf(3, 4);
+#define __tm_die(hint, flags, fmt, ...)				\
+({								\
+	___termas(TM_FATAL, hint, flags, fmt, ##__VA_ARGS__);	\
+	__unreachable();					\
+})
+
+#define __tm_bug(hint, flags, fmt, ...)				\
+({								\
+	u32 __flags = (flags) | TM_FLLN | TM_FUNC;		\
+	___termas(TM_BUG, hint, __flags, fmt, ##__VA_ARGS__);	\
+	__unreachable();					\
+})
 
 /*
  * For warn(), error(), and die(), the output format is '<tag>: <message>'.
@@ -32,31 +59,33 @@ void __noreturn __bug(const char *file,
  * '<tag>: <message>; <strerror>'
  */
 
-#define log(fmt, ...)       __log(NULL, fmt, ##__VA_ARGS__)
+#define __strerrno strerror(errno)
 
-#define note(fmt, ...)       __note(NULL, fmt, ##__VA_ARGS__)
-#define note_errno(fmt, ...) __note(strerror(errno), fmt, ##__VA_ARGS__)
+#define log(fmt, ...)       __tm_log(NULL, 0, fmt, ##__VA_ARGS__)
 
-#define warn(fmt, ...)       __warn(NULL, fmt, ##__VA_ARGS__)
-#define warn_errno(fmt, ...) __warn(strerror(errno), fmt, ##__VA_ARGS__)
+#define note(fmt, ...)       __tm_note(NULL, 0, fmt, ##__VA_ARGS__)
+#define note_errno(fmt, ...) __tm_note(__strerrno, 0, fmt, ##__VA_ARGS__)
 
-#define error(fmt, ...)       __error(NULL, fmt, ##__VA_ARGS__)
-#define error_errno(fmt, ...) __error(strerror(errno), fmt, ##__VA_ARGS__)
+#define warn(fmt, ...)       __tm_warn(NULL, 0, fmt, ##__VA_ARGS__)
+#define warn_errno(fmt, ...) __tm_warn(__strerrno, 0, fmt, ##__VA_ARGS__)
 
-#define die(fmt, ...)       __die(NULL, fmt, ##__VA_ARGS__)
-#define die_errno(fmt, ...) __die(strerror(errno), fmt, ##__VA_ARGS__)
+#define error(fmt, ...)       __tm_error(NULL, 0, fmt, ##__VA_ARGS__)
+#define error_errno(fmt, ...) __tm_error(__strerrno, 0, fmt, ##__VA_ARGS__)
 
-#define bug(fmt, ...) __bug(__FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define die(fmt, ...)       __tm_die(NULL, 0, fmt, ##__VA_ARGS__)
+#define die_errno(fmt, ...) __tm_die(__strerrno, 0, fmt, ##__VA_ARGS__)
+
+#define bug(fmt, ...) __tm_bug(NULL, 0, fmt, ##__VA_ARGS__)
 
 #ifdef _WIN32
 
 const char *strwinerr(void);
 
-#define warn_winerr(...) __warn(strwinerr(), __VA_ARGS__)
+#define warn_winerr(fmt, ...) __tm_warn(strwinerr(), 0, fmt, ##__VA_ARGS__)
 
-#define error_winerr(...) __error(strwinerr(), __VA_ARGS__)
+#define error_winerr(fmt, ...) __tm_error(strwinerr(), 0, fmt, ##__VA_ARGS__)
 
-#define die_winerr(...) __die(strwinerr(), __VA_ARGS__)
+#define die_winerr(fmt, ...) __tm_die(strwinerr(), 0, fmt, ##__VA_ARGS__)
 
 #endif /* _WIN32 */
 

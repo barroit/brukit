@@ -21,6 +21,8 @@
 
 #define __must_be_array(x) BUILD_BUG_ON_ZERO(__same_type(x, &x[0]))
 
+#define __unreachable() __builtin_unreachable()
+
 #define sizeof_array(x) (sizeof(x) / sizeof((x)[0]) + __must_be_array(x))
 
 #define bsizeof(x) (CHAR_BIT * sizeof(x))
@@ -39,11 +41,11 @@
  */
 #define mult_is_overflow(a, b) ((a) && (b) > (maxof(a) / (a)))
 
-void __noreturn __die_overflow(const char *file, int line,
+void __noreturn __die_overflow(const char *file, int line, const char *func,
 			       uintmax_t a, uintmax_t b, char op, uint size);
 
 #define __die_mult_overflow(a, b) \
-	__die_overflow(__FILE__, __LINE__, a, b, '*', sizeof(a));
+	__die_overflow(__FILE__, __LINE__, __func__, a, b, '*', sizeof(a));
 
 #define st_mult(a, b)				\
 ({						\

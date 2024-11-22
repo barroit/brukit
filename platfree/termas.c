@@ -10,6 +10,11 @@
 #include "time.h"
 #include "udef.h"
 
+struct tm_tag {
+	const char *name;
+	const char *colored;
+};
+
 #ifdef CONFIG_TERMAS_SMALL_BUFFER
 # define PUTF_BUF_CAP SZ_1K
 #else
@@ -112,9 +117,21 @@ static size_t rm_bad_cntrl(char *buf, size_t size, size_t cap)
 	return ret;
 }
 
-static void fdputs(int fd, const char *tag,
-		   const char *hint, const char *fmt, va_list ap)
+int __termas(const char *file, int line,
+	     const char *func, enum tm_level level,
+	     const char *hint, u32 flags, const char *fmt, ...)
 {
+	static struct tm_tag tags[] = {
+		[TM_LOG]   = { NULL, NULL },
+		[TM_WARN]  = { N_("warn:"),  HN_("warn:",  BOLD, MAGENTA) },
+		[TM_ERROR] = { N_("error:"), HN_("error:", BOLD, RED) },
+		[TM_FATAL] = { N_("fatal:"), HN_("fatal:", BOLD, RED) },
+		[TM_BUG]   = { N_("BUG:"),   HN_("BUG:",   BOLD, RED,
+							   BG_BLACK) },
+	};
+	struct tm_tag *tag = &tags[level];
+	va_list ap;
+
 	/*
 	 * Pay attention that we use write(2) to put our message to file. So
 	 * there's no need (and should not) to care about the null terminator
@@ -126,52 +143,70 @@ static void fdputs(int fd, const char *tag,
 	size_t avail = cap;
 	ssize_t nr;
 
-	if (cc_termas_with_ts || !tag) {
+	if (cc_termas_with_ts || !tag->name) {
 		struct timespec ts;
 		monotime(&ts);
 
 		u64 s = ts.tv_sec;
 		u64 us = ts.tv_nsec / 1000;
-		const char *mas = "[%" PRIu64 ".%" PRIu64 "] ";
-		if (cc_use_tercol)
-			mas = H("[%" PRIu64 ".%" PRIu64 "] ", GREEN);
+		const char *mas = !cc_use_tercol ?
+				  "[%" PRIu64 ".%" PRIu64 "] " :
+				  H("[%" PRIu64 ".%" PRIu64 "] ", GREEN);
 
 		nr = snprintf(&buf[size], avail + 1, mas, s, us);
-		BUG_ON(nr < 0);
-
 		if (!__test_add_buf_size(nr, &size, &avail))
 			goto out;
 	}
 
 	if (cc_termas_with_pid) {
 		long pid = getpid();
-		char *mas = ">%ld ";
-		if (cc_use_tercol)
-			mas = H(">", BOLD) "%ld ";
+		const char *mas = !cc_use_tercol ? ">%ld " :
+						   H(">", BOLD) "%ld ";
 
 		nr = snprintf(&buf[size], avail + 1, mas, pid);
-		BUG_ON(nr < 0);
-
 		if (!__test_add_buf_size(nr, &size, &avail))
 			goto out;
 	}
 
-	if (tag) {
-		size_t len = strlen(tag);
+	if (tag->name) {
+		int show_pos = flags & TM_FLLN || (flags & TM_FUNC);
+		const char *t = cc_use_tercol ? tag->colored : tag->name;
+		size_t len = strlen(t) + !show_pos;
+
 		if (len > avail)
 			len = avail;
 
-		memcpy(&buf[size], tag, len);
+		memcpy(&buf[size], _(t), len);
 		size += len;
+		if (!show_pos)
+			buf[size - 1] = ' ';
 
 		if (size >= avail)
 			goto out;
 		avail -= size;
 	}
 
-	nr = vsnprintf(&buf[size], avail + 1, fmt, ap);
-	BUG_ON(nr < 0);
+	if (flags & TM_FLLN) {
+		const char *mas = !cc_use_tercol ? "%s:%d:%s" :
+						   H("%s:%d:%s", BOLD);
 
+		nr = snprintf(&buf[size], avail + 1, mas,
+			      file, line, flags & TM_FUNC ? "" : " ");
+		if (!__test_add_buf_size(nr, &size, &avail))
+			goto out;
+	}
+
+	if (flags & TM_FUNC) {
+		const char *mas = !cc_use_tercol ? "%s " : H("%s ", BOLD);
+
+		nr = snprintf(&buf[size], avail + 1, mas, func);
+		if (!__test_add_buf_size(nr, &size, &avail))
+			goto out;
+	}
+
+	va_start(ap, fmt);
+	nr = vsnprintf(&buf[size], avail + 1, fmt, ap);
+	va_end(ap);
 	if (!__test_add_buf_size(nr, &size, &avail))
 		goto out;
 
@@ -194,104 +229,38 @@ static void fdputs(int fd, const char *tag,
 out:
 	size = rm_bad_cntrl(buf, size, cap);
 
-	if (fd == STDERR_FILENO)
-		fflush(stderr);
-	else if (fd == STDOUT_FILENO)
-		fflush(stdout);
+	int is_err = !(flags & TM_WROUT);
+	int fd = STDERR_FILENO;
+	int ret = -1;
+	FILE *stream = stderr;
+
+	if (!is_err) {
+		fd = STDOUT_FILENO;
+		stream = stdout;
+		ret = 0;
+	}
 
 	buf[size] = '\n';
 	size += 1;
 
-	nr = xwrite(fd, buf, size);
-	BUG_ON(nr < 0);
+	fflush(stream);
+	xwrite(fd, buf, size);
+
+	switch (level) {
+	case TM_FATAL:
+		exit(128);
+	case TM_BUG:
+		abort();
+	default:
+		return ret;
+	}
 }
 
-static inline void puterr(const char *tag,
-			  const char *hint, const char *fmt, va_list ap)
-{
-	return fdputs(STDERR_FILENO, tag, hint, fmt, ap);
-}
-
-void __log(const char *hint, const char *fmt, ...)
-{
-	va_list ap;
-
-	va_start(ap, fmt);
-
-	fdputs(STDOUT_FILENO, NULL, hint, fmt, ap);
-	va_end(ap);
-}
-
-void __note(const char *hint, const char *fmt, ...)
-{
-	va_list ap;
-	const char *tag = H_("note: ", BOLD, CYAN);
-
-	va_start(ap, fmt);
-	if (!cc_use_tercol)
-		tag = "note: ";
-
-	puterr(tag, hint, fmt, ap);
-	va_end(ap);
-}
-
-int __warn(const char *hint, const char *fmt, ...)
-{
-	va_list ap;
-	const char *tag = H_("warning: ", BOLD, MAGENTA);
-
-	va_start(ap, fmt);
-	if (!cc_use_tercol)
-		tag = "warning: ";
-
-	puterr(tag, hint, fmt, ap);
-	va_end(ap);
-	return -1;
-}
-
-int __cold __error(const char *hint, const char *fmt, ...)
-{
-	va_list ap;
-	const char *tag = H_("error: ", BOLD, RED);
-
-	va_start(ap, fmt);
-	if (!cc_use_tercol)
-		tag = "error: ";
-
-	puterr(tag, hint, fmt, ap);
-	va_end(ap);
-	return -1;
-}
-
-void __cold __die(const char *hint, const char *fmt, ...)
-{
-	va_list ap;
-	const char *tag = H_("fatal: ", BOLD, RED);
-
-	va_start(ap, fmt);
-	if (!cc_use_tercol)
-		tag = "fatal: ";
-
-	puterr(tag, hint, fmt, ap);
-	exit(128);
-}
-
-void __cold __bug(const char *file, int line, const char *fmt, ...)
-{
-	char tag[SZ_1K];
-	va_list ap;
-
-	va_start(ap, fmt);
-	snprintf(tag, sizeof(tag), "BUG!!! %s:%d: ", file, line);
-
-	puterr(tag, NULL, fmt, ap);
-	exit(128);
-}
-
-void __die_overflow(const char *file, int line,
+void __die_overflow(const char *file, int line, const char *func,
 		    uintmax_t a, uintmax_t b, char op, uint size)
 {
-	die(H("%s:%d: ", BOLD)
-	    "%" PRIuMAX " %c %" PRIuMAX " overflows in %u-byte",
-	    file, line, a, op, b, size);
+	__termas(file, line, func, TM_FATAL, NULL, TM_FLLN | TM_FUNC,
+		 "%" PRIuMAX " %c %" PRIuMAX " overflows in %u-byte",
+		 a, op, b, size);
+	__unreachable();
 }
