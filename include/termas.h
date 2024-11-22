@@ -48,4 +48,16 @@ void __noreturn __bug(const char *file,
 
 #define bug(fmt, ...) __bug(__FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
+#ifdef _WIN32
+
+const char *strwinerr(void);
+
+#define warn_winerr(...) __warn(strwinerr(), __VA_ARGS__)
+
+#define error_winerr(...) __error(strwinerr(), __VA_ARGS__)
+
+#define die_winerr(...) __die(strwinerr(), __VA_ARGS__)
+
+#endif /* _WIN32 */
+
 #endif /* NG39_TERMAS_H */

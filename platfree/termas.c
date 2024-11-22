@@ -287,3 +287,11 @@ void __cold __bug(const char *file, int line, const char *fmt, ...)
 	puterr(tag, NULL, fmt, ap);
 	exit(128);
 }
+
+void __die_overflow(const char *file, int line,
+		    uintmax_t a, uintmax_t b, char op, uint size)
+{
+	die(H("%s:%d: ", BOLD)
+	    "%" PRIuMAX " %c %" PRIuMAX " overflows in %u-byte",
+	    file, line, a, op, b, size);
+}
