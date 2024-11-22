@@ -15,6 +15,14 @@
 # define BUG_ON(x) assert(!(x))
 #endif
 
+#define BUILD_BUG_ON_ZERO(x) ((int)(sizeof(struct { int:(-!!(x)); })))
+
+#define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
+
+#define __must_be_array(x) BUILD_BUG_ON_ZERO(__same_type(x, &x[0]))
+
+#define sizeof_array(x) (sizeof(x) / sizeof((x)[0]) + __must_be_array(x))
+
 #define bsizeof(x) (CHAR_BIT * sizeof(x))
 
 #define is_signed(x) ((typeof(x))-1 < 0)
@@ -25,6 +33,24 @@
  */
 #define maxof(x) \
 	((UINTMAX_MAX >> is_signed(x)) >> (bsizeof(uintmax_t) - bsizeof(x)))
+
+/*
+ * mult_is_overflow() accepts signed values, provided they are not negative.
+ */
+#define mult_is_overflow(a, b) ((a) && (b) > (maxof(a) / (a)))
+
+void __noreturn __die_overflow(const char *file, int line,
+			       uintmax_t a, uintmax_t b, char op, uint size);
+
+#define __die_mult_overflow(a, b) \
+	__die_overflow(__FILE__, __LINE__, a, b, '*', sizeof(a));
+
+#define st_mult(a, b)				\
+({						\
+	if (unlikely(mult_is_overflow(a, b)))	\
+		__die_mult_overflow(a, b);	\
+	(a) * (b);				\
+})
 
 /*
  * Calculate the number of arguments (up to 6) passed to this macro. Useful for
