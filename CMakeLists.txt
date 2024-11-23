@@ -95,6 +95,7 @@ endif()
 configure_file(${TREE}/include/program.h.in ${GEN}/program.h)
 
 cc_include(${GEN}/autoconf.h)
+cc_include(${GEN}/features.h)
 cc_include(${GEN}/program.h)
 cc_include(${TREE}/include/prelude.h)
 cc_include(${TREE}/include/attr.h)
@@ -185,6 +186,8 @@ if(CONFIG_WIDE_CHAR)
 else()
   add_compile_definitions(ANSI)
 endif()
+
+include_scp(${LIB}/cmake.ccfeat)
 
 install(TARGETS ${exec_name} DESTINATION .)
 
