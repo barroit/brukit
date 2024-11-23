@@ -98,11 +98,6 @@ cc_include(${GEN}/autoconf.h)
 cc_include(${GEN}/features.h)
 cc_include(${GEN}/program.h)
 cc_include(${TREE}/include/prelude.h)
-cc_include(${TREE}/include/attr.h)
-cc_include(${TREE}/include/size.h)
-cc_include(${TREE}/include/types.h)
-cc_include(${TREE}/include/compiler.h)
-cc_include(${TREE}/include/gettext.h)
 
 include_directories(${TREE}/include)
 

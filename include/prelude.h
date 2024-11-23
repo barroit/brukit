@@ -65,4 +65,10 @@
 #include <unistd.h>
 #include <time.h>
 
+#include "attr.h"
+#include "size.h"
+#include "types.h"
+#include "compiler.h"
+#include "gettext.h"
+
 #endif /* NG39_HPRELUDE_H */
