@@ -21,38 +21,15 @@
 
 #define __must_be_array(x) BUILD_BUG_ON_ZERO(__same_type(x, &x[0]))
 
+#define __must_be_pow2(x) BUILD_BUG_ON_ZERO(!(x) || ((x) % 2) != 0)
+
 #define unreachable __builtin_unreachable
 
-#define sizeof_array(x) (sizeof(x) / sizeof((x)[0]) + __must_be_array(x))
-
-#define bsizeof(x) (CHAR_BIT * sizeof(x))
-
-#define is_signed(x) ((typeof(x))-1 < 0)
-
-/*
- * maxof() accepts any integer type, including constants, variables, and type
- * definitions.
- */
-#define maxof(x) \
-	((UINTMAX_MAX >> is_signed(x)) >> (bsizeof(uintmax_t) - bsizeof(x)))
-
-/*
- * mult_is_overflow() accepts signed values, provided they are not negative.
- */
-#define mult_is_overflow(a, b) ((a) && (b) > (maxof(a) / (a)))
-
-void __noreturn __die_overflow(const char *file, int line, const char *func,
-			       uintmax_t a, uintmax_t b, char op, uint size);
-
-#define __die_mult_overflow(a, b) \
-	__die_overflow(__FILE__, __LINE__, __func__, a, b, '*', sizeof(a));
-
-#define st_mult(a, b)				\
-({						\
-	if (unlikely(mult_is_overflow(a, b)))	\
-		__die_mult_overflow(a, b);	\
-	(a) * (b);				\
-})
+#ifdef HAVE_BUILTIN_ALIGN_DOWN
+# define align_down(m, n) __builtin_align_down(m, n)
+#else
+# define align_down(m, n) __must_be_pow2(n) + (m & ~(uintmax_t)(n - 1))
+#endif
 
 /*
  * Calculate the number of arguments (up to 6) passed to this macro. Useful for

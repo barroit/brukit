@@ -68,7 +68,10 @@
 #include "attr.h"
 #include "size.h"
 #include "types.h"
+
 #include "compiler.h"
+#include "calc.h"
+
 #include "gettext.h"
 
 #endif /* NG39_HPRELUDE_H */
