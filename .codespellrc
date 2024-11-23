@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later or MIT
+
+[codespell]
+
+skip = *.po
+
+ignore-words-list = delink
+
+check-filenames = true
