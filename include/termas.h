@@ -43,14 +43,14 @@ int __termas(const char *file, int line,
 #define __tm_die(hint, flags, fmt, ...)				\
 ({								\
 	___termas(TM_FATAL, hint, flags, fmt, ##__VA_ARGS__);	\
-	__unreachable();					\
+	unreachable();					\
 })
 
 #define __tm_bug(hint, flags, fmt, ...)				\
 ({								\
 	u32 __flags = (flags) | TM_FLLN | TM_FUNC;		\
 	___termas(TM_BUG, hint, __flags, fmt, ##__VA_ARGS__);	\
-	__unreachable();					\
+	unreachable();					\
 })
 
 /*

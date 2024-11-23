@@ -21,7 +21,7 @@
 
 #define __must_be_array(x) BUILD_BUG_ON_ZERO(__same_type(x, &x[0]))
 
-#define __unreachable() __builtin_unreachable()
+#define unreachable __builtin_unreachable
 
 #define sizeof_array(x) (sizeof(x) / sizeof((x)[0]) + __must_be_array(x))
 

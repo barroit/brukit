@@ -262,5 +262,5 @@ void __die_overflow(const char *file, int line, const char *func,
 	__termas(file, line, func, TM_FATAL, NULL, TM_FLLN | TM_FUNC,
 		 "%" PRIuMAX " %c %" PRIuMAX " overflows in %u-byte",
 		 a, op, b, size);
-	__unreachable();
+	unreachable();
 }
