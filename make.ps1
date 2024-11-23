@@ -76,7 +76,6 @@ if ($target -eq 'clean') {
 	cmake --build $TREE/build --target clean
 } elseif ($target -eq 'distclean') {
 	rmrf $TREE/include/generated
-	rmrf $TREE/.config*
 	rmrf $TREE/*.manifest
 	rmrf (git ls-files --directory -o 'build')
 } elseif ($target -eq 'menuconfig') {

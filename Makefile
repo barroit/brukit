@@ -40,7 +40,6 @@ clean:
 
 distclean:
 	@rm -rf $(TREE)/include/generated
-	@rm -f $(TREE)/.config*
 	@git ls-files --directory -o $(TREE)/build | xargs rm -rf
 
 .PHONY: menuconfig
