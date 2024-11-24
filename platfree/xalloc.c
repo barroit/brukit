@@ -9,20 +9,18 @@
 
 #define ALLOC_MAX ((size_t)512 * SZ_1K)
 
-static inline void __warn_on_exceeds(const char *file, int line,
-				     const char *func, size_t size)
+#ifdef CONFIG_WARN_HUGE_ALLOC
+static inline void warn_on_exceeds(const char *file, int line,
+				   const char *func, size_t size)
 {
 	if (likely(size <= ALLOC_MAX))
 		return;
 
 	__termas(file, line, func, TM_WARN, NULL, TM_FLLN | TM_FUNC,
-		 _("allocation of %zu exceeds limit of %zu"), size, ALLOC_MAX);
+		 "allocation of %zu exceeds limit of %zu", size, ALLOC_MAX);
 }
-
-#ifdef CONFIG_WARN_HUGE_ALLOC
-# define warn_on_exceeds __warn_on_exceeds
 #else
-# define warn_on_exceeds NOOP
+#define warn_on_exceeds NOOP
 #endif
 
 static inline void assert_allocated(const char *file, int line,
@@ -32,7 +30,7 @@ static inline void assert_allocated(const char *file, int line,
 		return;
 
 	__termas(file, line, func, TM_FATAL, NULL, TM_FLLN | TM_FUNC,
-		 _("out of memory (tried to allocate %zu bytes)"), size);
+		"out of memory (tried to allocate %zu bytes)", size);
 }
 
 void *__xmalloc(const char *file,
@@ -92,7 +90,7 @@ char *__xstrdup(const char *file,
 
 	__termas(file, line, func, TM_FATAL,
 		 strerror(errno), TM_FLLN | TM_FUNC,
-		 _("failed to duplicate string '%.10s...'"), s);
+		 "failed to duplicate string '%.10s...'", s);
 	unreachable();
 }
 

@@ -40,4 +40,16 @@ char *__xstrdup(const char *file,
 wchar_t *__xwcsdup(const char *file,
 		   int line, const char *func, const wchar_t *s);
 
+#define REALLOCBUF(x, new, cap)					\
+do {								\
+	BUILD_BUG_ON(__same_type(x, void *));			\
+	typeof(new) __new = new;				\
+	if (__new > cap) {					\
+		cap = lgrow(cap);				\
+		if (cap < __new)				\
+			cap = __new;				\
+		xreallocarray(x, sizeof(*(x)), __new);		\
+	}							\
+} while (0)
+
 #endif /* NG39_XALLOC_H */
