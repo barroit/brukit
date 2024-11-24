@@ -25,4 +25,17 @@ typedef unsigned int uint;
 typedef SSIZE_T ssize_t;
 #endif
 
+struct strbuf_offset {
+	uint ws;	/* a 'working space' for path operations */
+};
+
+struct strbuf {
+	xchar *buf;
+
+	uint len;
+	uint cap;
+
+	struct strbuf_offset off;
+};
+
 #endif /* NG39_TYPES_H */

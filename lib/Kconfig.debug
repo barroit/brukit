@@ -48,7 +48,7 @@ config DEBUG_INFO_COMPRESSED_ZSTD
 endchoice # Compressed Debug information
 
 config SAN_PROG
-	bool "Build program with asan and ubsan"
+	bool "Build program with sanitizers"
 	default DEBUG_PROG
 
 config DUMP_CPL_CMD
@@ -63,5 +63,13 @@ config REP_HOOK
 config DEBUG_INTL
 	bool "Link with the non-inline function call version of intl"
 	depends on I18N_SUPP
+
+menu "strbuf options"
+
+config STRBUF_SANITIZE_PATH
+	bool "Add path format checks"
+	default DEBUG_PROG
+
+endmenu # strbuf options
 
 endmenu # Hacking

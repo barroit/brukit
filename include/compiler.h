@@ -9,11 +9,15 @@
 #define likely(x)   __builtin_expect(!!(x), 1)
 #define unlikely(x) __builtin_expect(!!(x), 0)
 
+#define static_assert _Static_assert
+
 #ifdef NDEBUG
 # define BUG_ON(x) do { if (x); } while (0)
 #else
 # define BUG_ON(x) assert(!(x))
 #endif
+
+#define BUILD_BUG_ON(x) static_assert(!(x), "must not be " #x)
 
 #define BUILD_BUG_ON_ZERO(x) ((int)(sizeof(struct { int:(-!!(x)); })))
 
@@ -23,12 +27,14 @@
 
 #define __must_be_pow2(x) BUILD_BUG_ON_ZERO(!(x) || ((x) % 2) != 0)
 
+#define __must_have_va_arg(...) BUILD_BUG_ON_ZERO(ARGCOF(__VA_ARGS__) == 0)
+
 #define unreachable __builtin_unreachable
 
 #ifdef HAVE_BUILTIN_ALIGN_DOWN
 # define align_down(m, n) __builtin_align_down(m, n)
 #else
-# define align_down(m, n) __must_be_pow2(n) + (m & ~(uintmax_t)(n - 1))
+# define align_down(m, n) __must_be_pow2(n) + ((m) & ~(uintmax_t)(n - 1))
 #endif
 
 /*
