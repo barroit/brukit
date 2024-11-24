@@ -6,23 +6,20 @@
 #ifndef	NG39_ATTR_H
 #define NG39_ATTR_H
 
-#define __unused __attribute__((unused))
+#define __unused __attribute__((__unused__))
 
-#define __noreturn __attribute__((noreturn))
+#define __noreturn __attribute__((__noreturn__))
 
-#ifdef __nonnull
-# undef __nonnull
-#endif
-#define __nonnull(...) __attribute__((nonnull(__VA_ARGS__)))
+#define __pure __attribute__((__pure__))
 
-#define __pure __attribute__((pure))
+#define __printf(m, n) \
+	__attribute__((__format__(__printf__, m, n), __nonnull__(m)))
 
-#define __printf(m, n) __attribute__((format(printf, m, n))) __nonnull(m)
+#define __cold __attribute__((__cold__))
 
-#define __cold __attribute__((cold))
-
-#if __has_attribute(access)
-# define __read_only(...) __attribute__((access(read_only, __VA_ARGS__)))
+#if __has_attribute(__access__)
+# define __read_only(...) \
+	__attribute__((__access__(__read_only__, __VA_ARGS__)))
 #else
 # define __read_only(...)
 #endif
