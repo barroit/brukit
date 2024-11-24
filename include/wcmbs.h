@@ -3,8 +3,8 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-#ifndef NG39_MBCHAR_H
-#define NG39_MBCHAR_H
+#ifndef NG39_WCMBS_H
+#define NG39_WCMBS_H
 
 enum mbstatus {
 	MB_INVAL = -1,	/* unrecognized character */
@@ -17,4 +17,18 @@ enum mbstatus {
 
 enum mbstatus mbstatus(char c);
 
-#endif /* NG39_MBCHAR_H */
+size_t wcs_to_mbs(const wchar_t *__src, char **__dest);
+
+#ifdef ANSI
+#define xstrlen strlen
+#define xstrrchr strrchr
+#define xvsnprintf vsnprintf
+#define xisspace isspace
+#else
+#define xstrlen wcslen
+#define xstrrchr wcsrchr
+#define xvsnprintf vswprintf
+#define xisspace iswspace
+#endif
+
+#endif /* NG39_WCMBS_H */
