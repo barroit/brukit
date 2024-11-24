@@ -18,6 +18,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <wchar.h>
+#include <wctype.h>
 #include <string.h>
 #include <signal.h>
 #include <sys/types.h>
@@ -62,9 +63,6 @@
 # include <locale.h>
 #endif
 
-#include <unistd.h>
-#include <time.h>
-
 #include "attr.h"
 #include "size.h"
 #include "types.h"
@@ -73,5 +71,8 @@
 #include "calc.h"
 
 #include "gettext.h"
+
+#include <unistd.h>
+#include <time.h>
 
 #endif /* NG39_HPRELUDE_H */
