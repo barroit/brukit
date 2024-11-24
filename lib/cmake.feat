@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
-file(WRITE ${GEN}/features.h "")
-
 function(test_cc_builtin prog def)
   execute_process(COMMAND ${Python3_EXECUTABLE}
 		  ${TREE}/scripts/checkbuiltin.py "${prog}"
 		  RESULT_VARIABLE err)
 
   if(NOT err)
-    file(APPEND ${GEN}/features.h "#define ${def} 1\n")
+    set(${def} 1 PARENT_SCOPE)
   endif()
 endfunction()
 
 test_cc_builtin("
 int x = __builtin_align_down(8, 4);
 " HAVE_BUILTIN_ALIGN_DOWN)
+
+configure_file(${TREE}/include/features.h.in ${GEN}/features.h)

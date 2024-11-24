@@ -92,6 +92,8 @@ if(CONFIG_DUMP_CPL_CMD)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
+include_scp(${LIB}/cmake.feat)
+
 configure_file(${TREE}/include/program.h.in ${GEN}/program.h)
 
 cc_include(${GEN}/autoconf.h)
@@ -181,8 +183,6 @@ if(CONFIG_WIDE_CHAR)
 else()
   add_compile_definitions(ANSI)
 endif()
-
-include_scp(${LIB}/cmake.ccfeat)
 
 install(TARGETS ${exec_name} DESTINATION .)
 

@@ -1,0 +1,6 @@
+/* SPDX-License-Identifier: GPL-3.0-or-later or MIT */
+/*
+ * Copyright 2024 Jiamu Sun <barroit@linux.com>
+ */
+
+#cmakedefine HAVE_BUILTIN_ALIGN_DOWN
