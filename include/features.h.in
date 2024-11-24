@@ -4,3 +4,4 @@
  */
 
 #cmakedefine HAVE_BUILTIN_ALIGN_DOWN
+#cmakedefine HAVE_REALLOCARRAY

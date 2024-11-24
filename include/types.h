@@ -6,6 +6,12 @@
 #ifndef NG39_TYPES_H
 #define NG39_TYPES_H
 
+#include <stdint.h>
+
+#ifdef _WIN32
+# include <basetsd.h>
+#endif
+
 typedef uint8_t  u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -15,10 +21,11 @@ typedef unsigned int uint;
 
 #ifdef CONFIG_WIDE_CHAR
 # define xchar wchar_t
-# define C(x)  L##x
+# define MW(x)   __MW(x)
+# define __MW(x) L##x
 #else
 # define xchar char
-# define C(x)  x
+# define MW(x) x
 #endif
 
 #ifdef _WIN32

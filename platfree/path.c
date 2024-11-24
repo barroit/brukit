@@ -4,8 +4,10 @@
  */
 
 #include "path.h"
-#include "xalloc.h"
+
+#include "compiler.h"
 #include "strbuf.h"
+#include "xalloc.h"
 
 const xchar *pth_prefix(void)
 {
@@ -32,7 +34,7 @@ const xchar *pth_locale(void)
 		struct strbuf sb = SB_INIT;
 
 		sb_puts(&sb, prefix);
-		sb_pth_append(&sb, C("locale"));
+		sb_pth_append(&sb, MW("locale"));
 		name = sb_detach(&sb);
 	}
 

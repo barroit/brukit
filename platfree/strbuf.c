@@ -4,10 +4,14 @@
  */
 
 #include "strbuf.h"
-#include "xalloc.h"
+
+#include <stdarg.h>
+
+#include "compiler.h"
+#include "mwstr.h"
 #include "path.h"
 #include "termas.h"
-#include "wcmbs.h"
+#include "xalloc.h"
 
 void sb_init_ws(struct strbuf *sb, const xchar *name)
 {
@@ -108,7 +112,7 @@ uint sb_pth_append(struct strbuf *sb, const xchar *name)
 
 	sb_grow(sb, ret);
 
-	sb->buf[sb->len] = C(PTH_SEP);
+	sb->buf[sb->len] = PTH_SEP;
 	sb->len += 1;
 
 	memcpy(&sb->buf[sb->len], name, len + 1);

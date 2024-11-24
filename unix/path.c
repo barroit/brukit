@@ -4,6 +4,12 @@
  */
 
 #include "path.h"
+
+#include <pwd.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
+#include "compiler.h"
 #include "termas.h"
 #include "xalloc.h"
 

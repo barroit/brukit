@@ -6,6 +6,8 @@
 #ifndef NG39_ITER_H
 #define NG39_ITER_H
 
+#include "calc.h"
+
 #define idx_for_each(idx, step) \
 	for (idx = 0; idx < step; idx++)
 

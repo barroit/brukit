@@ -6,14 +6,18 @@
 #ifndef NG39_TIMESTAMP_H
 #define NG39_TIMESTAMP_H
 
+#include <time.h>
+
+#include <stdint.h>
+
 typedef uint64_t timestamp_t;
 
 timestamp_t __ts_now(void);
 
 #ifdef CONFIG_TS_SMALL_UNIT
-# define ts_now (__timestamp() / (1000 * 1000))
+# define ts_now (__ts_now() / (1000 * 1000))
 #else
-# define ts_now __timestamp()
+# define ts_now __ts_now()
 #endif
 
 void ts_mono(struct timespec *ts);

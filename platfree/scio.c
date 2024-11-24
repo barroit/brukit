@@ -5,6 +5,11 @@
 
 #include "scio.h"
 
+#include <errno.h>
+#include <unistd.h>
+
+#include "compiler.h"
+
 ssize_t xwrite(int fd, const void *buf, size_t count)
 {
 	int nr;

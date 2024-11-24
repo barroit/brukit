@@ -4,6 +4,11 @@
  */
 
 #include "path.h"
+
+#include <userenv.h>
+
+#include "calc.h"
+#include "compiler.h"
 #include "termas.h"
 #include "xalloc.h"
 

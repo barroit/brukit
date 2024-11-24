@@ -4,11 +4,23 @@
  */
 
 #include "termas.h"
-#include "tercol.h"
-#include "scio.h"
+
+#include <ctype.h>
+#include <inttypes.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "compiler.h"
+#include "gettext.h"
 #include "iter.h"
-#include "udef.h"
+#include "scio.h"
+#include "size.h"
+#include "tercol.h"
 #include "timestamp.h"
+#include "udef.h"
 
 struct tm_tag {
 	const char *name;

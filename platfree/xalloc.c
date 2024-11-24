@@ -4,8 +4,28 @@
  */
 
 #include "xalloc.h"
-#include "termas.h"
+
+#include <errno.h>
+#include <string.h>
+#include <wchar.h>
+
+#include "compiler.h"
+#include "size.h"
 #include "tercol.h"
+#include "termas.h"
+
+#ifndef HAVE_REALLOCARRAY
+void *reallocarray(void *ptr, size_t nmemb, size_t size)
+{
+	int overflow = mult_is_overflow(nmemb, size);
+	if (unlikely(overflow)) {
+		errno = ENOMEM;
+		return NULL;
+	}
+
+	return realloc(ptr, nmemb * size);
+}
+#endif
 
 #define ALLOC_MAX ((size_t)512 * SZ_1K)
 

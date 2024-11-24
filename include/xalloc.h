@@ -6,6 +6,15 @@
 #ifndef NG39_XALLOC_H
 #define NG39_XALLOC_H
 
+#include <stdlib.h>
+#include <string.h>
+
+#include "calc.h"
+
+#ifndef HAVE_REALLOCARRAY
+void *reallocarray(void *ptr, size_t nmemb, size_t size) __warn_unused_result;
+#endif
+
 #ifdef CONFIG_PANIC_NOMEM
 # define __xalloc(fn, ...)  __x##fn(__FILE__, __LINE__, __func__, __VA_ARGS__)
 # define xmalloc(...)       __xalloc(malloc, __VA_ARGS__)
@@ -48,7 +57,7 @@ do {								\
 		cap = lgrow(cap);				\
 		if (cap < __new)				\
 			cap = __new;				\
-		xreallocarray(x, sizeof(*(x)), __new);		\
+		x = xreallocarray(x, sizeof(*(x)), __new);	\
 	}							\
 } while (0)
 

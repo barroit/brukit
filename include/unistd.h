@@ -12,9 +12,13 @@
 
 #else /* __unix__ */
 
+#include <io.h>
+#include <process.h>
+
 #define STDIN_FILENO ({ fileno(stdin); })
 #define STDOUT_FILENO ({ fileno(stdout); })
 #define STDERR_FILENO ({ fileno(stderr); })
 
 #endif /* __unix__ */
+
 #endif /* NG39_UNISTD_H */

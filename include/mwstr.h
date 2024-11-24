@@ -3,8 +3,14 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-#ifndef NG39_WCMBS_H
-#define NG39_WCMBS_H
+#ifndef NG39_MWSTR_H
+#define NG39_MWSTR_H
+
+#include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+#include <wchar.h>
+#include <wctype.h>
 
 enum mbstatus {
 	MB_INVAL = -1,	/* unrecognized character */
@@ -31,4 +37,4 @@ size_t wcs_to_mbs(const wchar_t *__src, char **__dest);
 #define xisspace iswspace
 #endif
 
-#endif /* NG39_WCMBS_H */
+#endif /* NG39_MWSTR_H */

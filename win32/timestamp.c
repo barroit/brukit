@@ -5,6 +5,12 @@
 
 #include "timestamp.h"
 
+#include <windows.h>
+
+#include "calc.h"
+#include "compiler.h"
+#include "types.h"
+
 timestamp_t __ts_now(void)
 {
 	int err;

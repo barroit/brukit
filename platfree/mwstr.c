@@ -3,7 +3,12 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-#include "wcmbs.h"
+#include "mwstr.h"
+
+#include <wchar.h>
+
+#include "compiler.h"
+#include "types.h"
 #include "xalloc.h"
 
 enum mbstatus mbstatus(char c)

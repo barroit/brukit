@@ -6,6 +6,8 @@
 #ifndef NG39_COMPILER_H
 #define NG39_COMPILER_H
 
+#include <assert.h>
+
 #define likely(x)   __builtin_expect(!!(x), 1)
 #define unlikely(x) __builtin_expect(!!(x), 0)
 

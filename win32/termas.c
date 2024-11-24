@@ -5,6 +5,10 @@
 
 #include "termas.h"
 
+#include <windows.h>
+
+#include "calc.h"
+
 const char *strwinerr(void)
 {
 	static char buf[256];

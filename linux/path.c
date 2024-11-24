@@ -5,6 +5,8 @@
 
 #include "path.h"
 
+#include "compiler.h"
+
 const char *pth_executable(void)
 {
 	static char *name;

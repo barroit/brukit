@@ -5,6 +5,10 @@
 
 #include "timestamp.h"
 
+#include <time.h>
+
+#include "compiler.h"
+
 void ts_mono(struct timespec *ts)
 {
 	int err = clock_gettime(CLOCK_MONOTONIC, ts);

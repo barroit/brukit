@@ -99,7 +99,6 @@ configure_file(${TREE}/include/program.h.in ${GEN}/program.h)
 cc_include(${GEN}/autoconf.h)
 cc_include(${GEN}/features.h)
 cc_include(${GEN}/program.h)
-cc_include(${TREE}/include/prelude.h)
 
 include_directories(${TREE}/include)
 

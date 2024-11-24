@@ -6,6 +6,9 @@
 #ifndef NG39_STRBUF_H
 #define NG39_STRBUF_H
 
+#include "attr.h"
+#include "types.h"
+
 #define SB_INIT { 0 }
 
 void sb_init_ws(struct strbuf *sb, const xchar *name);

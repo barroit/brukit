@@ -9,8 +9,17 @@
 #ifndef NG39_PATH_H
 #define NG39_PATH_H
 
-#define PTH_SEP_UNIX  C('/')
-#define PTH_SEP_WIN32 C('\\')
+#include <string.h>
+
+#ifdef _WIN32
+# include <shlwapi.h>
+#endif
+
+#include "mwstr.h"
+#include "types.h"
+
+#define PTH_SEP_UNIX  MW('/')
+#define PTH_SEP_WIN32 MW('\\')
 
 #if defined(__unix__)
 # define PTH_SEP PTH_SEP_UNIX
@@ -38,8 +47,8 @@ static inline xchar *pth_last_sep(const xchar *s)
 
 static inline int pth_is_dot(const xchar *name)
 {
-	return name[0] == C('.') &&
-	       (name[1] == 0 || (name[1] == C('.') && name[2] == 0));
+	return name[0] == MW('.') &&
+	       (name[1] == 0 || (name[1] == MW('.') && name[2] == 0));
 }
 
 #ifdef __unix__

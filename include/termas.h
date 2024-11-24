@@ -6,6 +6,9 @@
 #ifndef NG39_TERMAS_H
 #define NG39_TERMAS_H
 
+#include "attr.h"
+#include "types.h"
+
 enum tm_level {
 	TM_LOG,
 	TM_WARN,
@@ -31,7 +34,7 @@ int __termas(const char *file, int line,
 	     const char *func, enum tm_level level,
 	     const char *hint, u32 flags, const char *fmt, ...) __printf(7, 8);
 
-#define __tm_log(hint, flags, fmt, ...) \
+#define __tm_mas(hint, flags, fmt, ...) \
 	___termas(TM_LOG, hint, flags | TM_WROUT, fmt, ##__VA_ARGS__)
 
 #define __tm_warn(hint, flags, fmt, ...) \
@@ -61,7 +64,7 @@ int __termas(const char *file, int line,
 
 #define __strerrno strerror(errno)
 
-#define log(fmt, ...)       __tm_log(NULL, 0, fmt, ##__VA_ARGS__)
+#define mas(fmt, ...)       __tm_mas(NULL, 0, fmt, ##__VA_ARGS__)
 
 #define note(fmt, ...)       __tm_note(NULL, 0, fmt, ##__VA_ARGS__)
 #define note_errno(fmt, ...) __tm_note(__strerrno, 0, fmt, ##__VA_ARGS__)

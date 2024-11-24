@@ -8,6 +8,12 @@
 #ifndef NG39_SCIO_H
 #define NG39_SCIO_H
 
+#include <unistd.h>
+#include <stddef.h>
+
+#include "attr.h"
+#include "types.h"
+
 /*
  * The functions in this file are mainly for handling retries on errors like
  * EINTR. The prefix 'x' here does not stand for "die on failure"; it's just

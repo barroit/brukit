@@ -4,6 +4,9 @@
  */
 
 #include "path.h"
+
+#include <mach-o/dyld.h>
+
 #include "xalloc.h"
 
 const char *pth_executable(void)
