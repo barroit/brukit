@@ -34,6 +34,11 @@
 # include <sys/mman.h>
 # include <sys/wait.h>
 # include <sys/syscall.h>
+# if defined(__FreeBSD__)
+#  include <sys/sysctl.h>
+# elif defined(__Darwin__)
+#  include <mach-o/dyld.h>
+# endif
 #elif defined(_WIN32)
 # include <sdkddkver.h>
 # include <io.h>
