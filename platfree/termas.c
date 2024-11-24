@@ -7,8 +7,8 @@
 #include "tercol.h"
 #include "scio.h"
 #include "iter.h"
-#include "time.h"
 #include "udef.h"
+#include "timestamp.h"
 
 struct tm_tag {
 	const char *name;
@@ -145,7 +145,7 @@ int __termas(const char *file, int line,
 
 	if (cc_termas_with_ts || !tag->name) {
 		struct timespec ts;
-		monotime(&ts);
+		ts_mono(&ts);
 
 		u64 s = ts.tv_sec;
 		u64 us = ts.tv_nsec / 1000;

@@ -3,7 +3,9 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-timestamp_t __timestamp(void)
+#include "timestamp.h"
+
+timestamp_t __ts_now(void)
 {
 	int err;
 	static u64 freqh;
@@ -33,9 +35,9 @@ timestamp_t __timestamp(void)
 	return (freqh * tick.HighPart) + ((freql * tick.LowPart) >> scale);
 }
 
-void monotime(struct timespec *ts)
+void ts_mono(struct timespec *ts)
 {
-	timestamp_t t = __timestamp();
+	timestamp_t t = __ts_now();
 
 	ts->tv_sec = t / 10000000000;
 	ts->tv_nsec = t % 10000000000;

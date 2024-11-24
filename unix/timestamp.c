@@ -3,16 +3,18 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-void monotime(struct timespec *ts)
+#include "timestamp.h"
+
+void ts_mono(struct timespec *ts)
 {
 	int err = clock_gettime(CLOCK_MONOTONIC, ts);
 	BUG_ON(err);
 }
 
-timestamp_t __timestamp(void)
+timestamp_t __ts_now(void)
 {
 	struct timespec ts;
 
-	monotime(&ts);
+	ts_mono(&ts);
 	return ts.tv_sec * 1000000000ULL + ts.tv_nsec;
 }
