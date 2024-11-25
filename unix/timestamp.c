@@ -12,6 +12,7 @@
 void ts_mono(struct timespec *ts)
 {
 	int err = clock_gettime(CLOCK_MONOTONIC, ts);
+
 	BUG_ON(err);
 }
 

@@ -116,8 +116,8 @@ cat <<EOF > $name.manifest.in
       <ws2:longPathAware>true</ws2:longPathAware>
     </asmv3:windowsSettings>
     <asmv3:windowsSettings
-      xmlns="http://schemas.microsoft.com/SMI/2019/WindowsSettings"> 
-      <activeCodePage>UTF-8</activeCodePage> 
+      xmlns="http://schemas.microsoft.com/SMI/2019/WindowsSettings">
+      <activeCodePage>UTF-8</activeCodePage>
     </asmv3:windowsSettings>
     <asmv3:windowsSettings
       xmlns="http://schemas.microsoft.com/SMI/2020/WindowsSettings">

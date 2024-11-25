@@ -68,7 +68,7 @@ static size_t rm_bad_cntrl(char *buf, size_t size, size_t cap)
 	uint cnt = 0;
 
 	idx_for_each(i, size)
-		if (char_is_bad_cntrl(buf[i])) 
+		if (char_is_bad_cntrl(buf[i]))
 			cnt++;
 
 	if (cnt == 0)
@@ -118,6 +118,7 @@ static size_t rm_bad_cntrl(char *buf, size_t size, size_t cap)
 
 		size_t good = i + 1;
 		size_t new = good + off;
+
 		if (likely(i != size - 1))
 			memmove(&buf[new], &buf[good], last - i);
 
@@ -157,10 +158,12 @@ int __termas(const char *file, int line,
 
 	if (cc_termas_with_ts || !tag->name) {
 		struct timespec ts;
+
 		ts_mono(&ts);
 
 		u64 s = ts.tv_sec;
 		u64 us = ts.tv_nsec / 1000;
+
 		const char *mas = !cc_use_tercol ?
 				  "[%" PRIu64 ".%" PRIu64 "] " :
 				  H("[%" PRIu64 ".%" PRIu64 "] ", GREEN);
@@ -231,6 +234,7 @@ int __termas(const char *file, int line,
 		avail -= 2;
 
 		size_t len = strlen(hint);
+
 		if (len > avail)
 			len = avail;
 

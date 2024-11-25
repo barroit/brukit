@@ -18,6 +18,7 @@
 void *reallocarray(void *ptr, size_t nmemb, size_t size)
 {
 	int overflow = mult_is_overflow(nmemb, size);
+
 	if (unlikely(overflow)) {
 		errno = ENOMEM;
 		return NULL;

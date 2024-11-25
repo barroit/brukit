@@ -111,9 +111,9 @@ static void sanitize_pth_sep(struct strbuf *sb)
 	char *path;
 	size_t len = mw_wcstombs(sb->buf, &path);
 
-	if (len == maxof(len)){
-		warn("sanitize_pth_sep() mixed: %d, suffixed: %d",
-		     mixed, suffixed);
+	if (len == maxof(len)) {
+		warn("%s mixed: %d, suffixed: %d",
+		     __func__, mixed, suffixed);
 		return;
 	}
 
@@ -189,7 +189,10 @@ uint sb_printf_at_ws(struct strbuf *sb, const xchar *fmt, ...)
 
 void sb_trim(struct strbuf *sb)
 {
-	xchar *h = sb->buf;
+	xchar *h;
+	xchar *t;
+
+	h = sb->buf;
 	while (xc_isspace(*h))
 		h++;
 
@@ -199,7 +202,7 @@ void sb_trim(struct strbuf *sb)
 		return;
 	}
 
-	xchar *t = &sb->buf[sb->len];
+	t = &sb->buf[sb->len];
 	while (xc_isspace(*(t - 1)))
 		t--;
 

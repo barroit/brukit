@@ -50,7 +50,7 @@ const xchar *pth_executable(void)
 		DWORD size = lgrow(64);
 		DWORD ret;
 
-	retry:
+retry:
 		name = xmalloc(size);
 		ret = GetModuleFileName(NULL, name, size);
 
