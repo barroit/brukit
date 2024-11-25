@@ -13,6 +13,20 @@
 #include "termas.h"
 #include "xalloc.h"
 
+#define DO_SB_PRINTF(__sb, __off, __fmt)			\
+({								\
+	va_list ap[2];						\
+	va_start(ap[0], __fmt);					\
+	va_copy(ap[1], ap[0]);					\
+								\
+	uint ret = __sb_printf_at(__sb, __off, __fmt, ap);	\
+								\
+	va_end(ap[0]);						\
+	va_end(ap[1]);						\
+								\
+	ret;							\
+})
+
 void sb_init_ws(struct strbuf *sb, const xchar *name)
 {
 	memset(sb, 0, sizeof(*sb));
@@ -67,8 +81,18 @@ uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s)
 	return len;
 }
 
+uint sb_puts(struct strbuf *sb, const xchar *s)
+{
+	return sb_puts_at(sb, sb->len, s);
+}
+
+uint sb_puts_at_ws(struct strbuf *sb, const xchar *s)
+{
+	return sb_puts_at(sb, sb->off.ws, s);
+}
+
 #ifdef CONFIG_STRBUF_SANITIZE_PATH
-static void sb_sanitize_pth_sep(struct strbuf *sb)
+static void sanitize_pth_sep(struct strbuf *sb)
 {
 	const xchar *usep = xstrrchr(sb->buf, PTH_SEP_UNIX);
 	const xchar *wsep = xstrrchr(sb->buf, PTH_SEP_WIN32);
@@ -79,30 +103,31 @@ static void sb_sanitize_pth_sep(struct strbuf *sb)
 	if (likely(!mixed && !suffixed))
 		return;
 
+#ifdef ANSI
+	if (mixed)
+		warn("path '%s' is mixing separators", sb->buf);
+	if (suffixed)
+		warn("path '%s' has trailing separator", sb->buf);
+#else
 	char *path;
-#ifdef UNICODE
 	size_t len = wcs_to_mbs(sb->buf, &path);
 
 	if (len == maxof(len)){
-		warn("sb_sanitize_pth_sep() mixed: %d, suffixed: %d",
+		warn("sanitize_pth_sep() mixed: %d, suffixed: %d",
 		     mixed, suffixed);
 		return;
 	}
-#else
-	path = sb->buf;
-#endif
 
 	if (mixed)
-		warn("path '%s' is mixing separators", path);
-	else
-		warn("path '%s' has trailing separator", path);
+		warn("path '%s' is mixing separators", sb->buf);
+	if (suffixed)
+		warn("path '%s' has trailing separator", sb->buf);
 
-#ifdef UNICODE
 	free(path);
 #endif
 }
 #else
-#define sb_sanitize_pth_sep NOOP
+#define sanitize_pth_sep NOOP
 #endif
 
 uint sb_pth_append(struct strbuf *sb, const xchar *name)
@@ -119,19 +144,17 @@ uint sb_pth_append(struct strbuf *sb, const xchar *name)
 	sb->len += len;
 
 	/* sanitize this fucking path */
-	sb_sanitize_pth_sep(sb);
+	sanitize_pth_sep(sb);
 	return ret;
 }
 
-uint sb_printf_at(struct strbuf *sb, uint off, const xchar *fmt, ...)
+static uint __sb_printf_at(struct strbuf *sb, uint off,
+			   const xchar *fmt, va_list *ap)
 {
 	int nr;
 	uint avail;
 	uint i = 0;
-	va_list ap[2];
 
-	va_start(ap[0], fmt);
-	va_copy(ap[1], ap[0]);
 	sb_grow(sb, 42);
 
 retry:
@@ -146,11 +169,23 @@ retry:
 		goto retry;
 	}
 
-	va_end(ap[0]);
-	va_end(ap[1]);
-
 	sb->len += nr;
 	return nr;
+}
+
+uint sb_printf_at(struct strbuf *sb, uint off, const xchar *fmt, ...)
+{
+	return DO_SB_PRINTF(sb, off, fmt);
+}
+
+uint sb_printf(struct strbuf *sb, const xchar *fmt, ...)
+{
+	return DO_SB_PRINTF(sb, sb->len, fmt);
+}
+
+uint sb_printf_at_ws(struct strbuf *sb, const xchar *fmt, ...)
+{
+	return DO_SB_PRINTF(sb, sb->off.ws, fmt);
 }
 
 void sb_trim(struct strbuf *sb)
