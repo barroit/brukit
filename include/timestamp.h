@@ -6,9 +6,9 @@
 #ifndef NG39_TIMESTAMP_H
 #define NG39_TIMESTAMP_H
 
-#include <time.h>
-
 #include <stdint.h>
+
+struct timespec;
 
 typedef uint64_t timestamp_t;
 

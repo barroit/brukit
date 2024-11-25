@@ -12,7 +12,7 @@
 
 ssize_t xwrite(int fd, const void *buf, size_t count)
 {
-	int nr;
+	ssize_t nr;
 
 retry:
 	nr = write(fd, buf, count);
@@ -25,7 +25,7 @@ retry:
 
 ssize_t xread(int fd, void *buf, size_t count)
 {
-	int nr;
+	ssize_t nr;
 
 retry:
 	nr = read(fd, buf, count);

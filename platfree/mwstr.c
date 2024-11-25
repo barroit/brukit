@@ -8,7 +8,6 @@
 #include <wchar.h>
 
 #include "compiler.h"
-#include "types.h"
 #include "xalloc.h"
 
 enum mbstatus mbstatus(char c)
@@ -25,7 +24,7 @@ enum mbstatus mbstatus(char c)
 	return map[(u8)c];
 }
 
-size_t wcs_to_mbs(const wchar_t *__src, char **__dest)
+size_t mw_wcstombs(const wchar_t *__src, char **__dest)
 {
 	char *buf;
 	const wchar_t *str = __src;

@@ -7,11 +7,10 @@
 
 #include <stdarg.h>
 
-#include "compiler.h"
-#include "mwstr.h"
 #include "path.h"
 #include "termas.h"
 #include "xalloc.h"
+#include "xchar.h"
 
 #define DO_SB_PRINTF(__sb, __off, __fmt)			\
 ({								\
@@ -66,7 +65,7 @@ static inline uint sb_avail(struct strbuf *sb)
 
 uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s)
 {
-	uint len = xstrlen(s);
+	uint len = xc_strlen(s);
 	uint overlap = sb->len - off;
 
 	if (len > overlap)
@@ -94,8 +93,8 @@ uint sb_puts_at_ws(struct strbuf *sb, const xchar *s)
 #ifdef CONFIG_STRBUF_SANITIZE_PATH
 static void sanitize_pth_sep(struct strbuf *sb)
 {
-	const xchar *usep = xstrrchr(sb->buf, PTH_SEP_UNIX);
-	const xchar *wsep = xstrrchr(sb->buf, PTH_SEP_WIN32);
+	const xchar *usep = xc_strrchr(sb->buf, PTH_SEP_UNIX);
+	const xchar *wsep = xc_strrchr(sb->buf, PTH_SEP_WIN32);
 
 	int mixed = usep && wsep;
 	int suffixed = (usep && usep[1] == 0) || (wsep && wsep[1]);
@@ -110,7 +109,7 @@ static void sanitize_pth_sep(struct strbuf *sb)
 		warn("path '%s' has trailing separator", sb->buf);
 #else
 	char *path;
-	size_t len = wcs_to_mbs(sb->buf, &path);
+	size_t len = mw_wcstombs(sb->buf, &path);
 
 	if (len == maxof(len)){
 		warn("sanitize_pth_sep() mixed: %d, suffixed: %d",
@@ -132,7 +131,7 @@ static void sanitize_pth_sep(struct strbuf *sb)
 
 uint sb_pth_append(struct strbuf *sb, const xchar *name)
 {
-	uint len = xstrlen(name);
+	uint len = xc_strlen(name);
 	uint ret = len + 1;
 
 	sb_grow(sb, ret);
@@ -159,7 +158,7 @@ static uint __sb_printf_at(struct strbuf *sb, uint off,
 
 retry:
 	avail = sb_avail(sb);
-	nr = xvsnprintf(&sb->buf[off], avail + 1, fmt, ap[i]);
+	nr = xc_vsnprintf(&sb->buf[off], avail + 1, fmt, ap[i]);
 
 	BUG_ON(nr < 0);
 	if (nr > avail) {
@@ -191,7 +190,7 @@ uint sb_printf_at_ws(struct strbuf *sb, const xchar *fmt, ...)
 void sb_trim(struct strbuf *sb)
 {
 	xchar *h = sb->buf;
-	while (xisspace(*h))
+	while (xc_isspace(*h))
 		h++;
 
 	if (*h == 0) {
@@ -201,7 +200,7 @@ void sb_trim(struct strbuf *sb)
 	}
 
 	xchar *t = &sb->buf[sb->len];
-	while (xisspace(*(t - 1)))
+	while (xc_isspace(*(t - 1)))
 		t--;
 
 	if (h == sb->buf && t == &sb->buf[sb->len])

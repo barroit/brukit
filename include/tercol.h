@@ -6,6 +6,8 @@
 #ifndef NG39_TERCOL_H
 #define NG39_TERCOL_H
 
+#include "gettext.h"
+
 /*
  * \033[<attributes>;<foreground>;<background>m
  *
@@ -69,10 +71,15 @@
 
 #define H(x, ...) __fmtcol(__VA_ARGS__) x __fmtcol(RESET)
 
+#ifndef INTL_PREPARE_MASMAP
+# define __H_  _
+# define __HN_ N_
+#endif
+
 /*
  * These are xgettext keywords. Do not wrap text with N_() or _()
  */
-#define H_(x, ...)  M_(H(x, __VA_ARGS__))
-#define HN_(x, ...) MN_(H(x, __VA_ARGS__))
+#define H_(x, ...)  __H_(H(x, __VA_ARGS__))
+#define HN_(x, ...) __HN_(H(x, __VA_ARGS__))
 
 #endif /* NG39_TERCOL_H */

@@ -7,11 +7,10 @@
 #define NG39_CALC_H
 
 #include <limits.h>
-#include <stdint.h>
 
 #include "attr.h"
-#include "types.h"
 #include "compiler.h"
+#include "types.h"
 
 #define sizeof_array(x) (sizeof(x) / sizeof((x)[0]) + __must_be_array(x))
 

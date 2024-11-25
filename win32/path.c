@@ -21,7 +21,7 @@ int pth_is_abs(const xchar *name)
 
 xchar *pth_last_sep(const xchar *s)
 {
-	return xstrrchr(s, PTH_SEP_WIN32) ? : xstrrchr(s, PTH_SEP_UNIX);
+	return xc_strrchr(s, PTH_SEP_WIN32) ? : xc_strrchr(s, PTH_SEP_UNIX);
 }
 
 const xchar *pth_home(void)

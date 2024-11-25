@@ -7,30 +7,15 @@
 #define NG39_GETTEXT_H
 
 #ifdef HAVE_INTL
-
-#ifdef CONFIG_DEBUG_INTL
-# define _INTL_REDIRECT_INLINE
+# ifdef CONFIG_DEBUG_INTL
+#  define _INTL_REDIRECT_INLINE
+# endif
+# include <libintl.h>
+# define _(masid)  gettext(masid)
+#else
+# define _(masid)  masid
 #endif
 
-#include <libintl.h>
-#include <locale.h>
-
-#define gettext_noop(masid) masid
-#define _(masid)  gettext(masid)
-#define N_(masid) gettext_noop(masid)
-
-#else /* HAVE_INTL */
-
-#define _(masid)  (masid)
 #define N_(masid) masid
-#define textdomain     NOOP
-#define bindtextdomain NOOP
-
-#endif
-
-#ifndef __INTL_PREP_MASMAP_NOT_IMPLEMENTED
-# define M_  _
-# define MN_ N_
-#endif
 
 #endif /* NG39_GETTEXT_H */

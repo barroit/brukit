@@ -29,8 +29,6 @@
 
 #define __must_be_pow2(x) BUILD_BUG_ON_ZERO(!(x) || ((x) % 2) != 0)
 
-#define __must_have_va_arg(...) BUILD_BUG_ON_ZERO(ARGCOF(__VA_ARGS__) == 0)
-
 #define unreachable __builtin_unreachable
 
 #ifdef HAVE_BUILTIN_ALIGN_DOWN

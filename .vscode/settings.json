@@ -23,12 +23,7 @@
 	"C_Cpp.default.forcedInclude": [
 		"${workspaceFolder}/include/generated/autoconf.h",
 		"${workspaceFolder}/include/generated/program.h",
-		"${workspaceFolder}/include/attr.h",
-		"${workspaceFolder}/include/size.h",
-		"${workspaceFolder}/include/compiler.h",
-		"${workspaceFolder}/include/prelude.h",
-		"${workspaceFolder}/include/types.h",
-		"${workspaceFolder}/include/gettext.h",
+		"${workspaceFolder}/include/generated/features.h"
 	],
 	"C_Cpp.default.defines": [
 		"_GNU_SOURCE",

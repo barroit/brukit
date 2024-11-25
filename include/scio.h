@@ -8,9 +8,6 @@
 #ifndef NG39_SCIO_H
 #define NG39_SCIO_H
 
-#include <unistd.h>
-#include <stddef.h>
-
 #include "attr.h"
 #include "types.h"
 
