@@ -32,4 +32,6 @@
 
 #define __warn_unused_result __attribute__((__warn_unused_result__))
 
+#define __leaf __attribute__((__leaf__))
+
 #endif /* NG39_ATTR_H */

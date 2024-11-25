@@ -10,8 +10,19 @@
 #include <sys/stat.h>
 
 #include "compiler.h"
+#include "mwstr.h"
 #include "termas.h"
 #include "xalloc.h"
+
+int pth_is_abs(const xchar *name)
+{
+	return name[0] == PTH_SEP;
+}
+
+xchar *pth_last_sep(const xchar *s)
+{
+	return strrchr(s, PTH_SEP);
+}
 
 char *delink(const char *name)
 {

@@ -5,9 +5,16 @@
 
 #include "path.h"
 
+#include "xchar.h"
 #include "compiler.h"
 #include "strbuf.h"
 #include "xalloc.h"
+
+int pth_is_dot(const xchar *name)
+{
+	return name[0] == XCHAR('.') &&
+	       (name[1] == 0 || (name[1] == XCHAR('.') && name[2] == 0));
+}
 
 const xchar *pth_prefix(void)
 {
@@ -34,7 +41,7 @@ const xchar *pth_locale(void)
 		struct strbuf sb = SB_INIT;
 
 		sb_puts(&sb, prefix);
-		sb_pth_append(&sb, MW("locale"));
+		sb_pth_append(&sb, XCHAR("locale"));
 		name = sb_detach(&sb);
 	}
 

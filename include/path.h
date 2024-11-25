@@ -9,17 +9,16 @@
 #ifndef NG39_PATH_H
 #define NG39_PATH_H
 
-#include <string.h>
-
-#ifdef _WIN32
-# include <shlwapi.h>
-#endif
-
-#include "mwstr.h"
+#include "attr.h"
 #include "types.h"
 
-#define PTH_SEP_UNIX  MW('/')
-#define PTH_SEP_WIN32 MW('\\')
+#ifdef ANSI
+# define PTH_SEP_UNIX  '/'
+# define PTH_SEP_WIN32 '\\'
+#else
+# define PTH_SEP_UNIX  L'/'
+# define PTH_SEP_WIN32 L'\\'
+#endif
 
 #if defined(__unix__)
 # define PTH_SEP PTH_SEP_UNIX
@@ -27,29 +26,11 @@
 # define PTH_SEP PTH_SEP_WIN32
 #endif
 
-static inline int pth_is_abs(const xchar *name)
-{
-#if defined(__unix__)
-	return name[0] == PTH_SEP;
-#elif defined(_WIN32)
-	return !PathIsRelative(name);
-#endif
-}
+int pth_is_abs(const xchar *name) __pure;
 
-static inline xchar *pth_last_sep(const xchar *s)
-{
-#if defined(__unix__)
-	return strrchr(s, PTH_SEP);
-#elif defined(_WIN32)
-	return xstrrchr(s, PTH_SEP_WIN32) ? : xstrrchr(s, PTH_SEP_UNIX);
-#endif
-}
+xchar *pth_last_sep(const xchar *s) __pure;
 
-static inline int pth_is_dot(const xchar *name)
-{
-	return name[0] == MW('.') &&
-	       (name[1] == 0 || (name[1] == MW('.') && name[2] == 0));
-}
+int pth_is_dot(const xchar *name) __leaf;
 
 #ifdef __unix__
 char *delink(const char *name);

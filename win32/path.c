@@ -5,12 +5,24 @@
 
 #include "path.h"
 
+#include <shlwapi.h>
 #include <userenv.h>
 
 #include "calc.h"
 #include "compiler.h"
+#include "mwstr.h"
 #include "termas.h"
 #include "xalloc.h"
+
+int pth_is_abs(const xchar *name)
+{
+	return !PathIsRelative(name);
+}
+
+xchar *pth_last_sep(const xchar *s)
+{
+	return xstrrchr(s, PTH_SEP_WIN32) ? : xstrrchr(s, PTH_SEP_UNIX);
+}
 
 const xchar *pth_home(void)
 {
