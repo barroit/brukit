@@ -3,7 +3,7 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-#include "mwstr.h"
+#include "cconv.h"
 
 #include <wchar.h>
 
@@ -24,7 +24,7 @@ enum mbstatus mbstatus(char c)
 	return map[(u8)c];
 }
 
-size_t mw_wcstombs(const wchar_t *__src, char **__dest)
+size_t conv_wcstombs(const wchar_t *__src, char **__dest)
 {
 	char *buf;
 	const wchar_t *str = __src;

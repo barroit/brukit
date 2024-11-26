@@ -109,7 +109,7 @@ static void sanitize_pth_sep(struct strbuf *sb)
 		warn("path '%s' has trailing separator", sb->buf);
 #else
 	char *path;
-	size_t len = mw_wcstombs(sb->buf, &path);
+	size_t len = conv_wcstombs(sb->buf, &path);
 
 	if (len == maxof(len)) {
 		warn("%s mixed: %d, suffixed: %d",

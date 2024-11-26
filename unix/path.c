@@ -10,7 +10,7 @@
 #include <sys/stat.h>
 
 #include "compiler.h"
-#include "mwstr.h"
+#include "cconv.h"
 #include "termas.h"
 #include "xalloc.h"
 

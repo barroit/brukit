@@ -3,8 +3,8 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-#ifndef NG39_MWSTR_H
-#define NG39_MWSTR_H
+#ifndef NG39_CCONV_H
+#define NG39_CCONV_H
 
 #include <stddef.h>
 
@@ -19,6 +19,6 @@ enum mbstatus {
 
 enum mbstatus mbstatus(char c);
 
-size_t mw_wcstombs(const wchar_t *__src, char **__dest);
+size_t conv_wcstombs(const wchar_t *__src, char **__dest);
 
-#endif /* NG39_MWSTR_H */
+#endif /* NG39_CCONV_H */
