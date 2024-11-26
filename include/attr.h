@@ -16,7 +16,7 @@
 
 #ifdef ANSI
 # define __printf(m, n) \
-	 __attribute__((__format__(__printf__, m, n))) __nonnone(m)
+	 __attribute__((__format__(__printf__, m, n), __nonnull__(m)))
 #else
 # define __printf(m, n)
 #endif

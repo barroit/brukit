@@ -34,7 +34,7 @@
 #ifdef HAVE_BUILTIN_ALIGN_DOWN
 # define align_down(m, n) __builtin_align_down(m, n)
 #else
-# define align_down(m, n) __must_be_pow2(n) + ((m) & ~(uintmax_t)(n - 1))
+# define align_down(m, n) (__must_be_pow2(n) + ((m) & ~(uintmax_t)(n - 1)))
 #endif
 
 /*
@@ -52,39 +52,14 @@
 #define __ADAP_CALL(n, ...) ___ADAP_CALL(n, __VA_ARGS__)
 #define ___ADAP_CALL(n, x, ...) n##x(__VA_ARGS__)
 
-/*
- * A helper to prevent the pyramid-like definitions.
- */
-#define __NOPYRAMID(n, ...) ___NOPYRAMID(n, ARGCOF(__VA_ARGS__), ##__VA_ARGS__)
-#define ___NOPYRAMID(n, ...) ____NOPYRAMID(n, __VA_ARGS__)
-#define ____NOPYRAMID(n, x, ...) __PYRAMID_CALL_##x(n, __VA_ARGS__)
-#define __PYRAMID_CALL_0(n, ...) n(0, 0, 0, 0, 0, 0)
-#define __PYRAMID_CALL_1(n, ...) n(0, 0, 0, 0, 0, __VA_ARGS__)
-#define __PYRAMID_CALL_2(n, ...) n(0, 0, 0, 0, __VA_ARGS__)
-#define __PYRAMID_CALL_3(n, ...) n(0, 0, 0, __VA_ARGS__)
-#define __PYRAMID_CALL_4(n, ...) n(0, 0, __VA_ARGS__)
-#define __PYRAMID_CALL_5(n, ...) n(0, __VA_ARGS__)
-
-/*
- * Don't show me that unused warning!
- */
-#define PSEUDO(...)   ADAP_CALL(PSEUDO_, ##__VA_ARGS__)
-#define PSEUDO_0(...) __NOPYRAMID(PSEUDO_6, ##__VA_ARGS__)
-#define PSEUDO_1(...) PSEUDO_0
-#define PSEUDO_2(...) PSEUDO_1
-#define PSEUDO_3(...) PSEUDO_2
-#define PSEUDO_4(...) PSEUDO_3
-#define PSEUDO_5(...) PSEUDO_4
-#define PSEUDO_6(_1, _2, _3, _4, _5, _6) \
-	if ((_1) && (_2) && (_3) && (_4) && (_5) && (_6))
-
 #define NOOP(...)   ADAP_CALL(NOOP_, ##__VA_ARGS__)
-#define NOOP_0(...) __NOPYRAMID(NOOP_6, ##__VA_ARGS__)
-#define NOOP_1      NOOP_0
-#define NOOP_2      NOOP_1
-#define NOOP_3      NOOP_2
-#define NOOP_4      NOOP_3
-#define NOOP_5      NOOP_4
-#define NOOP_6(...) do { PSEUDO_6(__VA_ARGS__); } while (0)
+#define NOOP_0(...) NOOP_1(0)
+#define NOOP_1(...) NOOP_2(0, __VA_ARGS__)
+#define NOOP_2(...) NOOP_3(0, __VA_ARGS__)
+#define NOOP_3(...) NOOP_4(0, __VA_ARGS__)
+#define NOOP_4(...) NOOP_5(0, __VA_ARGS__)
+#define NOOP_5(...) NOOP_6(0, __VA_ARGS__)
+#define NOOP_6(_1, _2, _3, _4, _5, _6) \
+	do { if ((_1) && (_2) && (_3) && (_4) && (_5) && (_6)); } while (0)
 
 #endif /* NG39_COMPILER_H */
