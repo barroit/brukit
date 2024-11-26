@@ -47,7 +47,7 @@ distclean:
 menuconfig:
 	@$(TREE)/scripts/kconfig.py menuconfig
 
-scripts := $(notdir $(wildcard scripts/*.sh))
+scripts := $(wildcard scripts/*.sh) $(wildcard scripts/*.py)
 args    := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
 
 .PHONY: $(args)
@@ -58,4 +58,4 @@ $(args):
 .PHONY: $(scripts)
 
 $(scripts):
-	@bash scripts/$@ $(args)
+	@$@ $(args)

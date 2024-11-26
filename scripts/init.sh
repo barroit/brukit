@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-3.0-or-later or MIT
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
 TREE=$(dirname $(dirname $(readlink -f $BASH_SOURCE)))
 if [[ $TREE != $PWD ]]; then

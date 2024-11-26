@@ -92,7 +92,7 @@ if(CONFIG_DUMP_CPL_CMD)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
-include_scp(${LIB}/cmake.feat)
+include_scp(${LIB}/cmake.feature)
 
 configure_file(${TREE}/include/program.h.in ${GEN}/program.h)
 
