@@ -202,3 +202,7 @@ if(WIN32)
   file(GLOB dll ${CMAKE_BINARY_DIR}/*.dll)
   install(FILES ${dll} DESTINATION .)
 endif()
+
+if(CONFIG_ENABLE_TESTING)
+  add_subdirectory(tests)
+endif()

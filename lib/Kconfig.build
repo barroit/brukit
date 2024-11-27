@@ -54,4 +54,7 @@ config WARN_HUGE_ALLOC
 
 endmenu # Memory allocation
 
+config ENABLE_TESTING
+	bool "Generate test suite"
+
 endmenu # Executable build options
