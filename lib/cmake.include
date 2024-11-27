@@ -8,13 +8,21 @@ function(include_scp name)
 endfunction()
 
 function(cc_include name)
+  if(NOT IS_ABSOLUTE ${name})
+    set(name ${CMAKE_CURRENT_SOURCE_DIR}/${name})
+  endif()
+
   # By including our header this way, we avoid option de-duplication by CMake.
   add_compile_options("SHELL:-include ${name}")
 endfunction()
 
-function(python3)
+function(python3 script)
+  if(NOT IS_ABSOLUTE ${script})
+    set(script ${CMAKE_CURRENT_SOURCE_DIR}/${script})
+  endif()
+
   execute_process(COMMAND ${Python3_EXECUTABLE}
-		  ${ARGV} COMMAND_ERROR_IS_FATAL ANY)
+		  ${script} ${ARGN} COMMAND_ERROR_IS_FATAL ANY)
 endfunction()
 
 function(test_add_compile_options pass)

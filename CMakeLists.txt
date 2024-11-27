@@ -2,26 +2,22 @@
 
 cmake_minimum_required(VERSION 3.21)
 
-# Never use relative paths. In certain scenarios, such as when the tree is
-# under z:, a relative path may cause CMake to misinterpret it, leading to
-# unexpected behavior.
 set(TREE $ENV{TREE})
-set(LIB  ${TREE}/lib)
 set(GEN  ${TREE}/include/generated)
 
 file(MAKE_DIRECTORY ${GEN})
 
-include(${LIB}/cmake.include)
+include(lib/cmake.include)
 
 if(NOT EXISTS ${TREE}/.config)
   set(ENV{KCONFIG_CONFIG} ${TREE}/.config.def)
   if(NOT EXISTS ${TREE}/.config.def)
-    python3(${TREE}/scripts/kconfig.py alldefconfig)
+    python3(scripts/kconfig.py alldefconfig)
   endif()
 endif()
 
-python3(${TREE}/scripts/kconfig.py genconfig --header-path ${GEN}/autoconf.h)
-include_scp(${LIB}/cmake.kconfig)
+python3(scripts/kconfig.py genconfig --header-path ${GEN}/autoconf.h)
+include_scp(lib/cmake.kconfig)
 
 set(prog_name ${CONFIG_PROG_NAME})
 if(CONFIG_SPEC_EXEC_NAME)
@@ -32,7 +28,8 @@ endif()
 set(prog_version ${CONFIG_PROG_VERSION})
 
 if(CONFIG_ARCH_SPEC)
-  include_scp(${LIB}/cmake.arch)
+  include_scp(lib/cmake.arch)
+  file(CREATE_LINK ../arch/${arch} include/arch SYMBOLIC)
 endif()
 
 set(CMAKE_C_COMPILER $ENV{CC})
@@ -92,15 +89,15 @@ if(CONFIG_DUMP_CPL_CMD)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
-include_scp(${LIB}/cmake.feature)
+include_scp(lib/cmake.feature)
 
-configure_file(${TREE}/include/program.h.in ${GEN}/program.h)
+configure_file(include/program.h.in ${GEN}/program.h)
 
 cc_include(${GEN}/autoconf.h)
 cc_include(${GEN}/features.h)
 cc_include(${GEN}/program.h)
 
-include_directories(${TREE}/include)
+include_directories(include)
 
 if(UNIX)
   list(APPEND platlist unix)
@@ -117,8 +114,8 @@ elseif(WIN32)
 endif()
 
 foreach(plat ${platlist})
-  include_directories(${TREE}/${plat})
-  list(APPEND pathspec ${TREE}/${plat}/*.c)
+  include_directories(${plat})
+  list(APPEND pathspec ${plat}/*.c)
 endforeach()
 
 file(GLOB source LIST_DIRECTORIES false ${pathspec})
@@ -126,21 +123,20 @@ list(FILTER source EXCLUDE REGEX main\.)
 
 add_library(platspec OBJECT ${source})
 
-file(GLOB source LIST_DIRECTORIES false ${TREE}/platfree/*.c
-					${TREE}/commands/*.c)
+file(GLOB source LIST_DIRECTORIES false platfree/*.c commands/*.c)
 add_library(platfree OBJECT ${source})
 
 if(UNIX)
-  set(source ${TREE}/unix/main.c)
+  set(source unix/main.c)
 elseif(WIN32)
   if(CONFIG_WIN_GUI)
     set(source WIN32)
-    list(APPEND source ${TREE}/win32/main.gui.c)
+    list(APPEND source win32/main.gui.c)
   else()
-    set(source ${TREE}/win32/main.tui.c)
+    set(source win32/main.tui.c)
   endif()
-  include_scp(${LIB}/cmake.manifest)
-  list(APPEND source ${TREE}/${prog_name}.rc)
+  include_scp(lib/cmake.manifest)
+  list(APPEND source ${prog_name}.rc)
 endif()
 
 add_executable(${exec_name} ${source})
@@ -150,7 +146,7 @@ target_link_libraries(${exec_name} platfree platspec)
 if(CONFIG_I18N_SUPP)
   find_package(Intl)
   if(Intl_FOUND)
-    include_scp(${LIB}/cmake.gettext)
+    include_scp(lib/cmake.gettext)
   endif()
 endif()
 
@@ -187,7 +183,7 @@ endif()
 install(TARGETS ${exec_name} DESTINATION .)
 
 if(CONFIG_I18N_SUPP)
-  install(DIRECTORY ${TREE}/locale/ DESTINATION locale
+  install(DIRECTORY locale DESTINATION locale
 	  FILES_MATCHING PATTERN *.mo PERMISSIONS OWNER_READ)
 endif()
 

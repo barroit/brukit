@@ -2,7 +2,7 @@
 
 function(test_cc_builtin prog def)
   execute_process(COMMAND ${Python3_EXECUTABLE}
-		  ${TREE}/scripts/checkfeature.py "${prog}"
+		  scripts/checkfeature.py "${prog}"
 		  RESULT_VARIABLE err)
 
   if(NOT err)
@@ -39,4 +39,4 @@ test_cc_builtin("
 ssize_t a = 0;
 " HAVE_SSIZE_T)
 
-configure_file(${TREE}/include/features.h.in ${GEN}/features.h)
+configure_file(include/features.h.in ../include/generated/features.h)

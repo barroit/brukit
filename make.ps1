@@ -13,12 +13,6 @@ param
 	[string]$first
 )
 
-function rmrf
-{
-	param($name)
-	Remove-Item -Recurse -Force -ErrorAction SilentlyContinue -Path $name
-}
-
 $tree = $PSScriptRoot
 Set-Alias error Write-Error
 
@@ -26,8 +20,7 @@ if ($tree -ne $PWD) {
 	error "you need to be inside the source tree ($tree)"
 }
 
-$TREE = $tree.Replace('\','/')
-$env:TREE = $TREE
+$env:TREE = $tree.Replace('\','/')
 
 $targets = @('configure', 'build', 'all', 'clean', `
 	     'distclean', 'menuconfig', 'install', 'uninstall')
@@ -65,19 +58,27 @@ if ($target -eq 'configure' -or $target -eq 'all') {
 	} else {
 		$generator = 'Ninja'
 	}
-	cmake -G $generator -S $TREE -B $TREE/build
+	cmake -G $generator -S . -B build
 }
 
 if ($target -eq 'build' -or $target -eq 'all') {
-	cmake --build $TREE/build --parallel
+	cmake --build build --parallel
 }
 
 if ($target -eq 'clean') {
-	cmake --build $TREE/build --target clean
+	cmake --build build --target clean
 } elseif ($target -eq 'distclean') {
-	rmrf $TREE/include/generated
-	rmrf $TREE/*.manifest
-	rmrf (git ls-files --directory -o 'build')
+	Remove-Item -Recurse -Force -ErrorAction SilentlyContinue`
+		    -Path include/generated
+
+	Remove-Item -Force -ErrorAction SilentlyContinue `
+		    -Path .config, .config.def, .config.old
+
+	Remove-Item -Force -ErrorAction SilentlyContinue `
+		    -Path *.manifest
+
+	Remove-Item -Recurse -Force -ErrorAction SilentlyContinue `
+		    -Path (git ls-files --directory -o build)
 } elseif ($target -eq 'menuconfig') {
-	python $TREE/scripts/kconfig.py menuconfig
+	python scripts/kconfig.py menuconfig
 }

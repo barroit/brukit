@@ -26,26 +26,28 @@ export CC LD
 .PHONY: configure build all
 
 build:
-	@cmake --build $(TREE)/build --parallel
+	@cmake --build build --parallel
 
 configure:
-	@cmake -S $(TREE) -B $(TREE)/build
+	@cmake -S . -B build
 
 all: configure build
 
 .PHONY: clean distclean
 
 clean:
-	@cmake --build $(TREE)/build --target clean
+	@cmake --build build --target clean
 
 distclean:
-	@rm -rf $(TREE)/include/generated
-	@git ls-files --directory -o $(TREE)/build | xargs rm -rf
+	@rm -rf include/generated
+	@rm -f include/arch
+	@rm -f .config .config.def .config.old
+	@git ls-files --directory -o build | xargs rm -rf
 
 .PHONY: menuconfig
 
 menuconfig:
-	@$(TREE)/scripts/kconfig.py menuconfig
+	@scripts/kconfig.py menuconfig
 
 scripts := $(wildcard scripts/*.sh) $(wildcard scripts/*.py)
 args    := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
