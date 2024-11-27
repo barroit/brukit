@@ -9,6 +9,7 @@
 
 build/*
 !build/locale
+!build/scripts
 
 include/generated
 include/arch
