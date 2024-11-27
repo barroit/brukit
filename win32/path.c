@@ -9,10 +9,10 @@
 #include <userenv.h>
 
 #include "calc.h"
-#include "compiler.h"
 #include "cconv.h"
 #include "termas.h"
 #include "xalloc.h"
+#include "xchar.h"
 
 int pth_is_abs(const xchar *name)
 {

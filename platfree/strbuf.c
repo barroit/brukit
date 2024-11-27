@@ -7,6 +7,7 @@
 
 #include <stdarg.h>
 
+#include "cconv.h"
 #include "path.h"
 #include "termas.h"
 #include "xalloc.h"
