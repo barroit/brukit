@@ -185,12 +185,6 @@ if(WIN32)
 			  _CRT_SECURE_NO_WARNINGS)
 endif()
 
-if(CONFIG_WIDE_CHAR)
-  add_compile_definitions(UNICODE)
-else()
-  add_compile_definitions(ANSI)
-endif()
-
 install(TARGETS ${exec_name} DESTINATION .)
 
 if(CONFIG_I18N_SUPP)
