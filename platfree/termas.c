@@ -27,9 +27,9 @@ struct tm_tag {
 };
 
 #ifdef CONFIG_TERMAS_SMALL_BUFFER
-# define PUTF_BUF_CAP SZ_1K
+# define MAS_BUF_CAP SZ_1K
 #else
-# define PUTF_BUF_CAP SZ_4K
+# define MAS_BUF_CAP SZ_4K
 #endif
 
 #ifdef CONFIG_SPEC_ALT_CNTRL
@@ -149,7 +149,7 @@ int __termas(const char *file, int line,
 	 * there's no need (and should not) to care about the null terminator
 	 * as it's not required.
 	 */
-	char buf[PUTF_BUF_CAP];
+	char buf[MAS_BUF_CAP];
 	size_t size = 0;
 	size_t cap = sizeof(buf) - 1;
 	size_t avail = cap;
@@ -218,6 +218,26 @@ int __termas(const char *file, int line,
 			goto out;
 	}
 
+	if (!fmt[0]) {
+		size_t len = strlen(__fmtcol(RESET));
+		size_t tail;
+
+		if (cc_use_tercol) {
+			size -= len;
+			tail = size;
+		}
+
+		while (isspace(buf[size - 1]) || buf[size - 1] == ':')
+			size--;
+
+		if (cc_use_tercol) {
+			memmove(&buf[size], &buf[tail], len);
+			size += len;
+		}
+
+		goto out;
+	}
+
 	va_start(ap, fmt);
 	nr = vsnprintf(&buf[size], avail + 1, fmt, ap);
 	va_end(ap);
@@ -266,9 +286,13 @@ out:
 		exit(128);
 	case TM_BUG:
 		abort();
-	default:
+	case TM_LOG:
+	case TM_WARN:
+	case TM_ERROR:
 		return ret;
 	}
+
+	unreachable();
 }
 
 void __die_overflow(const char *file, int line, const char *func,

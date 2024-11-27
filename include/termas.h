@@ -29,11 +29,11 @@ enum tm_level {
  * will be '<tag>: <message>'.
  */
 
-#define ___termas(...) __termas(__FILE__, __LINE__, __func__, __VA_ARGS__)
+#define ___termas(...) __termas(__FILE__, __LINE__, __func__, ##__VA_ARGS__)
 
 int __termas(const char *file, int line,
 	     const char *func, enum tm_level level,
-	     const char *hint, u32 flags, const char *fmt, ...) __printf(7, 8);
+	     const char *hint, u32 flags, const char *fmt, ...);
 
 #define __tm_mas(hint, flags, fmt, ...) \
 	___termas(TM_LOG, hint, flags | TM_WROUT, fmt, ##__VA_ARGS__)

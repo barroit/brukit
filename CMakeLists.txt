@@ -66,6 +66,7 @@ add_compile_options(-Wall
 		    -Wold-style-definition
 		    -Wpacked
 		    -Wstrict-prototypes
+		    -Wswitch-enum
 		    -Wshadow)
 
 add_compile_options(-fshort-wchar
