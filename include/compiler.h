@@ -14,7 +14,7 @@
 #define static_assert _Static_assert
 
 #ifdef NDEBUG
-# define BUG_ON(x) do { if (x); } while (0)
+# define BUG_ON    NOOP
 #else
 # define BUG_ON(x) assert(!(x))
 #endif
