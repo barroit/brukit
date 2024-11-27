@@ -7,6 +7,7 @@
 #define NG39_TERMAS_H
 
 #include "attr.h"
+#include "compiler.h"
 #include "types.h"
 
 enum tm_level {

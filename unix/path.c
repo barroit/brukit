@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "compiler.h"
 #include "cconv.h"
 #include "termas.h"
 #include "xalloc.h"

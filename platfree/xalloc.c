@@ -9,7 +9,6 @@
 #include <string.h>
 #include <wchar.h>
 
-#include "compiler.h"
 #include "size.h"
 #include "tercol.h"
 #include "termas.h"

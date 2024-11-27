@@ -13,7 +13,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "compiler.h"
 #include "gettext.h"
 #include "iter.h"
 #include "scio.h"
