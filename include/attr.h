@@ -34,4 +34,7 @@
 
 #define __leaf __attribute__((__leaf__))
 
+#undef __always_inline
+#define __always_inline inline __attribute__(__always_inline__)
+
 #endif /* NG39_ATTR_H */
