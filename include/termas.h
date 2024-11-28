@@ -10,6 +10,8 @@
 #include "compiler.h"
 #include "types.h"
 
+#define NULL ((void *)0)
+
 enum tm_level {
 	TM_LOG,
 	TM_WARN,
@@ -47,14 +49,13 @@ int __termas(const char *file, int line,
 #define __tm_die(hint, flags, fmt, ...)				\
 ({								\
 	___termas(TM_FATAL, hint, flags, fmt, ##__VA_ARGS__);	\
-	unreachable();					\
+	unreachable();						\
 })
 
 #define __tm_bug(hint, flags, fmt, ...)				\
 ({								\
-	u32 __flags = (flags) | TM_FLLN | TM_FUNC;		\
-	___termas(TM_BUG, hint, __flags, fmt, ##__VA_ARGS__);	\
-	unreachable();					\
+	___termas(TM_BUG, hint, flags, fmt, ##__VA_ARGS__);	\
+	unreachable();						\
 })
 
 /*
