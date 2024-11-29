@@ -10,6 +10,7 @@
 #include "compiler.h"
 #include "types.h"
 
+#undef NULL
 #define NULL ((void *)0)
 
 enum tm_level {
