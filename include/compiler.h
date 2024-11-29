@@ -23,9 +23,9 @@
 
 #define BUILD_BUG_ON_ZERO(x) ((int)(sizeof(struct { int:(-!!(x)); })))
 
-#define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
+#define type_is_same(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
 
-#define __must_be_array(x) BUILD_BUG_ON_ZERO(__same_type(x, &x[0]))
+#define __must_be_array(x) BUILD_BUG_ON_ZERO(type_is_same(x, &x[0]))
 
 #define __must_be_pow2(x) BUILD_BUG_ON_ZERO(!(x) || ((x) % 2) != 0)
 

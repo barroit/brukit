@@ -51,13 +51,13 @@ wchar_t *__xwcsdup(const char *file,
 
 #define REALLOCBUF(x, new, cap)					\
 do {								\
-	BUILD_BUG_ON(__same_type(x, void *));			\
-	typeof(new) __new = new;				\
-	if (__new > cap) {					\
+	BUILD_BUG_ON(type_is_same(*(x), void) ||		\
+		     type_is_same(*(x), void *));		\
+	if (new > cap) {					\
 		cap = lgrow(cap);				\
-		if (cap < __new)				\
-			cap = __new;				\
-		x = xreallocarray(x, sizeof(*(x)), __new);	\
+		if (cap < new)					\
+			cap = new;				\
+		x = xreallocarray(x, sizeof(*(x)), new);	\
 	}							\
 } while (0)
 
