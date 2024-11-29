@@ -69,4 +69,11 @@
 #define ___IS_ENABLED(...)        ____IS_ENABLED(__VA_ARGS__)
 #define ____IS_ENABLED(_, x, ...) x
 
+#define container_of(x, type, memb)				\
+({								\
+	BUILD_BUG_ON(!type_is_same(*(x), void) &&		\
+		     !type_is_same(*(x), ((type *)0)->memb));	\
+	(type *)((void *)(x) - __builtin_offsetof(type, memb));	\
+})
+
 #endif /* NG39_COMPILER_H */
