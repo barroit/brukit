@@ -15,8 +15,7 @@
 #define __nonnone(...) __attribute__((__nonnull__(__VA_ARGS__)))
 
 #ifdef ANSI
-# define __printf(m, n) \
-	 __attribute__((__format__(__printf__, m, n), __nonnull__(m)))
+# define __printf(m, n) __attribute__((__format__(__printf__, m, n))) __nonnone(m)
 #else
 # define __printf(m, n)
 #endif
@@ -24,8 +23,7 @@
 #define __cold __attribute__((__cold__))
 
 #if __has_attribute(__access__)
-# define __read_only(...) \
-	 __attribute__((__access__(__read_only__, __VA_ARGS__)))
+# define __read_only(...) __attribute__((__access__(__read_only__, __VA_ARGS__)))
 #else
 # define __read_only(...)
 #endif
@@ -36,5 +34,9 @@
 
 #undef __always_inline
 #define __always_inline inline __attribute__((__always_inline__))
+
+#define __used __attribute__((__used__))
+
+#define __constructor __attribute__((__constructor__))
 
 #endif /* NG39_ATTR_H */

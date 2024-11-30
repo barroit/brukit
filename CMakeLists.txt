@@ -170,8 +170,13 @@ endif()
 if(WIN32)
   add_compile_definitions(NTDDI_WIN7
 			  WINVER=_WIN32_WINNT_WIN7
-			  _WIN32_WINNT=_WIN32_WINNT_WIN7
-			  _CRT_NONSTDC_NO_DEPRECATE
+			  _WIN32_WINNT=_WIN32_WINNT_WIN7)
+
+  add_compile_definitions(WIN32_LEAN_AND_MEAN)
+
+  # See https://learn.microsoft.com/en-us/cpp/c-runtime-library/compatibility.
+  add_compile_definitions(_CRT_NONSTDC_NO_WARNINGS
+			  _CRT_DECLARE_NONSTDC_NAMES
 			  _CRT_SECURE_NO_WARNINGS)
 endif()
 
