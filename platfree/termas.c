@@ -211,7 +211,7 @@ int __termas(const char *file, int line,
 	}
 
 	if (flags & TM_FUNC) {
-		const char *mas = !cc_use_tercol ? "%s " : H("%s ", BOLD);
+		const char *mas = !cc_use_tercol ? "%s: " : H("%s: ", BOLD);
 
 		nr = snprintf(&buf[size], avail + 1, mas, func);
 		if (!__test_add_buf_size(nr, &size, &avail))
