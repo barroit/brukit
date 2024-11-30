@@ -50,11 +50,17 @@ config PROG_BUILD
 config CC_NAME
 	def_string $(cc-name)
 
+config CC_COMMAND
+	def_string $(CC)
+
 config CC_VERSION
 	def_int $(cc-version)
 
 config LD_NAME
 	def_string $(ld-name)
+
+config LD_COMMAND
+	def_string $(LD)
 
 config LD_VERSION
 	def_int $(ld-version)

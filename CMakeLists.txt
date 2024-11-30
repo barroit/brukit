@@ -19,6 +19,11 @@ endif()
 python3(scripts/kconfig.py genconfig --header-path ${GEN}/autoconf.h)
 include_scp(lib/cmake.kconfig)
 
+if(EXISTS ${TREE}/.config)
+  set(ENV{CC} ${CONFIG_CC_COMMAND})
+  set(ENV{LD} ${CONFIG_LD_COMMAND})
+endif()
+
 set(prog_name ${CONFIG_PROG_NAME})
 if(CONFIG_SPEC_EXEC_NAME)
   set(exec_name ${CONFIG_EXEC_NAME})
