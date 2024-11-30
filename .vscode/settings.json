@@ -9,7 +9,8 @@
 		"DRAFT": "plaintext",
 		"TAGGING": "plaintext",
 		"**/lib/cmake.*": "cmake",
-		"NOTE": "plaintext"
+		"NOTE": "plaintext",
+		"*.h": "c"
 	},
 	"search.exclude": {
 		"**/locale/**": true

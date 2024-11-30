@@ -64,9 +64,9 @@
 
 #define __config_placeholder_1 , 1
 
-#define IS_ENABLED(x)             __IS_ENABLED(x)
-#define __IS_ENABLED(x)           ___IS_ENABLED(__config_placeholder_ ## x, 0)
-#define ___IS_ENABLED(...)        ____IS_ENABLED(__VA_ARGS__)
+#define IS_ENABLED(x)      __IS_ENABLED(x)
+#define __IS_ENABLED(x)    ___IS_ENABLED(__config_placeholder_ ## x, 0)
+#define ___IS_ENABLED(...) ____IS_ENABLED(__VA_ARGS__)
 #define ____IS_ENABLED(_, x, ...) x
 
 #define container_of(x, type, memb)				\
