@@ -12,7 +12,13 @@ if [[ -n $inv ]]; then
 	exit 1
 fi
 
-git diff-index --cached --name-only HEAD | xargs -P$(nproc) -n1 codespell
+mod=$(git diff-index --cached --name-only HEAD)
+
+if [[ -z $mod ]]; then
+	exit 0
+fi
+
+echo $mod | xargs -P$(nproc) -n1 codespell
 if [[ $? -ne 0 ]]; then
 	exit 1
 fi
