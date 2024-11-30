@@ -3,7 +3,21 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-int main()
+#include "unitest.h"
+
+#include <stdio.h>
+
+TESTDECL_BEGIN(setup)
 {
-	return 0;
+	puts("setup");
+}
+
+TESTDECL_ROUTINE(path)
+{
+	puts("testing...");
+}
+
+TESTDECL_END(teardown)
+{
+	puts("cleanup");
 }

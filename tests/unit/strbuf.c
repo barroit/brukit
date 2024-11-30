@@ -3,7 +3,15 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-int main()
+#include "unitest.h"
+
+#include <stdio.h>
+
+TESTDECL_BEGIN();
+
+TESTDECL_ROUTINE(strbuf)
 {
-	return 0;
+	puts("testing...");
 }
+
+TESTDECL_END();

@@ -48,9 +48,9 @@
 /*
  * Call a function or macro based on the number of arguments
  */
-#define ADAP_CALL(n, ...) __ADAP_CALL(n, ARGCOF(__VA_ARGS__), ##__VA_ARGS__)
-#define __ADAP_CALL(n, ...) ___ADAP_CALL(n, __VA_ARGS__)
-#define ___ADAP_CALL(n, x, ...) n##x(__VA_ARGS__)
+#define ADAP_CALL(x, ...) __ADAP_CALL(x, ARGCOF(__VA_ARGS__), ##__VA_ARGS__)
+#define __ADAP_CALL(x, ...) ___ADAP_CALL(x, __VA_ARGS__)
+#define ___ADAP_CALL(x, n, ...) x##n(__VA_ARGS__)
 
 #define NOOP(...)   ADAP_CALL(NOOP_, ##__VA_ARGS__)
 #define NOOP_0(...) NOOP_1(0)
@@ -78,5 +78,8 @@
 		     !type_is_same(*(x), ((type *)0)->memb));	\
 	(type *)((void *)(x) - __builtin_offsetof(type, memb));	\
 })
+
+#define STROF(x)   __STROF(x)
+#define __STROF(x) #x
 
 #endif /* NG39_COMPILER_H */

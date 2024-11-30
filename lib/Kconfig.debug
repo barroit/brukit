@@ -47,7 +47,7 @@ config DEBUG_INFO_COMPRESSED_ZSTD
 
 endchoice # Compressed Debug information
 
-config SAN_PROG
+config PROG_WITH_SANITIZER
 	bool "Build program with sanitizers"
 	default DEBUG_PROG
 

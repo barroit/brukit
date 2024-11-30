@@ -2,4 +2,11 @@
 
 source ../scripts/libutil.sh
 
+assert_success()
+{
+	if [[ $? != 0 ]]; then
+		error $*
+	fi
+}
+
 source $1

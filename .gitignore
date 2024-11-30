@@ -14,6 +14,9 @@ build/*
 include/generated
 include/arch
 
+unitest.h
+unitest_list.h
+
 locale/*~
 locale/generated.pot
 
@@ -26,3 +29,4 @@ DRAFT
 *.rc
 *.manifest.in
 **/main*.c
+!tests/**/main.c
