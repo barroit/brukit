@@ -5,8 +5,6 @@
 
 #include "unitest.h"
 
-#include <stdio.h>
-
 #include "atexit.h"
 #include "iter.h"
 

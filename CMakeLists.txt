@@ -78,7 +78,9 @@ add_compile_options(-fshort-wchar
 		    -funsigned-char
 		    -fno-common)
 
-test_add_compile_options(CONFIG_DEBUG_PROG -fno-omit-frame-pointer)
+if(CONFIG_DEBUG_PROG)
+  add_compile_options(-fno-omit-frame-pointer)
+endif()
 
 # ASAN library lacks certain C library functions.
 if(WIN32 AND CONFIG_PROG_WITH_SANITIZER)
