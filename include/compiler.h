@@ -62,11 +62,14 @@
 #define NOOP_6(_1, _2, _3, _4, _5, _6) \
 	do { if ((_1) && (_2) && (_3) && (_4) && (_5) && (_6)); } while (0)
 
-#define __config_placeholder_1 , 1
+#undef __CONCAT
+#define CONCAT(a, b)   __CONCAT(a, b)
+#define __CONCAT(a, b) a ## b
 
-#define IS_ENABLED(x)      __IS_ENABLED(x)
-#define __IS_ENABLED(x)    ___IS_ENABLED(__config_placeholder_ ## x, 0)
-#define ___IS_ENABLED(...) ____IS_ENABLED(__VA_ARGS__)
+#define __kconf_enabled_1 , 1
+
+#define IS_ENABLED(x)     __IS_ENABLED(CONCAT(__kconf_enabled_, x), 0)
+#define __IS_ENABLED(...) ____IS_ENABLED(__VA_ARGS__)
 #define ____IS_ENABLED(_, x, ...) x
 
 #define container_of(x, type, memb)				\
