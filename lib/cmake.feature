@@ -39,4 +39,10 @@ test_cc_builtin("
 ssize_t a = 0;
 " HAVE_SSIZE_T)
 
-configure_file(include/features.h.in ../include/generated/features.h)
+if(CONFIG_WIDE_CHAR)
+  set(UNICODE 1)
+else()
+  set(ANSI 1)
+endif()
+
+configure_file(${TREE}/include/features.h.in ${GEN}/features.h)

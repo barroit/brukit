@@ -3,6 +3,9 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
+#cmakedefine ANSI
+#cmakedefine UNICODE
+
 #cmakedefine HAVE_BUILTIN_ALIGN_DOWN
 #cmakedefine HAVE_REALLOCARRAY
 #cmakedefine HAVE_UINT

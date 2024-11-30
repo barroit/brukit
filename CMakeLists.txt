@@ -78,13 +78,12 @@ add_compile_options(-fshort-wchar
 		    -funsigned-char
 		    -fno-common)
 
-test_add_compile_options(CONFIG_DEBUG_PROG -fno-omit-frame-pointer)
-
-test_add_compile_options(CONFIG_SAN_PROG -fsanitize=address,undefined)
-test_add_link_options(CONFIG_SAN_PROG -fsanitize=address,undefined)
+if(CONFIG_DEBUG_PROG)
+  add_compile_options(-fno-omit-frame-pointer)
+endif()
 
 # ASAN library lacks certain C library functions.
-if(WIN32 AND CONFIG_SAN_PROG)
+if(WIN32 AND CONFIG_PROG_WITH_SANITIZER)
   add_compile_options(-U_DLL)
 endif()
 
@@ -132,6 +131,12 @@ add_library(platspec OBJECT ${source})
 file(GLOB source LIST_DIRECTORIES false platfree/*.c commands/*.c)
 add_library(platfree OBJECT ${source})
 
+if(CONFIG_PROG_WITH_SANITIZER)
+  target_compile_options(platfree PRIVATE -fsanitize=address,undefined)
+  target_compile_options(platspec PRIVATE -fsanitize=address,undefined)
+  add_link_options(-fsanitize=address,undefined)
+endif()
+
 if(UNIX)
   set(source unix/main.c)
 elseif(WIN32)
@@ -145,24 +150,24 @@ elseif(WIN32)
   list(APPEND source ${prog_name}.rc)
 endif()
 
-add_executable(${exec_name} ${source})
+link_libraries(platfree platspec)
 
-target_link_libraries(${exec_name} platfree platspec)
+if(WIN32)
+  link_libraries(shlwapi userenv)
+  if(CONFIG_WIN_GUI)
+    link_libraries(comctl32)
+  endif()
+  if(CONFIG_DEBUG_PROG AND CONFIG_REP_HOOK)
+    link_libraries(dbghelp)
+  endif()
+endif()
+
+add_executable(${exec_name} ${source})
 
 if(CONFIG_I18N_SUPP)
   find_package(Intl)
   if(Intl_FOUND)
     include_scp(lib/cmake.gettext)
-  endif()
-endif()
-
-if(WIN32)
-  target_link_libraries(${exec_name} shlwapi userenv)
-  if(CONFIG_WIN_GUI)
-    target_link_libraries(${exec_name} comctl32)
-  endif()
-  if(CONFIG_DEBUG_PROG AND CONFIG_REP_HOOK)
-    target_link_libraries(${exec_name} dbghelp)
   endif()
 endif()
 
@@ -185,12 +190,6 @@ if(WIN32)
 			  _CRT_SECURE_NO_WARNINGS)
 endif()
 
-if(CONFIG_WIDE_CHAR)
-  add_compile_definitions(UNICODE)
-else()
-  add_compile_definitions(ANSI)
-endif()
-
 install(TARGETS ${exec_name} DESTINATION .)
 
 if(CONFIG_I18N_SUPP)
@@ -201,4 +200,8 @@ endif()
 if(WIN32)
   file(GLOB dll ${CMAKE_BINARY_DIR}/*.dll)
   install(FILES ${dll} DESTINATION .)
+endif()
+
+if(CONFIG_ENABLE_TESTING)
+  add_subdirectory(tests)
 endif()

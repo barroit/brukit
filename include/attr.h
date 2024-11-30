@@ -39,4 +39,6 @@
 
 #define __constructor __attribute__((__constructor__))
 
+#define __section(x) __attribute__((__section__(x)))
+
 #endif /* NG39_ATTR_H */

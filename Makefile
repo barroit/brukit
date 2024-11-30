@@ -33,6 +33,9 @@ configure:
 
 all: configure build
 
+test:
+	@ctest --test-dir build/tests --parallel
+
 .PHONY: clean distclean
 
 clean:

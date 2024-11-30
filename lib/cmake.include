@@ -24,21 +24,3 @@ function(python3 script)
   execute_process(COMMAND ${Python3_EXECUTABLE}
 		  ${script} ${ARGN} COMMAND_ERROR_IS_FATAL ANY)
 endfunction()
-
-function(test_add_compile_options pass)
-  if(${pass})
-    add_compile_options(${ARGN})
-  endif()
-endfunction()
-
-function(test_add_compile_definitions pass)
-  if(${pass})
-    add_compile_definitions(${ARGN})
-  endif()
-endfunction()
-
-function(test_add_link_options pass)
-  if(${pass})
-    add_link_options(${ARGN})
-  endif()
-endfunction()
