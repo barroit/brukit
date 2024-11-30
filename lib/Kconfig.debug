@@ -64,12 +64,20 @@ config DEBUG_INTL
 	bool "Link with the non-inline function call version of intl"
 	depends on I18N_SUPP
 
-menu "strbuf options"
+menu "String Buffer options"
 
 config STRBUF_SANITIZE_PATH
 	bool "Add path format checks"
 	default DEBUG_PROG
 
-endmenu # strbuf options
+endmenu # String Buffer options
+
+menu "List options"
+
+config LIST_SANITIZE_MOD
+	bool "Validate list modification"
+	default DEBUG_PROG
+
+endmenu # List options
 
 endmenu # Hacking
