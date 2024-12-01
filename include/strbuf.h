@@ -49,6 +49,8 @@ void sb_init_ws(struct strbuf *sb, const xchar *name);
 
 uint sb_pth_append(struct strbuf *sb, const xchar *name);
 
+uint sb_pth_append_at_ws(struct strbuf *sb, const xchar *name);
+
 void sb_pth_to_dirname(struct strbuf *sb);
 
 #endif /* NG39_STRBUF_H */

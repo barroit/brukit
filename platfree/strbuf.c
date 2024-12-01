@@ -62,11 +62,6 @@ static inline void sb_grow(struct strbuf *sb, uint new)
 	REALLOCBUF(sb->buf, sb->len + new + 1, sb->cap);
 }
 
-static inline uint sb_avail(struct strbuf *sb)
-{
-	return sb->cap - sb->len - 1;
-}
-
 uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s)
 {
 	BUG_ON(off > sb->len);
@@ -112,7 +107,7 @@ static uint __sb_printf_at(struct strbuf *sb, uint off,
 	sb_grow(sb, 42);
 
 retry:
-	avail = sb_avail(sb);
+	avail = sb->cap - sb->len - 1;
 	nr = xc_vsnprintf(&sb->buf[off], avail + 1, fmt, ap[i]);
 
 	BUG_ON(nr < 0);
@@ -212,21 +207,41 @@ void sb_init_ws(struct strbuf *sb, const xchar *name)
 
 uint sb_pth_append(struct strbuf *sb, const xchar *name)
 {
-	uint len = xc_strlen(name);
-	uint ret = len + 1;
+	uint __len = xc_strlen(name);
+	uint len = __len + 1;
 
-	sb_grow(sb, ret);
+	sb_grow(sb, len);
 
 	sb->buf[sb->len] = PTH_SEP;
 	sb->len += 1;
 
-	memcpy(&sb->buf[sb->len], name, (len + 1) * sizeof(*name));
-	sb->len += len;
+	memcpy(&sb->buf[sb->len], name, (__len + 1) * sizeof(*name));
+	sb->len += __len;
 
 	/* sanitize this fucking path */
 	if (IS_ENABLED(CONFIG_STRBUF_SANITIZE_PATH))
 		sanitize_pth_sep(sb);
-	return ret;
+	return len;
+}
+
+uint sb_pth_append_at_ws(struct strbuf *sb, const xchar *name)
+{
+	uint __len = xc_strlen(name);
+	uint len = __len + 1;
+	uint overlap = sb->len - sb->off.ws;
+
+	if (len > overlap)
+		sb_grow(sb, len - overlap);
+
+	sb->buf[sb->off.ws] = PTH_SEP;
+
+	memcpy(&sb->buf[sb->off.ws + 1], name, (__len + 1) * sizeof(*name));
+	if (len > overlap)
+		sb->len += len - overlap;
+	else
+		sb->len -= overlap - len;
+
+	return len;
 }
 
 void sb_pth_to_dirname(struct strbuf *sb)
