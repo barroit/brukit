@@ -115,7 +115,7 @@ static void sanitize_pth_sep(struct strbuf *sb)
 	char *path = (typeof(path))sb->buf;
 
 	if (IS_ENABLED(CONFIG_WIDE_CHAR)) {
-		size_t len = conv_wcstombs((wchar_t *)sb->buf, &path);
+		size_t len = conv_wcstombs(&path, (wchar_t *)sb->buf);
 
 		if (len == maxof(len)) {
 			__tm_warn(NULL, TM_FUNC,

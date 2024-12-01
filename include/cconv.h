@@ -19,6 +19,6 @@ enum mbstatus {
 
 enum mbstatus mbstatus(char c);
 
-size_t conv_wcstombs(const wchar_t *__src, char **__dest);
+size_t conv_wcstombs(char **__dest, const wchar_t *__src);
 
 #endif /* NG39_CCONV_H */
