@@ -101,7 +101,6 @@ uint sb_puts_at_ws(struct strbuf *sb, const xchar *s)
 	return sb_puts_at(sb, sb->off.ws, s);
 }
 
-#ifdef CONFIG_STRBUF_SANITIZE_PATH
 static void sanitize_pth_sep(struct strbuf *sb)
 {
 	const xchar *usep = xc_strrchr(sb->buf, PTH_SEP_UNIX);
@@ -113,32 +112,26 @@ static void sanitize_pth_sep(struct strbuf *sb)
 	if (likely(!mixed && !suffixed))
 		return;
 
-#ifdef ANSI
-	if (mixed)
-		warn("path '%s' is mixing separators", sb->buf);
-	if (suffixed)
-		warn("path '%s' has trailing separator", sb->buf);
-#else
-	char *path;
-	size_t len = conv_wcstombs(sb->buf, &path);
+	char *path = (typeof(path))sb->buf;
 
-	if (len == maxof(len)) {
-		warn("%s mixed: %d, suffixed: %d",
-		     __func__, mixed, suffixed);
-		return;
+	if (IS_ENABLED(CONFIG_WIDE_CHAR)) {
+		size_t len = conv_wcstombs((wchar_t *)sb->buf, &path);
+
+		if (len == maxof(len)) {
+			__tm_warn(NULL, TM_FUNC,
+				  "mixed: %d, suffixed: %d", mixed, suffixed);
+			return;
+		}
 	}
 
 	if (mixed)
-		warn("path '%s' is mixing separators", sb->buf);
+		warn("path '%s' is mixing separators", path);
 	if (suffixed)
-		warn("path '%s' has trailing separator", sb->buf);
+		warn("path '%s' has trailing separator", path);
 
-	free(path);
-#endif
+	if (IS_ENABLED(CONFIG_WIDE_CHAR))
+		free(path);
 }
-#else
-#define sanitize_pth_sep NOOP
-#endif
 
 uint sb_pth_append(struct strbuf *sb, const xchar *name)
 {
@@ -154,9 +147,16 @@ uint sb_pth_append(struct strbuf *sb, const xchar *name)
 	sb->len += len;
 
 	/* sanitize this fucking path */
-	sanitize_pth_sep(sb);
+	if (IS_ENABLED(CONFIG_STRBUF_SANITIZE_PATH))
+		sanitize_pth_sep(sb);
 	return ret;
 }
+
+/*
+ * Tell the compiler this fmt cannot be NULL.
+ */
+static uint __sb_printf_at(struct strbuf *sb, uint off,
+			   const xchar *fmt, va_list *ap) __nonnone(3);
 
 static uint __sb_printf_at(struct strbuf *sb, uint off,
 			   const xchar *fmt, va_list *ap)
