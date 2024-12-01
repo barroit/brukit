@@ -38,6 +38,11 @@ config WIN_GUI
 	bool "Build program with gui"
 	depends on $(WIN32)
 
+config WIDE_CHAR
+	bool "Use wide character"
+	default y
+	depends on $(WIN32)
+
 menu "Memory allocation"
 
 config PANIC_NOMEM

@@ -8,11 +8,6 @@ menu "Core features"
 config I18N_SUPP
 	bool "Enable i18n support"
 
-config WIDE_CHAR
-	bool "Use wide character"
-	default y
-	depends on $(WIN32)
-
 config TERMAS_SMALL_BUFFER
 	bool "Use small (1K) buffer in termas report functions"
 
