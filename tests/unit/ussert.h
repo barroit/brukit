@@ -35,7 +35,14 @@ do {								\
 	__err;							\
 })
 
-#define USSERT_ZERO(x) __ERROR_RETURN_ON(x != 0)
+#define MUST_PASS(x) !(x)
+#define MUST_FAIL(x) !!(x)
+
+#define USSERT_PASS(x) __ERROR_RETURN_ON(MUST_PASS(x))
+#define USSERT_FAIL(x) __ERROR_RETURN_ON(MUST_FAIL(x))
+
+#define USSERT_NONNULL(x) __ERROR_RETURN_ON(x == 0)
+#define USSERT_ZERO(x)    __ERROR_RETURN_ON(x != 0)
 
 #define USSERT_EQUAL(a, b) __ERROR_RETURN_ON(a != b)
 
@@ -59,7 +66,7 @@ do {								\
 				"\na: %s\nb: %s", a, b);	\
 	free(a);						\
 	free(b);						\
-	if(err)							\
+	if (err)						\
 		return;						\
 } while (0)
 #endif

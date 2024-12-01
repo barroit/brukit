@@ -42,6 +42,7 @@ TESTDECL_ROUTINE(sb_printf)
 	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
 	uint __cap;
 
+	/* 39 Variable! */
 	int int39 = 39;
 	float fp39 = 39.3939f;
 	uint hex39 = 0x3939;
