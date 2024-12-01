@@ -5,19 +5,60 @@
 
 #include "unitest.h"
 
-#include <stdio.h>
+#include "path.h"
 
-TESTDECL_BEGIN(setup)
+TESTDECL_BEGIN();
+
+TESTDECL_ROUTINE(pth_is_abs)
 {
-	puts("setup");
+	USSERT_FAIL(pth_is_abs(XC(".")));
+#if defined(_WIN32)
+	USSERT_PASS(pth_is_abs(XC("C:\\dir")));
+#elif defined(__unix__)
+	USSERT_PASS(pth_is_abs("/dir"));
+#endif
 }
 
-TESTDECL_ROUTINE(path)
+TESTDECL_ROUTINE(pth_last_sep)
 {
-	puts("testing...");
+	xchar *sep = pth_last_sep(XC("path/to/dir/exe"));
+	USSERT_STREQUAL(sep, XC("/exe"));
+
+#if defined(_WIN32)
+	sep = pth_last_sep(XC("path\\to\\dir\\exe"));
+	USSERT_STREQUAL(sep, XC("\\exe"));
+#endif
 }
 
-TESTDECL_END(teardown)
+TESTDECL_ROUTINE(pth_is_dot)
 {
-	puts("cleanup");
+	USSERT_PASS(pth_is_dot(XC(".")));
+	USSERT_PASS(pth_is_dot(XC("..")));
+	USSERT_FAIL(pth_is_dot(XC("...")));
 }
+
+TESTDECL_ROUTINE(pth_home)
+{
+	const xchar *name = pth_home();
+	USSERT_NONNULL(name);
+}
+
+TESTDECL_ROUTINE(pth_executable)
+{
+	const xchar *name = pth_executable();
+	USSERT_NONNULL(name);
+}
+
+TESTDECL_ROUTINE(pth_prefix)
+{
+	const xchar *name = pth_prefix();
+	USSERT_NONNULL(name);
+}
+
+TESTDECL_ROUTINE(pth_locale)
+{
+	const xchar *name = pth_locale();
+	USSERT_NONNULL(name);
+}
+
+TESTDECL_END();
