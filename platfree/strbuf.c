@@ -82,7 +82,7 @@ uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s)
 	if (len > overlap)
 		sb_grow(sb, len - overlap);
 
-	memcpy(&sb->buf[off], s, len + 1);
+	memcpy(&sb->buf[off], s, (len + 1) * sizeof(*s));
 	if (len > overlap)
 		sb->len += len - overlap;
 	else
@@ -143,7 +143,7 @@ uint sb_pth_append(struct strbuf *sb, const xchar *name)
 	sb->buf[sb->len] = PTH_SEP;
 	sb->len += 1;
 
-	memcpy(&sb->buf[sb->len], name, len + 1);
+	memcpy(&sb->buf[sb->len], name, (len + 1) * sizeof(*name));
 	sb->len += len;
 
 	/* sanitize this fucking path */
@@ -221,7 +221,7 @@ void sb_trim(struct strbuf *sb)
 		return;
 
 	sb->len = t - h;
-	memmove(sb->buf, h, sb->len);
+	memmove(sb->buf, h, sb->len * sizeof(*h));
 	sb->buf[sb->len] = 0;
 }
 
