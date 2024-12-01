@@ -56,7 +56,7 @@ do {								\
 	if (new > cap) {					\
 		cap = lgrow(cap);				\
 		if (cap < new)					\
-			cap = new;				\
+			cap = lgrow(new);			\
 		x = xreallocarray(x, sizeof(*(x)), cap);	\
 	}							\
 } while (0)
