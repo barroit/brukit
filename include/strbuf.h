@@ -28,6 +28,8 @@ void sb_destroy(struct strbuf *sb);
 
 xchar *sb_detach(struct strbuf *sb);
 
+void sb_trunc(struct strbuf *sb, uint len);
+
 uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s);
 
 uint sb_puts(struct strbuf *sb, const xchar *s);

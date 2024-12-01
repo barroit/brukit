@@ -50,6 +50,14 @@ xchar *sb_detach(struct strbuf *sb)
 	return ret;
 }
 
+void sb_trunc(struct strbuf *sb, uint len)
+{
+	BUG_ON(len > sb->len);
+
+	sb->len -= len;
+	sb->buf[sb->len] = 0;
+}
+
 /*
  * Ensure strbuf has at least sb->len + new spaces (excluding null terminator)
  * to store characters.
@@ -66,6 +74,8 @@ static inline uint sb_avail(struct strbuf *sb)
 
 uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s)
 {
+	BUG_ON(off > sb->len);
+
 	uint len = xc_strlen(s);
 	uint overlap = sb->len - off;
 
