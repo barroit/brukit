@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
 function(unitest name)
-  add_executable(test_${name} ${ARGN} ussert.c main.c)
-  add_test(NAME api_${name} COMMAND test_${name})
+  add_executable(${name}.t ${ARGN} ussert.c main.c)
+  add_test(NAME api_${name} COMMAND ${name}.t)
 endfunction()
 
 if(CONFIG_CC_HAS_TOPLEVEL_REORDER)

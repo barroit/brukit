@@ -24,45 +24,33 @@ extern unitest_routine_t __testdecl_end[];
 extern unitest_routine_t __testdecl_setup;
 extern unitest_routine_t __testdecl_teardown;
 
-#define __test_section \
-	__section(".miku_test") __used
-
-#define __func_decl(name) \
-	static void name(void)
-
-#define __secvar_decl(name) \
-	__test_section static unitest_routine_t CONCAT(__testdecl_, name)
-
-#define __TESTDECL(name, lvalue) \
-	__func_decl(name); lvalue = name; __func_decl(name)
+#define __test_section    __section(".miku_test") __used
+#define __test_decl(name) static __test_section void (*name ## _decl)(void)
+#define __test_def(name)  static void name(void)
+#define __testdecl(name, lvalue) \
+	__test_def(name); lvalue = &name; __test_def(name)
 
 #define TESTDECL_ROUTINE(name) \
-	__TESTDECL(__test_ ## name, __secvar_decl(__test_ ## name))
+	__testdecl(__test_ ## name, __test_decl(__test_ ## name))
 
-#define TESTDECL_BEGIN(...) ADAP_CALL(__TESTDECL_BEGIN_, ##__VA_ARGS__)
+#define TESTDECL_BEGIN(...) \
+	unitest_routine_t __test_section __testdecl_begin[1] = { 0 }; \
+	ADAP_CALL(__testdecl_begin_, ##__VA_ARGS__)
 
-#define __TESTDECL_BEGIN \
-	__test_section unitest_routine_t __testdecl_begin[1] = { 0 }
-
-#define __TESTDECL_BEGIN_0() \
-	__TESTDECL_BEGIN; \
+#define __testdecl_begin_0() \
 	unitest_routine_t __testdecl_setup = NULL
 
-#define __TESTDECL_BEGIN_1(name) \
-	__TESTDECL_BEGIN; \
-	__TESTDECL(name, unitest_routine_t __testdecl_setup)
+#define __testdecl_begin_1(name) \
+	__testdecl(name, unitest_routine_t __testdecl_setup)
 
-#define TESTDECL_END(...) ADAP_CALL(__TESTDECL_END_, ##__VA_ARGS__)
+#define TESTDECL_END(...) \
+	unitest_routine_t __test_section __testdecl_end[1] = { 0 }; \
+	ADAP_CALL(__testdecl_end_, ##__VA_ARGS__)
 
-#define __TESTDECL_END \
-	__test_section unitest_routine_t __testdecl_end[1] = { 0 }
-
-#define __TESTDECL_END_0() \
-	__TESTDECL_END; \
+#define __testdecl_end_0() \
 	unitest_routine_t __testdecl_teardown = NULL
 
-#define __TESTDECL_END_1(name) \
-	__TESTDECL_END; \
-	__TESTDECL(name, unitest_routine_t __testdecl_teardown)
+#define __testdecl_end_1(name) \
+	__testdecl(name, unitest_routine_t __testdecl_teardown)
 
 #endif /* NG39_UNITEST_H */
