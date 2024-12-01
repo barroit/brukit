@@ -6,5 +6,5 @@
 #include "udef.h"
 
 int cc_use_tercol = 1;
-int cc_termas_with_ts = 1;
-int cc_termas_with_pid = 1;
+int cc_termas_with_ts = 0;
+int cc_termas_with_pid = 0;
