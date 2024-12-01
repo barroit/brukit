@@ -81,4 +81,52 @@ TESTDECL_ROUTINE(sb_trim)
 	USSERT_STREQUAL(sb.buf, XC("aliquam sit amet nibh commodo"));
 }
 
+TESTDECL_ROUTINE(sb_off_ws)
+{
+	struct strbuf __cleanup(sb_destroy) sb;
+
+	/*
+	 * This is just a test. Do not initialize a strbuf with a trailing
+	 * slash and use path-related APIs if the strbuf is working with
+	 * off.ws (ws stands for working space).
+	 */
+	sb_init_ws(&sb, XC("path/to/root/dir/"));
+
+	USSERT_STREQUAL(sb.buf, XC("path/to/root/dir/"));
+	USSERT_EQUAL(sb.off.ws, xc_strlen(XC("path/to/root/dir/")));
+
+	sb_puts(&sb, XC("executable"));
+	USSERT_STREQUAL(sb.buf, XC("path/to/root/dir/executable"));
+
+	sb_puts_at_ws(&sb, XC("file"));
+	USSERT_STREQUAL(sb.buf, XC("path/to/root/dir/file"));
+
+	sb_printf_at_ws(&sb, XC(".%s%u"), XC("miku"), 39);
+	USSERT_STREQUAL(sb.buf, XC("path/to/root/dir/.miku39"));
+}
+
+TESTDECL_ROUTINE(sb_pth_api)
+{
+	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
+
+#if defined(__unix__)
+	sb_init_ws(&sb, XC("path/to/root/dir"));
+
+	sb_pth_append(&sb, XC("executable"));
+	USSERT_STREQUAL(sb.buf, XC("path/to/root/dir/executable"));
+
+	sb_pth_append_at_ws(&sb, XC("file"));
+	USSERT_STREQUAL(sb.buf, XC("path/to/root/dir/file"));
+
+#elif defined(_WIN32)
+	sb_init_ws(&sb, XC("path\\to\\root\\dir"));
+
+	sb_pth_append(&sb, XC("executable"));
+	USSERT_STREQUAL(sb.buf, XC("path\\to\\root\\dir\\executable"));
+
+	sb_pth_append_at_ws(&sb, XC("file"));
+	USSERT_STREQUAL(sb.buf, XC("path\\to\\root\\dir\\file"));
+#endif
+}
+
 TESTDECL_END();
