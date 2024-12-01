@@ -41,10 +41,11 @@ void sb_destroy(struct strbuf *sb)
 xchar *sb_detach(struct strbuf *sb)
 {
 	xchar *ret = sb->buf;
-	uint unused = align_down(sb->cap - sb->len, 8);
+	uint used = sb->len + 1;
+	uint unused = align_down(sb->cap - used, 8);
 
 	if (unused >= 64)
-		ret = xrealloc(sb->buf, sb->len);
+		ret = xrealloc(sb->buf, used);
 
 	sb->len = -1;
 	return ret;
