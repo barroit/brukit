@@ -7,11 +7,12 @@
 
 #include "atexit.h"
 #include "iter.h"
+#include "tercol.h"
 
 int main(void)
 {
 	uint i;
-	ptrdiff_t n = __testdecl_end - __testdecl_begin - 1;
+	uint n = __testdecl_end - __testdecl_begin - 1;
 	unitest_routine_t *func = (typeof(func))__testdecl_begin + 1;
 
 	if (__testdecl_teardown)
@@ -23,5 +24,13 @@ int main(void)
 	idx_for_each(i, n)
 		func[i]();
 
-	return 0;
+	if (!__test_failure_count)
+		exit(0);
+
+	uint percent = (n - __test_failure_count) * 100 / n;
+	const char *color = percent < 40 ? __fmtcol(RED) : __fmtcol(YELLOW);
+
+	fprintf(stderr, "%s%u%% tests passed%s (%u tests failed out of %u)\n",
+		color, percent, __fmtcol(RESET), __test_failure_count, n);
+	exit(128);
 }

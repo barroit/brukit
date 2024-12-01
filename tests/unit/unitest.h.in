@@ -24,6 +24,8 @@ extern unitest_routine_t __testdecl_end[];
 extern unitest_routine_t __testdecl_setup;
 extern unitest_routine_t __testdecl_teardown;
 
+extern uint __test_failure_count;
+
 #define __test_section    __section(".miku_test") __used
 #define __test_decl(name) static __test_section void (*name ## _decl)(void)
 #define __test_def(name)  static void name(void)
@@ -34,6 +36,7 @@ extern unitest_routine_t __testdecl_teardown;
 	__testdecl(__test_ ## name, __test_decl(__test_ ## name))
 
 #define TESTDECL_BEGIN(...) \
+	uint __test_failure_count = 0; \
 	unitest_routine_t __test_section __testdecl_begin[1] = { 0 }; \
 	ADAP_CALL(__testdecl_begin_, ##__VA_ARGS__)
 

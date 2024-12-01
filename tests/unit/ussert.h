@@ -13,11 +13,14 @@
 #include "termas.h"
 #include "xchar.h"
 
+extern uint __test_failure_count;
+
 #define __ERROR_RETURN_ON(x)					\
 do {								\
 	if (x) {						\
 		__tm_error(NULL, TM_FLLN | TM_FUNC,		\
 			   "\nassertion `%s' failed", #x);	\
+		__test_failure_count += 1;			\
 		return;						\
 	}							\
 } while (0)
@@ -36,13 +39,15 @@ do {								\
 int __ussert_strequal(const char *file, int line, const char *func,
 		      const char *expr, const xchar *__s1, const xchar *__s2);
 
-#define __USSERT_STREQUAL(expr, s1, s2) ___USSERT_STREQUAL(expr, s1, s2)
-#define ___USSERT_STREQUAL(expr, s1, s2) \
+#define ___ussert_strequal(expr, s1, s2) \
+	____ussert_strequal(expr, s1, s2)
+
+#define ____ussert_strequal(expr, s1, s2) \
 	__ussert_strequal(__FILE__, __LINE__, __func__, #expr, s1, s2)
 
 #define USSERT_STREQUAL(s1, s2) 				\
 do {								\
-	if (__USSERT_STREQUAL(xc_strcmp(s1, s2), s1, s2))	\
+	if (___ussert_strequal(xc_strcmp(s1, s2), s1, s2))	\
 		return;						\
 } while (0)
 
