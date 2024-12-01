@@ -5,10 +5,9 @@
 
 #include "path.h"
 
+#include <shlobj.h>
 #include <shlwapi.h>
-#include <userenv.h>
 
-#include "calc.h"
 #include "cconv.h"
 #include "termas.h"
 #include "xalloc.h"
@@ -30,13 +29,19 @@ const xchar *pth_home(void)
 
 	if (unlikely(!name)) {
 		int err;
-		DWORD size;
+		wchar_t *buf;
 
-		GetProfilesDirectory(NULL, &size);
-		name = xmalloc(size * sizeof(*name));
-
-		err = !GetProfilesDirectory((xchar *)name, &size);
+		err = SHGetKnownFolderPath(&FOLDERID_Profile, 0, NULL, &buf);
 		BUG_ON(err);
+
+		if (IS_ENABLED(CONFIG_WIDE_CHAR)) {
+			name = (typeof(name))buf;
+		} else {
+			size_t len = conv_wcstombs((char **)&name, buf);
+
+			BUG_ON(len == maxof(len));
+			CoTaskMemFree(buf);
+		}
 	}
 
 	return name;
