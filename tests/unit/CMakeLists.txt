@@ -15,3 +15,4 @@ configure_file(unitest.h.in ${CMAKE_CURRENT_SOURCE_DIR}/unitest.h)
 
 unitest(path path.c)
 unitest(strbuf strbuf.c)
+unitest(init init.c)
