@@ -230,6 +230,6 @@ void sb_pth_to_dirname(struct strbuf *sb)
 {
 	xchar *sep = pth_last_sep(sb->buf);
 
-	sb->len -= sep - sb->buf;
+	sb->len = sep - sb->buf;
 	sb->buf[sb->len] = 0;
 }
