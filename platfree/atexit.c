@@ -6,7 +6,7 @@
 #include "atexit.h"
 
 #include "attr.h"
-#include "constructor.h"
+#include "init.h"
 #include "list.h"
 #include "xalloc.h"
 
@@ -46,7 +46,7 @@ static void atexit_apply(void)
 	}
 }
 
-PROG_CTOR(atexit_chain_init)
+INIT_ROUTINE(atexit_chain_init)
 {
 	atexit(atexit_apply);
 }
