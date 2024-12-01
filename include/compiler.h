@@ -79,7 +79,4 @@
 	(type *)((void *)(x) - __builtin_offsetof(type, memb));	\
 })
 
-#define STROF(x)   __STROF(x)
-#define __STROF(x) #x
-
 #endif /* NG39_COMPILER_H */

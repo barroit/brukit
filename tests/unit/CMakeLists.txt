@@ -9,8 +9,8 @@ if(CONFIG_CC_HAS_TOPLEVEL_REORDER)
   add_compile_options(-fno-toplevel-reorder)
 endif()
 
-set(UT_PTH_TMP ${CMAKE_CURRENT_BINARY_DIR}/.tmp)
-file(MAKE_DIRECTORY ${UT_PTH_TMP})
+set(pth_test_tmp ${CMAKE_CURRENT_BINARY_DIR}/.tmp)
+file(MAKE_DIRECTORY ${pth_test_tmp})
 configure_file(unitest.h.in ${CMAKE_CURRENT_SOURCE_DIR}/unitest.h)
 
 unitest(path path.c)

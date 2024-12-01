@@ -12,8 +12,9 @@
 #include "compiler.h"
 #include "ussert.h"
 
-#define __UT_PTH_TMP    "@UT_PTH_TMP@"
-#define ut_tmpnam(name) __UT_PTH_TMP "/" name "_" STROF(__COUNTER__)
+#define __tmpnam(x)      ___tmpnam(x, __COUNTER__)
+#define ___tmpnam(...)   ____tmpnam(__VA_ARGS__)
+#define ____tmpnam(x, i) "@pth_test_tmp@" "/" x "_" #i
 
 typedef void (*unitest_routine_t)(void);
 
