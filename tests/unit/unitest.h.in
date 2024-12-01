@@ -10,6 +10,7 @@
 
 #include "attr.h"
 #include "compiler.h"
+#include "ussert.h"
 
 #define __UT_PTH_TMP    "@UT_PTH_TMP@"
 #define ut_tmpnam(name) __UT_PTH_TMP "/" name "_" STROF(__COUNTER__)
@@ -35,7 +36,7 @@ extern unitest_routine_t __testdecl_teardown;
 	__func_decl(name); lvalue = name; __func_decl(name)
 
 #define TESTDECL_ROUTINE(name) \
-	__TESTDECL(name, __secvar_decl(name))
+	__TESTDECL(__test_ ## name, __secvar_decl(__test_ ## name))
 
 #define TESTDECL_BEGIN(...) ADAP_CALL(__TESTDECL_BEGIN_, ##__VA_ARGS__)
 

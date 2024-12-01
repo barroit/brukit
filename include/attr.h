@@ -41,4 +41,6 @@
 
 #define __section(x) __attribute__((__section__(x)))
 
+#define __cleanup(x) __attribute__((__cleanup__(x)))
+
 #endif /* NG39_ATTR_H */

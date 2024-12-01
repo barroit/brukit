@@ -12,8 +12,8 @@
 # include <ctype.h>
 # include <string.h>
 #else
-# include <wchar.h>
 # include <wctype.h>
+# include <wchar.h>
 #endif
 
 #define XC(x) __XC(x)
@@ -28,11 +28,13 @@
 #define __strrchr_a   strrchr
 #define __vsnprintf_a vsnprintf
 #define __isspace_a   isspace
+#define __strcmp_a    strcmp
 
 #define __strlen_u    wcslen
 #define __strrchr_u   wcsrchr
 #define __vsnprintf_u vswprintf
 #define __isspace_u   iswspace
+#define __strcmp_u    wcscmp
 
 #ifdef ANSI
 # define __xchar_type _a
@@ -48,5 +50,6 @@
 #define xc_strrchr   __XCHAR_ALIAS(strrchr)
 #define xc_vsnprintf __XCHAR_ALIAS(vsnprintf)
 #define xc_isspace   __XCHAR_ALIAS(isspace)
+#define xc_strcmp    __XCHAR_ALIAS(strcmp)
 
 #endif /* NG39_XCHAR_H */
