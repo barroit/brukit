@@ -9,8 +9,6 @@
 #include <stdlib.h>
 
 #include "attr.h"
-#include "calc.h"
-#include "cconv.h"
 #include "compiler.h"
 #include "termas.h"
 #include "xchar.h"
@@ -24,17 +22,6 @@ do {								\
 	}							\
 } while (0)
 
-#define __ERROR_PRINTF_ON(x, fmt, ...)				\
-({								\
-	int __err = x;						\
-	if (__err) {						\
-		__tm_error(NULL, TM_FLLN | TM_FUNC,		\
-			   "\nassertion `%s' failed" fmt,	\
-			   #x, ##__VA_ARGS__);			\
-	}							\
-	__err;							\
-})
-
 #define MUST_PASS(x) !(x)
 #define MUST_FAIL(x) !!(x)
 
@@ -46,29 +33,17 @@ do {								\
 
 #define USSERT_EQUAL(a, b) __ERROR_RETURN_ON(a != b)
 
-#ifdef ANSI
-#define USSERT_STREQUAL(a, b) 					\
+int __ussert_strequal(const char *file, int line, const char *func,
+		      const char *expr, const xchar *__s1, const xchar *__s2);
+
+#define __USSERT_STREQUAL(expr, s1, s2) ___USSERT_STREQUAL(expr, s1, s2)
+#define ___USSERT_STREQUAL(expr, s1, s2) \
+	__ussert_strequal(__FILE__, __LINE__, __func__, #expr, s1, s2)
+
+#define USSERT_STREQUAL(s1, s2) 				\
 do {								\
-	if (__ERROR_PRINTF_ON(xc_strcmp(a, b) != 0,		\
-			      "\na: %s\nb: %s", a, b))		\
+	if (__USSERT_STREQUAL(xc_strcmp(s1, s2), s1, s2))	\
 		return;						\
 } while (0)
-#else
-#define USSERT_STREQUAL(__a, __b)				\
-do {								\
-	char *a = NULL;						\
-	char *b = NULL;						\
-	int err = 0;						\
-			  					\
-	conv_wcstombs(__a, &a);					\
-	conv_wcstombs(__b, &b);					\
-	err = __ERROR_PRINTF_ON(xc_strcmp(__a, __b) != 0,	\
-				"\na: %s\nb: %s", a, b);	\
-	free(a);						\
-	free(b);						\
-	if (err)						\
-		return;						\
-} while (0)
-#endif
 
 #endif /* NG39_USSERT_H */

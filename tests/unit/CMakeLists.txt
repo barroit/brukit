@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
 function(unitest name)
-  add_executable(test_${name} ${ARGN} main.c)
+  add_executable(test_${name} ${ARGN} ussert.c main.c)
   add_test(NAME api_${name} COMMAND test_${name})
 endfunction()
 
