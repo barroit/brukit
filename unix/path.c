@@ -59,7 +59,7 @@ const char *pth_home(void)
 	static char *name;
 
 	if (unlikely(!name)) {
-		pid_t pid = getpid();
+		uid_t pid = getuid();
 		struct passwd *pwd = getpwuid(pid);
 
 		BUG_ON(!pwd);
