@@ -33,7 +33,7 @@ const xchar *pth_home(void)
 		DWORD size;
 
 		GetProfilesDirectory(NULL, &size);
-		name = xmalloc(size);
+		name = xmalloc(size * sizeof(*name));
 
 		err = !GetProfilesDirectory((xchar *)name, &size);
 		BUG_ON(err);
@@ -51,7 +51,7 @@ const xchar *pth_executable(void)
 		DWORD ret;
 
 retry:
-		name = xmalloc(size);
+		name = xmalloc(size * sizeof(*name));
 		ret = GetModuleFileName(NULL, name, size);
 
 		BUG_ON(ret == 0);
