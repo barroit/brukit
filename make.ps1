@@ -8,7 +8,7 @@
 param
 (
 	[ArgumentCompletions('configure', 'build', `
-			     'all', 'clean', 'distclean', `
+			     'all', 'test', 'clean', 'distclean', `
 			     'menuconfig', 'install', 'uninstall')]
 	[string]$first
 )
@@ -22,7 +22,7 @@ if ($tree -ne $PWD) {
 
 $env:TREE = $tree.Replace('\','/')
 
-$targets = @('configure', 'build', 'all', 'clean', `
+$targets = @('configure', 'build', 'all', 'test', 'clean', `
 	     'distclean', 'menuconfig', 'install', 'uninstall')
 
 if (! $first) {
@@ -65,7 +65,9 @@ if ($target -eq 'build' -or $target -eq 'all') {
 	cmake --build build --parallel
 }
 
-if ($target -eq 'clean') {
+if ($target -eq 'test') {
+	ctest --test-dir build/tests --parallel
+} elseif ($target -eq 'clean') {
 	cmake --build build --target clean
 } elseif ($target -eq 'distclean') {
 	Remove-Item -Recurse -Force -ErrorAction SilentlyContinue`
