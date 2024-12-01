@@ -41,7 +41,7 @@ extern unitest_routine_t __testdecl_teardown;
 #define TESTDECL_BEGIN(...) ADAP_CALL(__TESTDECL_BEGIN_, ##__VA_ARGS__)
 
 #define __TESTDECL_BEGIN \
-	__test_section unitest_routine_t __testdecl_begin[] = { 0 }
+	__test_section unitest_routine_t __testdecl_begin[1] = { 0 }
 
 #define __TESTDECL_BEGIN_0() \
 	__TESTDECL_BEGIN; \
@@ -54,7 +54,7 @@ extern unitest_routine_t __testdecl_teardown;
 #define TESTDECL_END(...) ADAP_CALL(__TESTDECL_END_, ##__VA_ARGS__)
 
 #define __TESTDECL_END \
-	__test_section unitest_routine_t __testdecl_end[] = { 0 }
+	__test_section unitest_routine_t __testdecl_end[1] = { 0 }
 
 #define __TESTDECL_END_0() \
 	__TESTDECL_END; \
