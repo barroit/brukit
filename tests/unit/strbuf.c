@@ -42,18 +42,23 @@ TESTDECL_ROUTINE(sb_printf)
 	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
 	uint __cap;
 
-	sb_printf(&sb, XC("%d\t%.2f\t%p\t%s"), 5, 39.3939f, NULL, XC("foo"));
-	USSERT_STREQUAL(sb.buf, XC("5\t39.39\t(nil)\tfoo"));
+	int int39 = 39;
+	float fp39 = 39.3939f;
+	uint hex39 = 0x3939;
+	const xchar *str39 = XC("miku");
+
+	sb_printf(&sb, XC("%d\t%.2f\t%x\t%s"), int39, fp39, hex39, str39);
+	USSERT_STREQUAL(sb.buf, XC("39\t39.39\t3939\tmiku"));
 	__cap = sb.cap;
 
 	sb_printf_at_ws(&sb,
-			XC("%d\t%.2f\t%p\t%s"), 5, 39.3939f, NULL, XC("foo"));
-	USSERT_STREQUAL(sb.buf, XC("5\t39.39\t(nil)\tfoo"));
+			XC("%d\t%.2f\t%x\t%s"), int39, fp39, hex39, str39);
+	USSERT_STREQUAL(sb.buf, XC("39\t39.39\t3939\tmiku"));
 	USSERT_EQUAL(sb.cap, __cap);
 
 	sb_printf_at(&sb, 9,
-		     XC("%d\t%.2f\t%p\t%s"), 5, 39.3939f, NULL, XC("foo"));
-	USSERT_STREQUAL(sb.buf, XC("5\t39.39\t(5\t39.39\t(nil)\tfoo"));
+		     XC("%d\t%.2f\t%x\t%s"), int39, fp39, hex39, str39);
+	USSERT_STREQUAL(sb.buf, XC("39\t39.39\t39\t39.39\t3939\tmiku"));
 }
 
 TESTDECL_ROUTINE(sb_trim)

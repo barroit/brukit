@@ -55,7 +55,7 @@ do {								\
 			  					\
 	conv_wcstombs(__a, &a);					\
 	conv_wcstombs(__b, &b);					\
-	err = __ERROR_PRINTF_ON(xc_strcmp(a, b) != 0,		\
+	err = __ERROR_PRINTF_ON(xc_strcmp(__a, __b) != 0,	\
 				"\na: %s\nb: %s", a, b);	\
 	free(a);						\
 	free(b);						\
