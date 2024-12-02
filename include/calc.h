@@ -12,7 +12,7 @@
 #include "compiler.h"
 #include "types.h"
 
-#define sizeof_array(x) (sizeof(x) / sizeof((x)[0]) + __must_be_array(x))
+#define sizeof_array(x) (sizeof(x) / sizeof((x)[0]) + __st_array(x))
 
 #define bsizeof(x) (CHAR_BIT * sizeof(x))
 

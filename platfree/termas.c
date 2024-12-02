@@ -286,13 +286,9 @@ out:
 		exit(128);
 	case TM_BUG:
 		abort();
-	case TM_LOG:
-	case TM_WARN:
-	case TM_ERROR:
+	default:
 		return ret;
 	}
-
-	unreachable();
 }
 
 void __die_overflow(const char *file, int line, const char *func,

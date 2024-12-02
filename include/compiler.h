@@ -25,16 +25,18 @@
 
 #define type_is_same(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
 
-#define __must_be_array(x) BUILD_BUG_ON_ZERO(type_is_same(x, &x[0]))
+#define __st_array(x) BUILD_BUG_ON_ZERO(type_is_same(x, &x[0]))
 
-#define __must_be_pow2(x) BUILD_BUG_ON_ZERO(!(x) || ((x) % 2) != 0)
+#define __st_pow2(x) BUILD_BUG_ON_ZERO(!(x) || ((x) % 2) != 0)
+
+#define __st_same_type(a, b) BUILD_BUG_ON_ZERO(!type_is_same(a, b))
 
 #define unreachable __builtin_unreachable
 
 #ifdef HAVE_BUILTIN_ALIGN_DOWN
 # define align_down(m, n) __builtin_align_down(m, n)
 #else
-# define align_down(m, n) (__must_be_pow2(n) + ((m) & ~(uintmax_t)(n - 1)))
+# define align_down(m, n) (__st_pow2(n) + ((m) & ~(uintmax_t)(n - 1)))
 #endif
 
 /*
