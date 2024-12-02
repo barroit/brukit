@@ -18,6 +18,7 @@ struct data {
 
 LIST_HEAD(dl);
 LIST_HEAD(dr);
+
 struct data *rl[DLSIZE];
 struct data *rr[DLSIZE];
 

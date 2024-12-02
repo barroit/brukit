@@ -7,7 +7,7 @@
 
 #include <stdarg.h>
 
-#include "cconv.h"
+#include "charconv.h"
 #include "path.h"
 #include "termas.h"
 #include "xalloc.h"
@@ -178,7 +178,7 @@ static void sanitize_pth_sep(struct strbuf *sb)
 	char *path = (typeof(path))sb->buf;
 
 	if (IS_ENABLED(CONFIG_WIDE_CHAR)) {
-		size_t len = conv_wcstombs(&path, (wchar_t *)sb->buf);
+		size_t len = cc_wcstombs(&path, (wchar_t *)sb->buf);
 
 		if (len == maxof(len)) {
 			__tm_warn(NULL, TM_FUNC,
