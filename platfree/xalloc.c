@@ -36,7 +36,8 @@ static inline void warn_on_exceeds(const char *file, int line,
 	if (likely(size <= ALLOC_MAX))
 		return;
 
-	__termas(file, line, func, TM_WARN, NULL, TM_FLLN | TM_FUNC,
+	__termas(file, line, func,
+		 TM_WARN, NULL, MAS_SHOW_FILE | MAS_SHOW_FUNC,
 		 "allocation of %zu exceeds limit of %zu", size, ALLOC_MAX);
 }
 #else
@@ -49,8 +50,9 @@ static inline void assert_allocated(const char *file, int line,
 	if (likely(ptr))
 		return;
 
-	__termas(file, line, func, TM_FATAL, NULL, TM_FLLN | TM_FUNC,
-		"out of memory (tried to allocate %zu bytes)", size);
+	__termas(file, line, func,
+		 TM_FATAL, NULL, MAS_SHOW_FILE | MAS_SHOW_FUNC,
+		 "out of memory (tried to allocate %zu bytes)", size);
 }
 
 void *__xmalloc(const char *file,
@@ -109,7 +111,7 @@ char *__xstrdup(const char *file,
 		return ptr;
 
 	__termas(file, line, func, TM_FATAL,
-		 strerror(errno), TM_FLLN | TM_FUNC,
+		 strerror(errno), MAS_SHOW_FILE | MAS_SHOW_FUNC,
 		 "failed to duplicate string '%.10s...'", s);
 	unreachable();
 }
@@ -122,7 +124,9 @@ wchar_t *__xwcsdup(const char *file,
 	if (likely(ptr))
 		return ptr;
 
-	__termas(file, line, func, TM_FATAL, strerror(errno),
-		 TM_FLLN | TM_FUNC, "failed to duplicate wide string");
+	__termas(file, line, func,
+		 TM_FATAL, strerror(errno),
+		 MAS_SHOW_FILE | MAS_SHOW_FUNC,
+		 "failed to duplicate wide string");
 	unreachable();
 }

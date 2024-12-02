@@ -18,7 +18,7 @@ extern uint __test_failure_count;
 #define __ERROR_RETURN_ON(x)					\
 do {								\
 	if (x) {						\
-		__tm_error(NULL, TM_FLLN | TM_FUNC,		\
+		__tm_error(NULL, MAS_SHOW_FILE | MAS_SHOW_FUNC,	\
 			   "\nassertion `%s' failed", #x);	\
 		__test_failure_count += 1;			\
 		return;						\
@@ -29,7 +29,7 @@ do {								\
 ({								\
 	int __err = x;						\
 	if (__err) {						\
-		__tm_error(NULL, TM_FLLN | TM_FUNC,		\
+		__tm_error(NULL, MAS_SHOW_FILE | MAS_SHOW_FUNC,	\
 			   "\nassertion `%s' failed" fmt,	\
 			   #x, ##__VA_ARGS__);			\
 	}							\

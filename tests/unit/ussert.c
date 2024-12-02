@@ -30,7 +30,8 @@ int __cold __ussert_strequal(const char *file, int line,
 			goto err_conv_s2;
 	}
 
-	__termas(file, line, func, TM_ERROR, NULL, TM_FLLN | TM_FUNC,
+	__termas(file, line, func,
+		 TM_ERROR, NULL, MAS_SHOW_FILE | MAS_SHOW_FUNC,
 		 "\nassertion `%s' failed\na: %s\nb: %s", expr, s1, s2);
 
 	if (IS_ENABLED(CONFIG_WIDE_CHAR)) {
@@ -45,7 +46,8 @@ err_conv_s2:
 	free(s1);
 err_conv_s1:
 	__termas(file, line, func, TM_ERROR, NULL,
-		 TM_FLLN | TM_FUNC, "\nassertion `%s' failed", expr);
+		 MAS_SHOW_FILE | MAS_SHOW_FUNC,
+		 "\nassertion `%s' failed", expr);
 
 	__test_failure_count += 1;
 	return -1;

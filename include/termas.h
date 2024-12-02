@@ -21,9 +21,9 @@ enum tm_level {
 	TM_BUG,
 };
 
-#define TM_FLLN  (1 << 0)	/* show file name and line number */
-#define TM_FUNC  (1 << 1)	/* show function name */
-#define TM_WROUT (1 << 2)	/* output to stdout */
+#define MAS_SHOW_FILE (1 << 0)	/* show file name and line number */
+#define MAS_SHOW_FUNC (1 << 1)	/* show function name */
+#define MAS_TO_STDOUT (1 << 2)	/* output to stdout */
 
 /*
  * For 'hint' parameter in __warn(), __error(), and __die(). This argument
@@ -36,10 +36,10 @@ enum tm_level {
 
 int __termas(const char *file, int line,
 	     const char *func, enum tm_level level,
-	     const char *hint, u32 flags, const char *fmt, ...);
+	     const char *hint, u32 flags, const char *fmt, ...) __printf(7, 8);
 
 #define __tm_mas(hint, flags, fmt, ...) \
-	___termas(TM_LOG, hint, flags | TM_WROUT, fmt, ##__VA_ARGS__)
+	___termas(TM_LOG, hint, flags | MAS_TO_STDOUT, fmt, ##__VA_ARGS__)
 
 #define __tm_warn(hint, flags, fmt, ...) \
 	___termas(TM_WARN, hint, flags, fmt, ##__VA_ARGS__)

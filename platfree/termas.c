@@ -183,7 +183,8 @@ int __termas(const char *file, int line,
 	}
 
 	if (tag->name) {
-		int show_pos = flags & TM_FLLN || (flags & TM_FUNC);
+		int show_pos = flags & MAS_SHOW_FILE ||
+			       (flags & MAS_SHOW_FUNC);
 		const char *t = cc_use_tercol ? tag->colored : tag->name;
 		size_t len = strlen(t) + !show_pos;
 
@@ -200,17 +201,17 @@ int __termas(const char *file, int line,
 		avail -= size;
 	}
 
-	if (flags & TM_FLLN) {
+	if (flags & MAS_SHOW_FILE) {
 		const char *mas = !cc_use_tercol ? "%s:%d:%s" :
 						   H("%s:%d:%s", BOLD);
 
 		nr = snprintf(&buf[size], avail + 1, mas,
-			      file, line, flags & TM_FUNC ? "" : " ");
+			      file, line, flags & MAS_SHOW_FUNC ? "" : " ");
 		if (!__test_add_buf_size(nr, &size, &avail))
 			goto out;
 	}
 
-	if (flags & TM_FUNC) {
+	if (flags & MAS_SHOW_FUNC) {
 		const char *mas = !cc_use_tercol ? "%s: " : H("%s: ", BOLD);
 
 		nr = snprintf(&buf[size], avail + 1, mas, func);
@@ -264,7 +265,7 @@ int __termas(const char *file, int line,
 out:
 	size = rm_bad_cntrl(buf, size, cap);
 
-	int is_err = !(flags & TM_WROUT);
+	int is_err = !(flags & MAS_TO_STDOUT);
 	int fd = STDERR_FILENO;
 	int ret = -1;
 	FILE *stream = stderr;
@@ -294,7 +295,8 @@ out:
 void __die_overflow(const char *file, int line, const char *func,
 		    uintmax_t a, uintmax_t b, char op, uint size)
 {
-	__termas(file, line, func, TM_FATAL, NULL, TM_FLLN | TM_FUNC,
+	__termas(file, line, func,
+		 TM_FATAL, NULL, MAS_SHOW_FILE | MAS_SHOW_FUNC,
 		 "%" PRIuMAX " %c %" PRIuMAX " overflows in %u-byte",
 		 a, op, b, size);
 	unreachable();

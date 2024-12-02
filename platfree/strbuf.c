@@ -181,7 +181,7 @@ static void sanitize_pth_sep(struct strbuf *sb)
 		size_t len = cc_wcstombs(&path, (wchar_t *)sb->buf);
 
 		if (len == maxof(len)) {
-			__tm_warn(NULL, TM_FUNC,
+			__tm_warn(NULL, MAS_SHOW_FUNC,
 				  "mixed: %d, suffixed: %d", mixed, suffixed);
 			return;
 		}
