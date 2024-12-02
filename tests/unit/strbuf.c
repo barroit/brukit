@@ -26,6 +26,25 @@ TESTDECL_ROUTINE(sb_puts)
 	USSERT_EQUAL(xc_strlen(sb.buf), 6);
 }
 
+TESTDECL_ROUTINE(sb_putc)
+{
+	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
+	uint __cap;
+
+	sb_putc(&sb, XC('a'));
+	USSERT_EQUAL(xc_strlen(sb.buf), 1);
+	__cap = sb.cap;
+
+	sb_putc_at_ws(&sb, XC('b'));
+	USSERT_EQUAL(xc_strlen(sb.buf), 1);
+	USSERT_STREQUAL(sb.buf, XC("b"));
+	USSERT_EQUAL(sb.cap, __cap);
+
+	sb_puts_at(&sb, 0, XC("miku.39"));
+	sb_putc_at(&sb, 4, XC('_'));
+	USSERT_STREQUAL(sb.buf, XC("miku_"));
+}
+
 TESTDECL_ROUTINE(sb_trunc)
 {
 	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;

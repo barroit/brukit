@@ -62,7 +62,7 @@ int __ussert_strequal(const char *file, int line, const char *func,
 
 #define USSERT_STREQUAL(s1, s2) 				\
 do {								\
-	if (___ussert_strequal(xc_strcmp(s1, s2), s1, s2))	\
+	if (___ussert_strequal(xc_strcmp(s1, s2) == 0, s1, s2))	\
 		return;						\
 } while (0)
 
