@@ -6,6 +6,6 @@ mainmenu "$(pg-name)/$(pg-build)-$(pg-arch) $(pg-version) Configuration"
 
 source "lib/Kconfig.build"
 
-source "lib/Kconfig.feat"
+source "lib/Kconfig.feature"
 
 source "lib/Kconfig.debug"
