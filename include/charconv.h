@@ -10,4 +10,10 @@
 
 size_t cc_wcstombs(char **dest, const wchar_t *src);
 
+/*
+ * If the length returned by this function is maxof(size_t), then the dest
+ * buffer must not be passed to free(3).
+ */
+size_t cc_wcstombs_fb(char **dest, const wchar_t *src, const char *fb);
+
 #endif /* NG39_CHARCONV_H */

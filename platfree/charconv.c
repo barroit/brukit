@@ -33,3 +33,16 @@ size_t cc_wcstombs(char **__dest, const wchar_t *__src)
 	*__dest = buf;
 	return size - 1;
 }
+
+size_t cc_wcstombs_fb(char **dest, const wchar_t *src, const char *fb)
+{
+	char *buf;
+
+	size_t len = cc_wcstombs(&buf, src);
+
+	if (unlikely(len == maxof(len)))
+		buf = (char *)fb;
+
+	*dest = buf;
+	return len;
+}
