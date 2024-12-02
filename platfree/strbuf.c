@@ -91,6 +91,35 @@ uint sb_puts_at_ws(struct strbuf *sb, const xchar *s)
 	return sb_puts_at(sb, sb->off.ws, s);
 }
 
+uint sb_putc_at(struct strbuf *sb, uint off, const xchar c)
+{
+	BUG_ON(off > sb->len);
+
+	uint overlap = sb->len - off;
+
+	if (!overlap)
+		sb_grow(sb, 1);
+
+	sb->buf[off] = c;
+	sb->buf[off + 1] = 0;
+	if (!overlap)
+		sb->len += 1;
+	else
+		sb->len -= overlap - 1;
+
+	return 1;
+}
+
+uint sb_putc(struct strbuf *sb, const xchar c)
+{
+	return sb_putc_at(sb, sb->len, c);
+}
+
+uint sb_putc_at_ws(struct strbuf *sb, const xchar c)
+{
+	return sb_putc_at(sb, sb->off.ws, c);
+}
+
 /*
  * Tell the compiler this fmt cannot be NULL.
  */

@@ -36,6 +36,12 @@ uint sb_puts(struct strbuf *sb, const xchar *s);
 
 uint sb_puts_at_ws(struct strbuf *sb, const xchar *s);
 
+uint sb_putc_at(struct strbuf *sb, uint off, const xchar c);
+
+uint sb_putc(struct strbuf *sb, const xchar c);
+
+uint sb_putc_at_ws(struct strbuf *sb, const xchar c);
+
 uint sb_printf_at(struct strbuf *sb,
 		  uint off, const xchar *fmt, ...) __printf(3, 4);
 
