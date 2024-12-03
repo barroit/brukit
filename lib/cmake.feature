@@ -36,6 +36,13 @@ test_cc_builtin("
 #define _GNU_SOURCE
 #include <sys/types.h>
 
+ulong a = 0;
+" HAVE_ULONG)
+
+test_cc_builtin("
+#define _GNU_SOURCE
+#include <sys/types.h>
+
 ssize_t a = 0;
 " HAVE_SSIZE_T)
 

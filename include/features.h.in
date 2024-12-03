@@ -8,5 +8,8 @@
 
 #cmakedefine HAVE_BUILTIN_ALIGN_DOWN
 #cmakedefine HAVE_REALLOCARRAY
+
 #cmakedefine HAVE_UINT
+#cmakedefine HAVE_ULONG
+
 #cmakedefine HAVE_SSIZE_T

@@ -37,7 +37,7 @@ extern const unsigned char _ctype[];
 #define isupper(c)  __isctype(c, _U)
 #define isxdigit(c) __isctype(c, _D|_X)
 
-#define isascii(c) (!((unsigned char)(c) & 0x80))
+#define isascii(c) ((unsigned char)(c) <= 0x7f)
 #define toascii(c) ((unsigned char)(c) & 0x7f)
 
 static inline unsigned char __tolower(unsigned char c)
