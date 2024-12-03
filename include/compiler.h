@@ -31,6 +31,8 @@
 
 #define __st_same_type(a, b) BUILD_BUG_ON_ZERO(!__same_type(a, b))
 
+#define __st_isascii(c) BUILD_BUG_ON_ZERO(((unsigned char)c) & 0x80)
+
 #define unreachable __builtin_unreachable
 
 #ifdef HAVE_BUILTIN_ALIGN_DOWN
