@@ -51,8 +51,8 @@ wchar_t *__xwcsdup(const char *file,
 
 #define REALLOCBUF(x, new, cap)					\
 do {								\
-	BUILD_BUG_ON(type_is_same(*(x), void) ||		\
-		     type_is_same(*(x), void *));		\
+	BUILD_BUG_ON(__same_type(*(x), void) ||			\
+		     __same_type(*(x), void *));		\
 	if (new > cap) {					\
 		cap = lgrow(cap);				\
 		if (cap < new)					\

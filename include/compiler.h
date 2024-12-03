@@ -23,13 +23,13 @@
 
 #define BUILD_BUG_ON_ZERO(x) ((int)(sizeof(struct { int:(-!!(x)); })))
 
-#define type_is_same(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
+#define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
 
-#define __st_array(x) BUILD_BUG_ON_ZERO(type_is_same(x, &x[0]))
+#define __st_array(x) BUILD_BUG_ON_ZERO(__same_type(x, &x[0]))
 
 #define __st_pow2(x) BUILD_BUG_ON_ZERO(!(x) || ((x) % 2) != 0)
 
-#define __st_same_type(a, b) BUILD_BUG_ON_ZERO(!type_is_same(a, b))
+#define __st_same_type(a, b) BUILD_BUG_ON_ZERO(!__same_type(a, b))
 
 #define unreachable __builtin_unreachable
 
@@ -76,8 +76,8 @@
 
 #define container_of(x, type, memb)				\
 ({								\
-	BUILD_BUG_ON(!type_is_same(*(x), void) &&		\
-		     !type_is_same(*(x), ((type *)0)->memb));	\
+	BUILD_BUG_ON(!__same_type(*(x), void) &&		\
+		     !__same_type(*(x), ((type *)0)->memb));	\
 	(type *)((void *)(x) - __builtin_offsetof(type, memb));	\
 })
 
