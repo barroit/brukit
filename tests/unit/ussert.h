@@ -51,6 +51,9 @@ do {								\
 #define USSERT_ZERO(x)    USSERT_EQUAL(x, 0)
 #define USSERT_NONNULL(x) USSERT_DIFF(x, 0)
 
+#define NOT(x) x
+#define USSERT_NOT(x)    __ERROR_RETURN_ON(NOT(x))
+
 int __ussert_strequal(const char *file, int line, const char *func,
 		      const char *expr, const xchar *__s1, const xchar *__s2);
 
