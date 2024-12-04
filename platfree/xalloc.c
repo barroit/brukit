@@ -5,7 +5,6 @@
 
 #include "xalloc.h"
 
-#include <errno.h>
 #include <string.h>
 #include <wchar.h>
 

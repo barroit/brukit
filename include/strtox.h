@@ -8,22 +8,22 @@
 
 #include "types.h"
 
-int stx_strtoull(unsigned long long *res, const xchar *s, uint base);
-int stx_strtoul(ulong *res, const xchar *s, uint base);
-int stx_strtouint(uint *res, const xchar *s, uint base);
+int stx_strtoull(const xchar *s, uint base, unsigned long long *res);
+int stx_strtoul(const xchar *s, uint base, ulong *res);
+int stx_strtouint(const xchar *s, uint base, uint *res);
 
-int stx_strtoll(long long *res, const xchar *s, uint base);
-int stx_strtol(long *res, const xchar *s, uint base);
-int stx_strtoint(int *res, const xchar *s, uint base);
+int stx_strtoll(const xchar *s, uint base, long long *res);
+int stx_strtol(const xchar *s, uint base, long *res);
+int stx_strtoint(const xchar *s, uint base, int *res);
 
-int stx_strtou64(u64 *res, const xchar *s, uint base);
-int stx_strtou32(u32 *res, const xchar *s, uint base);
-int stx_strtou16(u16 *res, const xchar *s, uint base);
-int stx_strtou8(u8 *res, const xchar *s, uint base);
+int stx_strtou64(const xchar *s, uint base, u64 *res);
+int stx_strtou32(const xchar *s, uint base, u32 *res);
+int stx_strtou16(const xchar *s, uint base, u16 *res);
+int stx_strtou8(const xchar *s, uint base, u8 *res);
 
-int stx_strtos64(s64 *res, const xchar *s, uint base);
-int stx_strtos32(s32 *res, const xchar *s, uint base);
-int stx_strtos16(s16 *res, const xchar *s, uint base);
-int stx_strtos8(s8 *res, const xchar *s, uint base);
+int stx_strtos64(const xchar *s, uint base, s64 *res);
+int stx_strtos32(const xchar *s, uint base, s32 *res);
+int stx_strtos16(const xchar *s, uint base, s16 *res);
+int stx_strtos8(const xchar *s, uint base, s8 *res);
 
 #endif /* NG39_STRTOX_H */

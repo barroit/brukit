@@ -6,6 +6,8 @@
 #ifndef NG39_TERMAS_H
 #define NG39_TERMAS_H
 
+#include <errno.h>
+
 #include "attr.h"
 #include "compiler.h"
 #include "types.h"
