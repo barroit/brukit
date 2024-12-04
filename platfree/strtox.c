@@ -70,10 +70,13 @@ static int __strtoull(unsigned long long *__res, const xchar *s, uint base)
 	s = fixup_radix(&base, s);
 	ret = parse_integer(&res, s, base, -1);
 
-	if (ret & STRTOX_OVERFLOW)
-		return -ERANGE;
-	else if (ret == 0 || s[ret] != 0)
-		return -EINVAL;
+	if (ret & STRTOX_OVERFLOW) {
+		errno = ERANGE;
+		return -1;
+	} else if (ret == 0 || s[ret] != 0) {
+		errno = EINVAL;
+		return -1;
+	}
 
 	*__res = res;
 	return 0;
@@ -97,46 +100,54 @@ int stx_strtoll(long long *__res, const xchar *s, uint base)
 		if (err)
 			return err;
 		if ((long long)-res > 0)
-			return -ERANGE;
+			goto err_range;
 		*__res = -res;
 	} else {
 		err = stx_strtoull(&res, s, base);
 		if (err)
 			return err;
 		if ((long long)res < 0)
-			return -ERANGE;
+			goto err_range;
 		*__res = res;
 	}
 
 	return 0;
+
+err_range:
+	errno = ERANGE;
+	return -1;
 }
 
-#define __STRTOU(res, s, base)				\
-({							\
-	unsigned long long __res;			\
-	int ret;					\
-							\
-	ret = stx_strtoull(&__res, s, base);		\
-	if (ret == 0 && __res != (typeof(*(res)))__res)	\
-		ret = -ERANGE;				\
-							\
-	if (ret == 0)					\
-		*res = __res;				\
-	ret;						\
+#define __STRTOU(res, s, base)					\
+({								\
+	unsigned long long __res;				\
+	int ret;						\
+								\
+	ret = stx_strtoull(&__res, s, base);			\
+	if (ret == 0 && __res != (typeof(*(res)))__res)	{	\
+		errno = ERANGE;					\
+		ret = -1;					\
+	}							\
+								\
+	if (ret == 0)						\
+		*res = __res;					\
+	ret;							\
 })
 
-#define __STRTOS(res, s, base)				\
-({							\
-	long long __res;				\
-	int ret;					\
-							\
-	ret = stx_strtoll(&__res, s, base);		\
-	if (ret == 0 && __res != (typeof(*(res)))__res)	\
-		ret = -ERANGE;				\
-							\
-	if (ret == 0)					\
-		*res = __res;				\
-	ret;						\
+#define __STRTOS(res, s, base)					\
+({								\
+	long long __res;					\
+	int ret;						\
+								\
+	ret = stx_strtoll(&__res, s, base);			\
+	if (ret == 0 && __res != (typeof(*(res)))__res)	{	\
+		errno = ERANGE;					\
+		ret = -1;					\
+	}							\
+								\
+	if (ret == 0)						\
+		*res = __res;					\
+	ret;							\
 })
 
 int stx_strtoul(ulong *res, const xchar *s, uint base)
