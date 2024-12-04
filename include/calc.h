@@ -16,14 +16,12 @@
 
 #define bsizeof(x) (CHAR_BIT * sizeof(x))
 
-#define is_signed(x) ((typeof(x))-1 < 0)
-
 /*
  * maxof() accepts any integer type, including constants, variables, and type
  * definitions.
  */
 #define maxof(x) \
-	((UINTMAX_MAX >> is_signed(x)) >> (bsizeof(uintmax_t) - bsizeof(x)))
+	((UINTMAX_MAX >> __signed_type(x)) >> (bsizeof(uintmax_t) - bsizeof(x)))
 
 /*
  * mult_is_overflow() accepts signed values, provided they are not negative.
