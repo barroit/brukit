@@ -25,6 +25,12 @@ struct list_head {
 
 #define LIST_HEAD_INIT(name) { &(name), &(name) }
 
+static inline void list_head_init(struct list_head *head)
+{
+	head->next = head;
+	head->prev = head;
+}
+
 void __cold __noreturn __list_add_report_invalid(const struct list_head *new,
 						 const struct list_head *prev,
 						 const struct list_head *next);
