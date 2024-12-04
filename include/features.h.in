@@ -6,7 +6,9 @@
 #cmakedefine ANSI
 #cmakedefine UNICODE
 
+#cmakedefine HAVE_BUILTIN_ALIGN_UP
 #cmakedefine HAVE_BUILTIN_ALIGN_DOWN
+
 #cmakedefine HAVE_REALLOCARRAY
 
 #cmakedefine HAVE_UINT

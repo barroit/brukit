@@ -37,10 +37,18 @@
 
 #define unreachable __builtin_unreachable
 
+#define alignof __alignof__
+
 #ifdef HAVE_BUILTIN_ALIGN_DOWN
 # define align_down(m, n) __builtin_align_down(m, n)
 #else
 # define align_down(m, n) (__st_pow2(n) + ((m) & ~(uintmax_t)(n - 1)))
+#endif
+
+#ifdef HAVE_BUILTIN_ALIGN_UP
+# define align_up(m, n) __builtin_align_up(m, n)
+#else
+# define align_up(m, n) (__st_pow2(n) + (((m) + (n) - 1) & ~(uintmax_t)(n - 1)))
 #endif
 
 /*

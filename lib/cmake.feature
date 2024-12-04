@@ -15,6 +15,10 @@ int x = __builtin_align_down(8, 4);
 " HAVE_BUILTIN_ALIGN_DOWN)
 
 test_cc_builtin("
+int x = __builtin_align_up(8, 4);
+" HAVE_BUILTIN_ALIGN_UP)
+
+test_cc_builtin("
 #define _GNU_SOURCE
 #include <stdlib.h>
 
