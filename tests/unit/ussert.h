@@ -36,6 +36,9 @@ do {								\
 	__err;							\
 })
 
+#define IS(x)  !(x)
+#define NOT(x) x
+
 #define MUST_PASS(x) !(x)
 #define MUST_FAIL(x) !!(x)
 
@@ -45,14 +48,57 @@ do {								\
 #define USSERT_PASS(x) __ERROR_RETURN_ON(MUST_PASS(x))
 #define USSERT_FAIL(x) __ERROR_RETURN_ON(MUST_FAIL(x))
 
-#define USSERT_EQUAL(a, b) __ERROR_RETURN_ON(MUST_EQUAL(a, b))
-#define USSERT_DIFF(a, b)  __ERROR_RETURN_ON(MUST_DIFF(a, b))
+#define USSERT_ZERO(x)    __ERROR_RETURN_ON(MUST_EQUAL(x, 0))
+#define USSERT_NONNULL(x) __ERROR_RETURN_ON(MUST_DIFF(x, NULL))
 
-#define USSERT_ZERO(x)    USSERT_EQUAL(x, 0)
-#define USSERT_NONNULL(x) USSERT_DIFF(x, 0)
+#define USSERT_IS(x)  __ERROR_RETURN_ON(IS(x))
+#define USSERT_NOT(x) __ERROR_RETURN_ON(NOT(x))
 
-#define NOT(x) x
-#define USSERT_NOT(x)    __ERROR_RETURN_ON(NOT(x))
+#define USSERT_EQUAL(__a, __b) 						\
+do {									\
+	if (__signed_type(__a)) {					\
+		long long a = __a;					\
+		long long b = __b;					\
+									\
+		if (__error_printf_on(MUST_EQUAL(__a, __b),		\
+				      "\na %lld\nb %lld", a, b)) {	\
+			__test_failure_count += 1;			\
+			return;						\
+		}							\
+	} else {							\
+		unsigned long long a = __a;				\
+		unsigned long long b = __b;				\
+									\
+		if (__error_printf_on(MUST_EQUAL(__a, __b),		\
+				      "\na %llu\nb %llu", a, b)) {	\
+			__test_failure_count += 1;			\
+			return;						\
+		}							\
+	}								\
+} while (0)
+
+#define USSERT_DIFF(__a, __b) 						\
+do {									\
+	if (__signed_type(__a)) {					\
+		long long a = __a;					\
+		long long b = __b;					\
+									\
+		if (__error_printf_on(MUST_DIFF(__a, __b),		\
+				      "\na %lld\nb %lld", a, b)) {	\
+			__test_failure_count += 1;			\
+			return;						\
+		}							\
+	} else {							\
+		unsigned long long a = __a;				\
+		unsigned long long b = __b;				\
+									\
+		if (__error_printf_on(MUST_DIFF(__a, __b),		\
+				      "\na %llu\nb %llu", a, b)) {	\
+			__test_failure_count += 1;			\
+			return;						\
+		}							\
+	}								\
+} while (0)
 
 int __ussert_strequal(const char *file, int line, const char *func,
 		      const char *expr, const xchar *__s1, const xchar *__s2);
@@ -63,17 +109,21 @@ int __ussert_strequal(const char *file, int line, const char *func,
 #define ____ussert_strequal(expr, s1, s2) \
 	__ussert_strequal(__FILE__, __LINE__, __func__, #expr, s1, s2)
 
-#define USSERT_STREQUAL(s1, s2) 				\
-do {								\
-	if (___ussert_strequal(xc_strcmp(s1, s2) == 0, s1, s2))	\
-		return;						\
+#define USSERT_STREQUAL(s1, s2) 					\
+do {									\
+	if (___ussert_strequal(xc_strcmp(s1, s2) == 0, s1, s2))	{	\
+		__test_failure_count += 1;				\
+		return;							\
+	}								\
 } while (0)
 
 #define USSERT_PTREQUAL(p1, p2) 				\
 do {								\
 	if (__error_printf_on(MUST_EQUAL(p1, p2),		\
-			      "\na %p\nb %p", p1, p2))		\
+			      "\na %p\nb %p", p1, p2)) {	\
+		__test_failure_count += 1;			\
 		return;						\
+	}							\
 } while (0)
 
 #endif /* NG39_USSERT_H */

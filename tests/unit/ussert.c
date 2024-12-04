@@ -38,8 +38,6 @@ int __cold __ussert_strequal(const char *file, int line,
 		free(s1);
 		free(s2);
 	}
-
-	__test_failure_count += 1;
 	return 1;
 
 err_conv_s2:
@@ -48,7 +46,5 @@ err_conv_s1:
 	__termas(file, line, func, TM_ERROR, NULL,
 		 MAS_SHOW_FILE | MAS_SHOW_FUNC,
 		 "\nassertion `%s' failed", expr);
-
-	__test_failure_count += 1;
 	return -1;
 }
