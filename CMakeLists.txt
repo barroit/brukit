@@ -41,6 +41,10 @@ set(CMAKE_C_COMPILER $ENV{CC})
 string(TOLOWER ${CONFIG_LD_NAME} ld)
 add_link_options(-fuse-ld=${ld})
 
+if(WIN32)
+  add_link_options(-Xlinker /ignore:longsections)
+endif()
+
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_EXTENSIONS true)
 set(CMAKE_C_STANDARD_REQUIRED ON)
