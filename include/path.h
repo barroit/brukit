@@ -30,7 +30,11 @@ int pth_is_abs(const xchar *name) __pure;
 
 xchar *pth_last_sep(const xchar *s) __pure;
 
-int pth_is_dot(const xchar *name) __leaf;
+static inline int pth_is_dot(const xchar *name)
+{
+	return name[0] == '.' &&
+	       (name[1] == 0 || (name[1] == '.' && name[2] == 0));
+}
 
 #ifdef __unix__
 char *delink(const char *name);

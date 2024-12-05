@@ -10,12 +10,6 @@
 #include "xalloc.h"
 #include "xchar.h"
 
-int pth_is_dot(const xchar *name)
-{
-	return name[0] == XC('.') &&
-	       (name[1] == 0 || (name[1] == XC('.') && name[2] == 0));
-}
-
 const xchar *pth_prefix(void)
 {
 	static xchar *name;
