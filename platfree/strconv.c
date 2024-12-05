@@ -40,8 +40,10 @@ size_t mb_wcstombs_fb(char **dest, const wchar_t *src, const char *fb)
 	char *buf;
 	size_t len = mb_wcstombs(&buf, src);
 
-	if (unlikely(len == maxof(len)))
+	if (unlikely(len == maxof(len))) {
 		buf = (char *)fb;
+		len = strlen(buf);
+	}
 
 	*dest = buf;
 	return len;
@@ -77,8 +79,10 @@ size_t wc_mbstowcs_fb(wchar_t **dest, const char *src, const wchar_t *fb)
 	wchar_t *buf;
 	size_t len = wc_mbstowcs(&buf, src);
 
-	if (unlikely(len == maxof(len)))
+	if (unlikely(len == maxof(len))) {
 		buf = (wchar_t *)fb;
+		len = wcslen(buf);
+	}
 
 	*dest = buf;
 	return len;
