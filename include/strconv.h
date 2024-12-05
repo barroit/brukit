@@ -16,4 +16,8 @@ size_t mb_wcstombs(char **__dest, const wchar_t *__src);
  */
 size_t mb_wcstombs_fb(char **dest, const wchar_t *src, const char *fb);
 
+size_t wc_mbstowcs(wchar_t **__dest, const char *__src);
+
+size_t wc_mbstowcs_fb(wchar_t **dest, const char *src, const wchar_t *fb);
+
 #endif /* NG39_CHARCONV_H */
