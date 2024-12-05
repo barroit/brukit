@@ -78,9 +78,7 @@ add_compile_options(-Wall
 		    -Wno-switch
 		    -Wshadow)
 
-add_compile_options(-fshort-wchar
-		    -funsigned-char
-		    -fno-common)
+add_compile_options(-funsigned-char -fno-common)
 
 if(CONFIG_DEBUG_PROG)
   add_compile_options(-fno-omit-frame-pointer)
