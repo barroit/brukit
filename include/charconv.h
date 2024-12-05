@@ -8,7 +8,18 @@
 
 #include <stddef.h>
 
-size_t cc_wcstombs(char **dest, const wchar_t *src);
+enum mbstatus {
+	MB_INVAL = -1,	/* unrecognized character */
+	MB_ASCII = 0,	/* character is ascii */
+	MB_DATA,	/* in the middle of a character */
+	MB_LBT2,	/* character is represented by 2 bytes */
+	MB_LBT3,
+	MB_LBT4,
+};
+
+enum mbstatus mbstatus(char c);
+
+size_t cc_wcstombs(char **__dest, const wchar_t *__src);
 
 /*
  * If the length returned by this function is maxof(size_t), then the dest
