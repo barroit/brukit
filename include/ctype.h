@@ -9,14 +9,14 @@
 #include "attr.h"
 #include "compiler.h"
 
-#define _C  0x01  /* Control character */
-#define _S  0x02  /* Space character */
-#define _P  0x04  /* Punctuation */
-#define _D  0x08  /* Digit */
-#define _U  0x10  /* Uppercase letter */
-#define _L  0x20  /* Lowercase letter */
-#define _X  0x40  /* Hex digit */
-#define _SP 0x80  /* Space (' ') */
+#define _3C  0x01  /* Control character */
+#define _3S  0x02  /* Space character */
+#define _3P  0x04  /* Punctuation */
+#define _3D  0x08  /* Digit */
+#define _3U  0x10  /* Uppercase letter */
+#define _3L  0x20  /* Lowercase letter */
+#define _3X  0x40  /* Hex digit */
+#define _3SP 0x80  /* Space (' ') */
 
 extern const unsigned char _ctype[];
 
@@ -26,16 +26,16 @@ extern const unsigned char _ctype[];
 #define __ismask(x) _ctype[(int)(unsigned char)(x)]
 #define __isctype(x, t) (__ischrrange(x) && (__ismask(x) & (t)) != 0)
 
-#define isalpha(c)  __isctype(c, _U|_L)
-#define isdigit(c)  __isctype(c, _D)
-#define iscntrl(c)  __isctype(c, _C)
-#define isgraph(c)  __isctype(c, _P|_U|_L|_D)
-#define islower(c)  __isctype(c, _L)
-#define isprint(c)  __isctype(c, _P|_U|_L|_D|_SP)
-#define ispunct(c)  __isctype(c, _P)
-#define isspace(c)  __isctype(c, _S)
-#define isupper(c)  __isctype(c, _U)
-#define isxdigit(c) __isctype(c, _D|_X)
+#define isalpha(c)  __isctype(c, _3U|_3L)
+#define isdigit(c)  __isctype(c, _3D)
+#define iscntrl(c)  __isctype(c, _3C)
+#define isgraph(c)  __isctype(c, _3P|_3U|_3L|_3D)
+#define islower(c)  __isctype(c, _3L)
+#define isprint(c)  __isctype(c, _3P|_3U|_3L|_3D|_3SP)
+#define ispunct(c)  __isctype(c, _3P)
+#define isspace(c)  __isctype(c, _3S)
+#define isupper(c)  __isctype(c, _3U)
+#define isxdigit(c) __isctype(c, _3D|_3X)
 
 #define isascii(c) ((unsigned char)(c) <= 0x7f)
 #define toascii(c) ((unsigned char)(c) & 0x7f)

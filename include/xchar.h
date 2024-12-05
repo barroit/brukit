@@ -8,10 +8,10 @@
 
 #include <stdio.h>
 
-#ifdef ANSI
-# include <ctype.h>
-# include <string.h>
-#else
+#include <ctype.h>
+#include <string.h>
+
+#ifdef CONFIG_WIDE_CHAR
 # include <wctype.h>
 # include <wchar.h>
 #endif
