@@ -79,8 +79,11 @@ if ($target -eq 'test') {
 	Remove-Item -Force -ErrorAction SilentlyContinue `
 		    -Path *.manifest
 
-	Remove-Item -Recurse -Force -ErrorAction SilentlyContinue `
-		    -Path (git ls-files --directory -o build)
+	$f = git ls-files --directory -o build
+	if ($f) {
+		Remove-Item -Recurse -Force -ErrorAction SilentlyContinue `
+			    -Path (git ls-files --directory -o build)
+	}
 } elseif ($target -eq 'menuconfig') {
 	python scripts/kconfig.py menuconfig
 }
