@@ -10,6 +10,26 @@
 
 #include "strtox.h"
 
+#if __SIZEOF_LONG__ == 8
+# define __ULONG_MAX      "18446744073709551615"
+# define __ULONG_OVERFLOW "18446744073709551616"
+#elif __SIZEOF_LONG__ == 4
+# define __ULONG_MAX      "4294967295"
+# define __ULONG_OVERFLOW "4294967296"
+#endif
+
+#if __SIZEOF_LONG__ == 8
+# define __LONG_MIN       "-9223372036854775808"
+# define __LONG_MAX       "9223372036854775807"
+# define __LONG_UNDERFLOW "-9223372036854775809"
+# define __LONG_OVERFLOW  "9223372036854775808"
+#elif __SIZEOF_LONG__ == 4
+# define __LONG_MIN       "-2147483648"
+# define __LONG_MAX       "2147483647"
+# define __LONG_UNDERFLOW "-2147483649"
+# define __LONG_OVERFLOW  "2147483648"
+#endif
+
 TESTDECL_BEGIN();
 
 TESTDECL_ROUTINE(strtoull)
@@ -88,11 +108,11 @@ TESTDECL_ROUTINE(strtoul)
 	int err;
 
 	errno = 0;
-	err = stx_strtoul(XC("18446744073709551616"), 10, &res);
+	err = stx_strtoul(XC(__ULONG_OVERFLOW), 10, &res);
 	USSERT_IS(err);
 	USSERT_EQUAL(errno, ERANGE);
 
-	err = stx_strtoul(XC("18446744073709551615"), 10, &res);
+	err = stx_strtoul(XC(__ULONG_MAX), 10, &res);
 	USSERT_NOT(err);
 }
 
@@ -102,19 +122,19 @@ TESTDECL_ROUTINE(strtol)
 	int err;
 
 	errno = 0;
-	err = stx_strtol(XC("9223372036854775808"), 10, &res);
+	err = stx_strtol(XC(__LONG_OVERFLOW), 10, &res);
 	USSERT_IS(err);
 	USSERT_EQUAL(errno, ERANGE);
 
-	err = stx_strtol(XC("9223372036854775807"), 10, &res);
+	err = stx_strtol(XC(__LONG_MAX), 10, &res);
 	USSERT_NOT(err);
 
 	errno = 0;
-	err = stx_strtol(XC("-9223372036854775809"), 10, &res);
+	err = stx_strtol(XC(__LONG_UNDERFLOW), 10, &res);
 	USSERT_IS(err);
 	USSERT_EQUAL(errno, ERANGE);
 
-	err = stx_strtol(XC("-9223372036854775808"), 10, &res);
+	err = stx_strtol(XC(__LONG_MIN), 10, &res);
 	USSERT_NOT(err);
 }
 
