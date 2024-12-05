@@ -8,12 +8,12 @@
 
 #include <stddef.h>
 
-size_t cc_wcstombs(char **__dest, const wchar_t *__src);
+size_t mb_wcstombs(char **__dest, const wchar_t *__src);
 
 /*
  * If the length returned by this function is maxof(size_t), then the dest
  * buffer must not be passed to free(3).
  */
-size_t cc_wcstombs_fb(char **dest, const wchar_t *src, const char *fb);
+size_t mb_wcstombs_fb(char **dest, const wchar_t *src, const char *fb);
 
 #endif /* NG39_CHARCONV_H */

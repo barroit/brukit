@@ -3,14 +3,14 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-#include "charconv.h"
+#include "strconv.h"
 
 #include <wchar.h>
 
 #include "compiler.h"
 #include "xalloc.h"
 
-size_t cc_wcstombs(char **__dest, const wchar_t *__src)
+size_t mb_wcstombs(char **__dest, const wchar_t *__src)
 {
 	char *buf;
 	const wchar_t *str = __src;
@@ -35,11 +35,11 @@ size_t cc_wcstombs(char **__dest, const wchar_t *__src)
 	return size - 1;
 }
 
-size_t cc_wcstombs_fb(char **dest, const wchar_t *src, const char *fb)
+size_t mb_wcstombs_fb(char **dest, const wchar_t *src, const char *fb)
 {
 	char *buf;
 
-	size_t len = cc_wcstombs(&buf, src);
+	size_t len = mb_wcstombs(&buf, src);
 
 	if (unlikely(len == maxof(len)))
 		buf = (char *)fb;

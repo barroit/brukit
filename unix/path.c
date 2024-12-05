@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "charconv.h"
+#include "strconv.h"
 #include "termas.h"
 #include "xalloc.h"
 

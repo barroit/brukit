@@ -8,7 +8,7 @@
 #include <shlobj.h>
 #include <shlwapi.h>
 
-#include "charconv.h"
+#include "strconv.h"
 #include "termas.h"
 #include "xalloc.h"
 #include "xchar.h"
@@ -37,7 +37,7 @@ const xchar *pth_home(void)
 		if (IS_ENABLED(CONFIG_WIDE_CHAR)) {
 			name = (typeof(name))buf;
 		} else {
-			size_t len = cc_wcstombs((char **)&name, buf);
+			size_t len = mb_wcstombs((char **)&name, buf);
 
 			BUG_ON(len == maxof(len));
 			CoTaskMemFree(buf);

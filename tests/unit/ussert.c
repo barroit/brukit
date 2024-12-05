@@ -6,7 +6,7 @@
 #include "ussert.h"
 
 #include "calc.h"
-#include "charconv.h"
+#include "strconv.h"
 
 int __cold __ussert_strequal(const char *file, int line,
 			     const char *func, const char *expr,
@@ -21,11 +21,11 @@ int __cold __ussert_strequal(const char *file, int line,
 	if (IS_ENABLED(CONFIG_WIDE_CHAR)) {
 		size_t len;
 
-		len = cc_wcstombs(&s1, (wchar_t *)__s1);
+		len = mb_wcstombs(&s1, (wchar_t *)__s1);
 		if (len == maxof(len))
 			goto err_conv_s1;
 
-		len = cc_wcstombs(&s2, (wchar_t *)__s2);
+		len = mb_wcstombs(&s2, (wchar_t *)__s2);
 		if (len == maxof(len))
 			goto err_conv_s2;
 	}
