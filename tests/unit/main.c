@@ -34,3 +34,8 @@ int main(void)
 		color, percent, __fmtcol(RESET), __test_failure_count, n);
 	exit(128);
 }
+
+void __free(void *ptr)
+{
+	free(*(void **)ptr);
+}

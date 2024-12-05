@@ -100,18 +100,32 @@ do {									\
 	}								\
 } while (0)
 
-int __ussert_strequal(const char *file, int line, const char *func,
-		      const char *expr, const xchar *__s1, const xchar *__s2);
+int __ussert_strequal(const char *file, int line,
+		      const char *func, const char *expr,
+		      const void *__s1, const void *__s2, int is_ansi);
 
-#define ___ussert_strequal(expr, s1, s2) \
-	____ussert_strequal(expr, s1, s2)
+#define ___ussert_strequal(expr, s1, s2, t) \
+	____ussert_strequal(expr, s1, s2, t)
+#define ____ussert_strequal(expr, s1, s2, t) \
+	__ussert_strequal(__FILE__, __LINE__, __func__, #expr, s1, s2, t)
 
-#define ____ussert_strequal(expr, s1, s2) \
-	__ussert_strequal(__FILE__, __LINE__, __func__, #expr, s1, s2)
+#ifdef CONFIG_WIDE_CHAR
+# define USSERT_STREQUAL USSERT_STREQUAL_U
+#else
+# define USSERT_STREQUAL USSERT_STREQUAL_A
+#endif
 
-#define USSERT_STREQUAL(s1, s2) 					\
+#define USSERT_STREQUAL_A(s1, s2) 					\
 do {									\
-	if (___ussert_strequal(xc_strcmp(s1, s2) == 0, s1, s2))	{	\
+	if (___ussert_strequal(strcmp(s1, s2) == 0, s1, s2, 1)) {	\
+		__test_failure_count += 1;				\
+		return;							\
+	}								\
+} while (0)
+
+#define USSERT_STREQUAL_U(s1, s2) 					\
+do {									\
+	if (___ussert_strequal(wcscmp(s1, s2) == 0, s1, s2, 0)) {	\
 		__test_failure_count += 1;				\
 		return;							\
 	}								\

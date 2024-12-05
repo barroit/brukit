@@ -16,6 +16,8 @@
 #define ___tmpnam(...)   ____tmpnam(__VA_ARGS__)
 #define ____tmpnam(x, i) "@pth_test_tmp@" "/" x "_" #i
 
+void __free(void *ptr);
+
 typedef void (*unitest_routine_t)(void);
 
 extern unitest_routine_t __testdecl_begin[];
