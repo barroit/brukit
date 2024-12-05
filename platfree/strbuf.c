@@ -30,6 +30,11 @@
 	ret;				\
 })
 
+void sb_init(struct strbuf *sb)
+{
+	memset(sb, 0, sizeof(*sb));
+}
+
 void sb_destroy(struct strbuf *sb)
 {
 	free(sb->buf);

@@ -24,6 +24,8 @@ struct strbuf {
 
 #define SB_INIT { 0 }
 
+void sb_init(struct strbuf *sb);
+
 void sb_destroy(struct strbuf *sb);
 
 xchar *sb_detach(struct strbuf *sb);
