@@ -28,19 +28,35 @@ void sb_destroy(struct strbuf *sb);
 
 xchar *sb_detach(struct strbuf *sb);
 
-void sb_trunc(struct strbuf *sb, uint len);
+static inline void sb_trunc(struct strbuf *sb, uint len)
+{
+	sb->len -= len;
+	sb->buf[sb->len] = 0;
+}
 
 uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s);
 
-uint sb_puts(struct strbuf *sb, const xchar *s);
+static inline uint sb_puts(struct strbuf *sb, const xchar *s)
+{
+	return sb_puts_at(sb, sb->len, s);
+}
 
-uint sb_puts_at_ws(struct strbuf *sb, const xchar *s);
+static inline uint sb_puts_at_ws(struct strbuf *sb, const xchar *s)
+{
+	return sb_puts_at(sb, sb->off.ws, s);
+}
 
-uint sb_putc_at(struct strbuf *sb, uint off, const xchar c);
+uint sb_putc_at(struct strbuf *sb, uint off, xchar c);
 
-uint sb_putc(struct strbuf *sb, const xchar c);
+static inline uint sb_putc(struct strbuf *sb, xchar c)
+{
+	return sb_putc_at(sb, sb->len, c);
+}
 
-uint sb_putc_at_ws(struct strbuf *sb, const xchar c);
+static inline uint sb_putc_at_ws(struct strbuf *sb, xchar c)
+{
+	return sb_putc_at(sb, sb->off.ws, c);
+}
 
 uint sb_printf_at(struct strbuf *sb,
 		  uint off, const xchar *fmt, ...) __printf(3, 4);

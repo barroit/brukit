@@ -13,18 +13,21 @@
 #include "xalloc.h"
 #include "xchar.h"
 
-#define DO_SB_PRINTF(__sb, __off, __fmt)			\
-({								\
-	va_list ap[2];						\
-	va_start(ap[0], __fmt);					\
-	va_copy(ap[1], ap[0]);					\
-								\
-	uint ret = __sb_printf_at(__sb, __off, __fmt, ap);	\
-								\
-	va_end(ap[0]);						\
-	va_end(ap[1]);						\
-								\
-	ret;							\
+#define __DO_SB_PRINTF(sb, off, fmt)	\
+({					\
+	va_list ap[2];			\
+	uint ret;			\
+					\
+	va_start(ap[0], fmt);		\
+	va_copy(ap[1], ap[0]);		\
+					\
+	ret = __sb_printf_at(sb, off,	\
+			     fmt, ap);	\
+					\
+	va_end(ap[0]);			\
+	va_end(ap[1]);			\
+					\
+	ret;				\
 })
 
 void sb_destroy(struct strbuf *sb)
@@ -41,16 +44,7 @@ xchar *sb_detach(struct strbuf *sb)
 	if (unused >= 64)
 		ret = xrealloc(sb->buf, used);
 
-	sb->len = -1;
 	return ret;
-}
-
-void sb_trunc(struct strbuf *sb, uint len)
-{
-	BUG_ON(len > sb->len);
-
-	sb->len -= len;
-	sb->buf[sb->len] = 0;
 }
 
 /*
@@ -64,8 +58,6 @@ static inline void sb_grow(struct strbuf *sb, uint new)
 
 uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s)
 {
-	BUG_ON(off > sb->len);
-
 	uint len = xc_strlen(s);
 	uint overlap = sb->len - off;
 
@@ -81,20 +73,8 @@ uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s)
 	return len;
 }
 
-uint sb_puts(struct strbuf *sb, const xchar *s)
-{
-	return sb_puts_at(sb, sb->len, s);
-}
-
-uint sb_puts_at_ws(struct strbuf *sb, const xchar *s)
-{
-	return sb_puts_at(sb, sb->off.ws, s);
-}
-
 uint sb_putc_at(struct strbuf *sb, uint off, const xchar c)
 {
-	BUG_ON(off > sb->len);
-
 	uint overlap = sb->len - off;
 
 	if (!overlap)
@@ -108,16 +88,6 @@ uint sb_putc_at(struct strbuf *sb, uint off, const xchar c)
 		sb->len -= overlap - 1;
 
 	return 1;
-}
-
-uint sb_putc(struct strbuf *sb, const xchar c)
-{
-	return sb_putc_at(sb, sb->len, c);
-}
-
-uint sb_putc_at_ws(struct strbuf *sb, const xchar c)
-{
-	return sb_putc_at(sb, sb->off.ws, c);
 }
 
 /*
@@ -153,17 +123,17 @@ retry:
 
 uint sb_printf_at(struct strbuf *sb, uint off, const xchar *fmt, ...)
 {
-	return DO_SB_PRINTF(sb, off, fmt);
+	return __DO_SB_PRINTF(sb, off, fmt);
 }
 
 uint sb_printf(struct strbuf *sb, const xchar *fmt, ...)
 {
-	return DO_SB_PRINTF(sb, sb->len, fmt);
+	return __DO_SB_PRINTF(sb, sb->len, fmt);
 }
 
 uint sb_printf_at_ws(struct strbuf *sb, const xchar *fmt, ...)
 {
-	return DO_SB_PRINTF(sb, sb->off.ws, fmt);
+	return __DO_SB_PRINTF(sb, sb->off.ws, fmt);
 }
 
 void sb_trim(struct strbuf *sb)
