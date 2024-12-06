@@ -62,4 +62,7 @@ endmenu # Memory allocation
 config ENABLE_TESTING
 	bool "Generate test suite"
 
+config TERMAS_SMALL_BUFFER
+	bool "Use small (1K) buffer in termas report functions"
+
 endmenu # Executable build options

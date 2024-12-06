@@ -8,11 +8,10 @@ menu "Core features"
 config I18N_SUPP
 	bool "Enable i18n support"
 
-config TERMAS_SMALL_BUFFER
-	bool "Use small (1K) buffer in termas report functions"
-
 config TS_SMALL_UNIT
 	bool "Display timestamps in milliseconds"
+
+menu "Character settings"
 
 menuconfig SPEC_ALT_CNTRL
 	bool "Customize control character replacement"
@@ -25,5 +24,11 @@ config ALT_CNTRL
 	default "�"
 
 endif
+
+config LINE_WIDTH
+	int "Default line wrap threshold"
+	default 80
+
+endmenu # Character settings
 
 endmenu # Program features
