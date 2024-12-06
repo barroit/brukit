@@ -8,9 +8,6 @@ menu "Core features"
 config I18N_SUPP
 	bool "Enable i18n support"
 
-config TS_SMALL_UNIT
-	bool "Display timestamps in milliseconds"
-
 menu "Character settings"
 
 menuconfig SPEC_ALT_CNTRL

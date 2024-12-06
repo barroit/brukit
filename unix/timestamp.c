@@ -14,7 +14,7 @@ void ts_mono(struct timespec *ts)
 	BUG_ON(err);
 }
 
-timestamp_t __ts_now(void)
+timestamp_t ts_now(void)
 {
 	struct timespec ts;
 

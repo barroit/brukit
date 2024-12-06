@@ -10,7 +10,7 @@
 #include "calc.h"
 #include "types.h"
 
-timestamp_t __ts_now(void)
+timestamp_t ts_now(void)
 {
 	int err;
 	static u64 freqh;
@@ -42,7 +42,7 @@ timestamp_t __ts_now(void)
 
 void ts_mono(struct timespec *ts)
 {
-	timestamp_t t = __ts_now();
+	timestamp_t t = ts_now();
 
 	ts->tv_sec = t / 10000000000;
 	ts->tv_nsec = t % 10000000000;

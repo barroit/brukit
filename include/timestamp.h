@@ -11,13 +11,7 @@
 
 typedef uint64_t timestamp_t;
 
-timestamp_t __ts_now(void);
-
-#ifdef CONFIG_TS_SMALL_UNIT
-# define ts_now (__ts_now() / (1000 * 1000))
-#else
-# define ts_now __ts_now()
-#endif
+timestamp_t ts_now(void);
 
 void ts_mono(struct timespec *ts);
 
