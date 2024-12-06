@@ -6,16 +6,17 @@
 #ifndef	NG39_ATTR_H
 #define NG39_ATTR_H
 
-#define __unused __attribute__((__unused__))
+#define __maybe_unused __attribute__((__unused__))
 
 #define __noreturn __attribute__((__noreturn__))
 
 #define __pure __attribute__((__pure__))
 
-#define __nonnone(...) __attribute__((__nonnull__(__VA_ARGS__)))
+#undef __nonnull
+#define __nonnull(...) __attribute__((__nonnull__(__VA_ARGS__)))
 
 #ifdef ANSI
-# define __printf(m, n) __attribute__((__format__(__printf__, m, n))) __nonnone(m)
+# define __printf(m, n) __attribute__((__format__(__printf__, m, n))) __nonnull(m)
 #else
 # define __printf(m, n)
 #endif
