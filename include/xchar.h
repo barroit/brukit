@@ -58,7 +58,12 @@
 #define ___XCHAR_ALIAS(...)   ____XCHAR_ALIAS(__VA_ARGS__)
 #define ____XCHAR_ALIAS(x, t) x ## t
 
+/*
+ * Returns the exact length of a UTF-8 string in characters, independent of
+ * the locale.
+ */
 #define xc_mbslen    __XCHAR_ALIAS(__mbslen)
+
 #define xc_strchrnul __XCHAR_ALIAS(__strchrnul)
 #define xc_strcmp    __XCHAR_ALIAS(__strcmp)
 #define xc_strdup    __XCHAR_ALIAS(__strdup)

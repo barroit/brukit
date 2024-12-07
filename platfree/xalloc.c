@@ -115,7 +115,7 @@ char *__strdup_x(const char *file,
 	unreachable();
 }
 
-wchar_t *__xwcsdup_x(const char *file,
+wchar_t *__wcsdup_x(const char *file,
 		    int line, const char *func, const wchar_t *s)
 {
 	wchar_t *ptr = wcsdup(s);

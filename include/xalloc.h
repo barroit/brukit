@@ -47,7 +47,7 @@ void *__reallocarray_x(const char *file, int line,
 char *__strdup_x(const char *file,
 		 int line, const char *func, const char *s);
 
-wchar_t *__xwcsdup_x(const char *file,
+wchar_t *__wcsdup_x(const char *file,
 		    int line, const char *func, const wchar_t *s);
 
 #define REALLOCBUF(x, new, cap)					\

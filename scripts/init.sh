@@ -7,7 +7,7 @@ if [[ $TREE != $PWD ]]; then
 	exit 1
 fi
 
-source scripts/libutil
+source scripts/libutil.sh
 
 section()
 {

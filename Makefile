@@ -63,4 +63,4 @@ $(args):
 .PHONY: $(scripts)
 
 $(scripts):
-	@$@ $(args)
+	@bash $@ $(args)
