@@ -44,4 +44,6 @@
 
 #define __cleanup(x) __attribute__((__cleanup__(x)))
 
+#define __malloc __attribute__((__malloc__))
+
 #endif /* NG39_ATTR_H */
