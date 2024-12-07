@@ -5,7 +5,7 @@
 
 #include "mbctype.h"
 
-unsigned char _mbctype[] = {
+unsigned char _39mbctype[] = {
 	[0x00 ... 0x7F] = _9A,
 	[0x80 ... 0xBF] = _9B,
 	[0xC0 ... 0xDF] = _9C,

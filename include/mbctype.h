@@ -6,7 +6,7 @@
 #ifndef NG39_MBTYPE_H
 #define NG39_MBTYPE_H
 
-extern unsigned char _mbctype[];
+extern unsigned char _39mbctype[];
 
 enum mbctype {
 	_9A,   /* 1-byte */
@@ -16,7 +16,7 @@ enum mbctype {
 	_9CB,  /* continuation bytes */
 };
 
-#define __ismbctype(c, t) (_mbctype[(int)(unsigned char)(c)] == t)
+#define __ismbctype(c, t) (_39mbctype[(int)(unsigned char)(c)] == t)
 
 #define ismb1(c) __ismbctype(c, _9A)
 #define ismb2(c) __ismbctype(c, _9B)
