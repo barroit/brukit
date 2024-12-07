@@ -16,13 +16,14 @@ void *reallocarray(void *ptr, size_t nmemb, size_t size) __warn_unused_result;
 #endif
 
 #ifdef CONFIG_PANIC_NOMEM
-# define __xalloc(fn, ...)  __x##fn(__FILE__, __LINE__, __func__, __VA_ARGS__)
-# define xmalloc(...)       __xalloc(malloc, __VA_ARGS__)
-# define xcalloc(...)       __xalloc(calloc, __VA_ARGS__)
-# define xrealloc(...)      __xalloc(realloc, __VA_ARGS__)
-# define xreallocarray(...) __xalloc(reallocarray, __VA_ARGS__)
-# define xstrdup(...)       __xalloc(strdup, __VA_ARGS__)
-# define xwcsdup(...)       __xalloc(wcsdup, __VA_ARGS__)
+# define __xalloc(name, ...) \
+	 name ## _x(__FILE__, __LINE__, __func__, __VA_ARGS__)
+# define xmalloc(...)       __xalloc(__malloc, __VA_ARGS__)
+# define xcalloc(...)       __xalloc(__calloc, __VA_ARGS__)
+# define xrealloc(...)      __xalloc(__realloc, __VA_ARGS__)
+# define xreallocarray(...) __xalloc(__reallocarray, __VA_ARGS__)
+# define xstrdup(...)       __xalloc(__strdup, __VA_ARGS__)
+# define xwcsdup(...)       __xalloc(__wcsdup, __VA_ARGS__)
 #else
 # define xmalloc       malloc
 # define xcalloc       calloc
@@ -31,23 +32,23 @@ void *reallocarray(void *ptr, size_t nmemb, size_t size) __warn_unused_result;
 # define xstrdup       strdup
 #endif
 
-void *__xmalloc(const char *file,
-		int line, const char *func, size_t size);
+void *__malloc_x(const char *file,
+		 int line, const char *func, size_t size);
 
-void *__xcalloc(const char *file,
-		int line, const char *func, size_t nmemb, size_t size);
+void *__calloc_x(const char *file,
+		 int line, const char *func, size_t nmemb, size_t size);
 
-void *__xrealloc(const char *file,
-		 int line, const char *func, void *ptr, size_t size);
+void *__realloc_x(const char *file,
+		  int line, const char *func, void *ptr, size_t size);
 
-void *__xreallocarray(const char *file, int line,
-		      const char *func, void *ptr, size_t nmemb, size_t size);
+void *__reallocarray_x(const char *file, int line,
+		       const char *func, void *ptr, size_t nmemb, size_t size);
 
-char *__xstrdup(const char *file,
-		int line, const char *func, const char *s);
+char *__strdup_x(const char *file,
+		 int line, const char *func, const char *s);
 
-wchar_t *__xwcsdup(const char *file,
-		   int line, const char *func, const wchar_t *s);
+wchar_t *__xwcsdup_x(const char *file,
+		    int line, const char *func, const wchar_t *s);
 
 #define REALLOCBUF(x, new, cap)					\
 do {								\

@@ -54,8 +54,8 @@ static inline void assert_allocated(const char *file, int line,
 		 "out of memory (tried to allocate %zu bytes)", size);
 }
 
-void *__xmalloc(const char *file,
-		int line, const char *func, size_t size)
+void *__malloc_x(const char *file,
+		 int line, const char *func, size_t size)
 {
 	void *ptr;
 
@@ -66,8 +66,8 @@ void *__xmalloc(const char *file,
 	return ptr;
 }
 
-void *__xcalloc(const char *file,
-		int line, const char *func, size_t nmemb, size_t size)
+void *__calloc_x(const char *file,
+		 int line, const char *func, size_t nmemb, size_t size)
 {
 	void *ptr;
 	size_t n = st_mult(nmemb, size);
@@ -79,8 +79,8 @@ void *__xcalloc(const char *file,
 	return ptr;
 }
 
-void *__xrealloc(const char *file,
-		 int line, const char *func, void *ptr, size_t size)
+void *__realloc_x(const char *file,
+		  int line, const char *func, void *ptr, size_t size)
 {
 	warn_on_exceeds(file, line, func, size);
 	ptr = realloc(ptr, size);
@@ -89,8 +89,8 @@ void *__xrealloc(const char *file,
 	return ptr;
 }
 
-void *__xreallocarray(const char *file, int line,
-		      const char *func, void *ptr, size_t nmemb, size_t size)
+void *__reallocarray_x(const char *file, int line,
+		       const char *func, void *ptr, size_t nmemb, size_t size)
 {
 	size_t n = st_mult(nmemb, size);
 
@@ -101,8 +101,8 @@ void *__xreallocarray(const char *file, int line,
 	return ptr;
 }
 
-char *__xstrdup(const char *file,
-		int line, const char *func, const char *s)
+char *__strdup_x(const char *file,
+		 int line, const char *func, const char *s)
 {
 	char *ptr = strdup(s);
 
@@ -115,8 +115,8 @@ char *__xstrdup(const char *file,
 	unreachable();
 }
 
-wchar_t *__xwcsdup(const char *file,
-		   int line, const char *func, const wchar_t *s)
+wchar_t *__xwcsdup_x(const char *file,
+		    int line, const char *func, const wchar_t *s)
 {
 	wchar_t *ptr = wcsdup(s);
 
