@@ -15,7 +15,7 @@ size_t mb_wcstombs(char **__dest, const wchar_t *__src)
 	char *buf;
 	const wchar_t *str = __src;
 
-	mbstate_t ps;
+	mbstate_t ps = { 0 };
 	size_t size = wcsrtombs(NULL, &str, 0, &ps);
 
 	if (unlikely(size == maxof(size)))
@@ -54,7 +54,7 @@ size_t wc_mbstowcs(wchar_t **__dest, const char *__src)
 	wchar_t *buf;
 	const char *str = __src;
 
-	mbstate_t ps;
+	mbstate_t ps = { 0 };
 	size_t size = mbsrtowcs(NULL, &str, 0, &ps);
 
 	if (unlikely(size == maxof(size)))
