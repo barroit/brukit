@@ -21,7 +21,7 @@
 
 #define BUILD_BUG_ON(x) static_assert(!(x), "must not be " #x)
 
-#define BUILD_BUG_ON_ZERO(x) ((int)(sizeof(struct { int:(-!!(x)); })))
+#define BUILD_BUG_ON_ZERO(x) (sizeof(struct { int:(-!!(x)); }) & 0)
 
 #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
 
@@ -36,6 +36,8 @@
 #define __st_isascii(c) BUILD_BUG_ON_ZERO(((unsigned char)c) & 0x80)
 
 #define unreachable __builtin_unreachable
+
+#define popcount __builtin_popcount
 
 #define alignof __alignof__
 
