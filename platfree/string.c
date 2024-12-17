@@ -12,8 +12,8 @@ size_t __mbslen(const char *s)
 	size_t len = 0;
 
 	while (*s) {
-		len += _39mbctype[(int)(unsigned char)*s];
-		s++;
+		s += _39mbctype[(int)(unsigned char)*s];
+		len++;
 	}
 
 	return len;
