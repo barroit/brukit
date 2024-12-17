@@ -102,12 +102,12 @@ int __ussert_strequal(const char *file, int line,
 	__ussert_strequal(__FILE__, __LINE__, __func__, #expr, s1, s2, t)
 
 #ifdef CONFIG_WIDE_CHAR
-# define USSERT_STREQUAL USSERT_STREQUAL_U
+# define USSERT_STREQUAL USSERT_STREQUAL_WC
 #else
-# define USSERT_STREQUAL USSERT_STREQUAL_A
+# define USSERT_STREQUAL USSERT_STREQUAL_MB
 #endif
 
-#define USSERT_STREQUAL_A(s1, s2) 					\
+#define USSERT_STREQUAL_MB(s1, s2) 					\
 do {									\
 	if (___ussert_strequal(strcmp(s1, s2) == 0, s1, s2, 1)) {	\
 		__test_failure_count += 1;				\
@@ -115,7 +115,7 @@ do {									\
 	}								\
 } while (0)
 
-#define USSERT_STREQUAL_U(s1, s2) 					\
+#define USSERT_STREQUAL_WC(s1, s2) 					\
 do {									\
 	if (___ussert_strequal(wcscmp(s1, s2) == 0, s1, s2, 0)) {	\
 		__test_failure_count += 1;				\
