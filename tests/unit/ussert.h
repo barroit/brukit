@@ -45,6 +45,12 @@ do {								\
 #define MUST_EQUAL(a, b) a != b
 #define MUST_DIFF(a, b)  a == b
 
+#define MUST_LT(a, b) a >= b
+#define MUST_GT(a, b) a <= b
+
+#define MUST_LE(a, b) a > b
+#define MUST_GE(a, b) a < b
+
 #define USSERT_PASS(x) __ERROR_RETURN_ON(MUST_PASS(x))
 #define USSERT_FAIL(x) __ERROR_RETURN_ON(MUST_FAIL(x))
 
@@ -54,13 +60,13 @@ do {								\
 #define USSERT_IS(x)  __ERROR_RETURN_ON(IS(x))
 #define USSERT_NOT(x) __ERROR_RETURN_ON(NOT(x))
 
-#define USSERT_EQUAL(__a, __b) 						\
+#define __USSERT_INTCMP(__a, __b, expr) 				\
 do {									\
 	if (__signed_type(__a)) {					\
 		long long a = __a;					\
 		long long b = __b;					\
 									\
-		if (__error_printf_on(MUST_EQUAL(__a, __b),		\
+		if (__error_printf_on(MUST_ ## expr,			\
 				      "\na %lld\nb %lld", a, b)) {	\
 			__test_failure_count += 1;			\
 			return;						\
@@ -69,7 +75,7 @@ do {									\
 		unsigned long long a = __a;				\
 		unsigned long long b = __b;				\
 									\
-		if (__error_printf_on(MUST_EQUAL(__a, __b),		\
+		if (__error_printf_on(MUST_ ## expr,			\
 				      "\na %llu\nb %llu", a, b)) {	\
 			__test_failure_count += 1;			\
 			return;						\
@@ -77,28 +83,14 @@ do {									\
 	}								\
 } while (0)
 
-#define USSERT_DIFF(__a, __b) 						\
-do {									\
-	if (__signed_type(__a)) {					\
-		long long a = __a;					\
-		long long b = __b;					\
-									\
-		if (__error_printf_on(MUST_DIFF(__a, __b),		\
-				      "\na %lld\nb %lld", a, b)) {	\
-			__test_failure_count += 1;			\
-			return;						\
-		}							\
-	} else {							\
-		unsigned long long a = __a;				\
-		unsigned long long b = __b;				\
-									\
-		if (__error_printf_on(MUST_DIFF(__a, __b),		\
-				      "\na %llu\nb %llu", a, b)) {	\
-			__test_failure_count += 1;			\
-			return;						\
-		}							\
-	}								\
-} while (0)
+#define USSERT_EQUAL(a, b) __USSERT_INTCMP(a, b, EQUAL(a, b))
+#define USSERT_DIFF(a, b)  __USSERT_INTCMP(a, b, DIFF(a, b))
+
+#define USSERT_LT(a, b) __USSERT_INTCMP(a, b, LT(a, b))
+#define USSERT_GT(a, b) __USSERT_INTCMP(a, b, GT(a, b))
+
+#define USSERT_LE(a, b) __USSERT_INTCMP(a, b, LE(a, b))
+#define USSERT_GE(a, b) __USSERT_INTCMP(a, b, GE(a, b))
 
 int __ussert_strequal(const char *file, int line,
 		      const char *func, const char *expr,
