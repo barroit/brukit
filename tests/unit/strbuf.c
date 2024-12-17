@@ -15,15 +15,15 @@ TESTDECL_ROUTINE(sb_puts)
 	uint __cap;
 
 	sb_puts(&sb, XC("miku"));
-	USSERT_EQUAL(xc_strlen(sb.buf), 4);
+	USSERT_EQ(xc_strlen(sb.buf), 4);
 	__cap = sb.cap;
 
 	sb_puts_at_ws(&sb, XC("miku39"));
-	USSERT_EQUAL(xc_strlen(sb.buf), 6);
-	USSERT_EQUAL(sb.cap, __cap);
+	USSERT_EQ(xc_strlen(sb.buf), 6);
+	USSERT_EQ(sb.cap, __cap);
 
 	sb_puts_at(&sb, 2, XC("miku"));
-	USSERT_EQUAL(xc_strlen(sb.buf), 6);
+	USSERT_EQ(xc_strlen(sb.buf), 6);
 }
 
 TESTDECL_ROUTINE(sb_putc)
@@ -32,13 +32,13 @@ TESTDECL_ROUTINE(sb_putc)
 	uint __cap;
 
 	sb_putc(&sb, XC('a'));
-	USSERT_EQUAL(xc_strlen(sb.buf), 1);
+	USSERT_EQ(xc_strlen(sb.buf), 1);
 	__cap = sb.cap;
 
 	sb_putc_at_ws(&sb, XC('b'));
-	USSERT_EQUAL(xc_strlen(sb.buf), 1);
+	USSERT_EQ(xc_strlen(sb.buf), 1);
 	USSERT_STREQUAL(sb.buf, XC("b"));
-	USSERT_EQUAL(sb.cap, __cap);
+	USSERT_EQ(sb.cap, __cap);
 
 	sb_puts_at(&sb, 0, XC("miku.39"));
 	sb_putc_at(&sb, 4, XC('_'));
@@ -74,7 +74,7 @@ TESTDECL_ROUTINE(sb_printf)
 	sb_printf_at_ws(&sb,
 			XC("%d\t%.2f\t%x\t%s"), int39, fp39, hex39, str39);
 	USSERT_STREQUAL(sb.buf, XC("39\t39.39\t3939\tmiku"));
-	USSERT_EQUAL(sb.cap, __cap);
+	USSERT_EQ(sb.cap, __cap);
 
 	sb_printf_at(&sb, 9,
 		     XC("%d\t%.2f\t%x\t%s"), int39, fp39, hex39, str39);
@@ -112,7 +112,7 @@ TESTDECL_ROUTINE(sb_off_ws)
 	sb_init_ws(&sb, XC("path/to/root/dir/"));
 
 	USSERT_STREQUAL(sb.buf, XC("path/to/root/dir/"));
-	USSERT_EQUAL(sb.off.ws, xc_strlen(XC("path/to/root/dir/")));
+	USSERT_EQ(sb.off.ws, xc_strlen(XC("path/to/root/dir/")));
 
 	sb_puts(&sb, XC("executable"));
 	USSERT_STREQUAL(sb.buf, XC("path/to/root/dir/executable"));

@@ -20,17 +20,17 @@ TESTDECL_ROUTINE(wcstombs)
 	char __cleanup(__free) *__res;
 	size_t len = mb_wcstombs(&__res, L"ミク");
 
-	USSERT_EQUAL(len, strlen("ミク"));
+	USSERT_EQ(len, strlen("ミク"));
 	USSERT_STREQUAL_MB(__res, "ミク");
 
 	char *res;
 	wchar_t eseq[] = { L'ミ', 0xD800, L'ク', 0 };
 
 	len = mb_wcstombs(&res, eseq);
-	USSERT_EQUAL(len, maxof(len));
+	USSERT_EQ(len, maxof(len));
 
 	len = mb_wcstombs_fb(&res, eseq, "���");
-	USSERT_EQUAL(len, strlen("���"));
+	USSERT_EQ(len, strlen("���"));
 	USSERT_STREQUAL_MB(res, "���");
 }
 
@@ -39,7 +39,7 @@ TESTDECL_ROUTINE(mbstowcs)
 	wchar_t __cleanup(__free) *__res;
 	size_t len = wc_mbstowcs(&__res, "ミク");
 
-	USSERT_EQUAL(len, wcslen(L"ミク"));
+	USSERT_EQ(len, wcslen(L"ミク"));
 	USSERT_STREQUAL_WC(__res, L"ミク");
 
 	wchar_t *res;
@@ -51,10 +51,10 @@ TESTDECL_ROUTINE(mbstowcs)
 	};
 
 	len = wc_mbstowcs(&res, eseq);
-	USSERT_EQUAL(len, maxof(len));
+	USSERT_EQ(len, maxof(len));
 
 	len = wc_mbstowcs_fb(&res, eseq, L"���");
-	USSERT_EQUAL(len, wcslen(L"���"));
+	USSERT_EQ(len, wcslen(L"���"));
 	USSERT_STREQUAL_WC(res, L"���");
 }
 

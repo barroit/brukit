@@ -64,13 +64,13 @@ TESTDECL_ROUTINE(for_each_entry)
 	struct data *d;
 
 	list_for_each_entry(d, &dl, list) {
-		USSERT_EQUAL(d->val, i);
+		USSERT_EQ(d->val, i);
 		i -= 1;
 	}
 
 	list_for_each_entry(d, &dr, list) {
 		i += 1;
-		USSERT_EQUAL(d->val, i);
+		USSERT_EQ(d->val, i);
 	}
 }
 

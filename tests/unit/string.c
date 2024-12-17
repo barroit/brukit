@@ -16,16 +16,16 @@ TESTDECL_ROUTINE(__mbslen)
 	size_t len;
 	
 	len = __mbslen("ミクミク");
-	USSERT_EQUAL(len, 4);
+	USSERT_EQ(len, 4);
 
 	len = __mbslen("mikumiku");
-	USSERT_EQUAL(len, 8);
+	USSERT_EQ(len, 8);
 
 	len = __mbslen("");
-	USSERT_EQUAL(len, 0);
+	USSERT_EQ(len, 0);
 
 	len = __mbslen("^");
-	USSERT_EQUAL(len, 1);
+	USSERT_EQ(len, 1);
 }
 
 TESTDECL_ROUTINE(__mbtowc)

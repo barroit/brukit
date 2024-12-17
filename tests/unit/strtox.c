@@ -40,25 +40,25 @@ TESTDECL_ROUTINE(strtoull)
 	err1 = stx_strtoull(XC("3939"), 10, &res1);
 	err2 = stx_strtoull(XC("3939"), 0, &res2);
 	USSERT_NOT(err1 || err2);
-	USSERT_EQUAL(res1, 3939);
-	USSERT_EQUAL(res2, 3939);
+	USSERT_EQ(res1, 3939);
+	USSERT_EQ(res2, 3939);
 
 	err1 = stx_strtoull(XC("3939"), 16, &res1);
 	err2 = stx_strtoull(XC("0x3939"), 0, &res2);
 	USSERT_NOT(err1 || err2);
-	USSERT_EQUAL(res1, 0x3939);
-	USSERT_EQUAL(res2, 0x3939);
+	USSERT_EQ(res1, 0x3939);
+	USSERT_EQ(res2, 0x3939);
 
 	err1 = stx_strtoull(XC("0101"), 8, &res1);
 	err2 = stx_strtoull(XC("0101"), 0, &res2);
 	USSERT_NOT(err1 || err2);
-	USSERT_EQUAL(res1, 0101);
-	USSERT_EQUAL(res2, 0101);
+	USSERT_EQ(res1, 0101);
+	USSERT_EQ(res2, 0101);
 
 	errno = 0;
 	err = stx_strtoull(XC("0101x"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, EINVAL);
+	USSERT_EQ(errno, EINVAL);
 
 	err = stx_strtoull(XC("+0101"), 10, &res);
 	USSERT_NOT(err);
@@ -66,16 +66,16 @@ TESTDECL_ROUTINE(strtoull)
 	errno = 0;
 	err = stx_strtoull(XC("-0101"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, EINVAL);
+	USSERT_EQ(errno, EINVAL);
 
 	errno = 0;
 	err = stx_strtoull(XC("18446744073709551616"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtoull(XC("18446744073709551615"), 10, &res);
 	USSERT_NOT(err);
-	USSERT_EQUAL(res, ULLONG_MAX);
+	USSERT_EQ(res, ULLONG_MAX);
 }
 
 TESTDECL_ROUTINE(strtoll)
@@ -86,20 +86,20 @@ TESTDECL_ROUTINE(strtoll)
 	errno = 0;
 	err = stx_strtoll(XC("9223372036854775808"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtoll(XC("9223372036854775807"), 10, &res);
 	USSERT_NOT(err);
-	USSERT_EQUAL(res, LLONG_MAX);
+	USSERT_EQ(res, LLONG_MAX);
 
 	errno = 0;
 	err = stx_strtoll(XC("-9223372036854775809"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtoll(XC("-9223372036854775808"), 10, &res);
 	USSERT_NOT(err);
-	USSERT_EQUAL(res, LLONG_MIN);
+	USSERT_EQ(res, LLONG_MIN);
 }
 
 TESTDECL_ROUTINE(strtoul)
@@ -110,7 +110,7 @@ TESTDECL_ROUTINE(strtoul)
 	errno = 0;
 	err = stx_strtoul(XC(__ULONG_OVERFLOW), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtoul(XC(__ULONG_MAX), 10, &res);
 	USSERT_NOT(err);
@@ -124,7 +124,7 @@ TESTDECL_ROUTINE(strtol)
 	errno = 0;
 	err = stx_strtol(XC(__LONG_OVERFLOW), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtol(XC(__LONG_MAX), 10, &res);
 	USSERT_NOT(err);
@@ -132,7 +132,7 @@ TESTDECL_ROUTINE(strtol)
 	errno = 0;
 	err = stx_strtol(XC(__LONG_UNDERFLOW), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtol(XC(__LONG_MIN), 10, &res);
 	USSERT_NOT(err);
@@ -146,7 +146,7 @@ TESTDECL_ROUTINE(strtouint)
 	errno = 0;
 	err = stx_strtouint(XC("4294967296"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtouint(XC("4294967295"), 10, &res);
 	USSERT_NOT(err);
@@ -160,7 +160,7 @@ TESTDECL_ROUTINE(strtoint)
 	errno = 0;
 	err = stx_strtoint(XC("2147483648"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtoint(XC("2147483647"), 10, &res);
 	USSERT_NOT(err);
@@ -168,7 +168,7 @@ TESTDECL_ROUTINE(strtoint)
 	errno = 0;
 	err = stx_strtoint(XC("-2147483649"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtoint(XC("-2147483648"), 10, &res);
 	USSERT_NOT(err);
@@ -182,7 +182,7 @@ TESTDECL_ROUTINE(strtou64)
 	errno = 0;
 	err = stx_strtou64(XC("18446744073709551616"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtou64(XC("18446744073709551615"), 10, &res);
 	USSERT_NOT(err);
@@ -196,7 +196,7 @@ TESTDECL_ROUTINE(strtos64)
 	errno = 0;
 	err = stx_strtos64(XC("9223372036854775808"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtos64(XC("9223372036854775807"), 10, &res);
 	USSERT_NOT(err);
@@ -204,7 +204,7 @@ TESTDECL_ROUTINE(strtos64)
 	errno = 0;
 	err = stx_strtos64(XC("-9223372036854775809"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtos64(XC("-9223372036854775808"), 10, &res);
 	USSERT_NOT(err);
@@ -218,7 +218,7 @@ TESTDECL_ROUTINE(strtou32)
 	errno = 0;
 	err = stx_strtou32(XC("4294967296"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtou32(XC("4294967295"), 10, &res);
 	USSERT_NOT(err);
@@ -232,7 +232,7 @@ TESTDECL_ROUTINE(strtos32)
 	errno = 0;
 	err = stx_strtos32(XC("2147483648"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtos32(XC("2147483647"), 10, &res);
 	USSERT_NOT(err);
@@ -240,7 +240,7 @@ TESTDECL_ROUTINE(strtos32)
 	errno = 0;
 	err = stx_strtos32(XC("-2147483649"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtos32(XC("-2147483648"), 10, &res);
 	USSERT_NOT(err);
@@ -254,7 +254,7 @@ TESTDECL_ROUTINE(strtou16)
 	errno = 0;
 	err = stx_strtou16(XC("65536"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtou16(XC("65535"), 10, &res);
 	USSERT_NOT(err);
@@ -268,7 +268,7 @@ TESTDECL_ROUTINE(strtos16)
 	errno = 0;
 	err = stx_strtos16(XC("32768"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtos16(XC("32767"), 10, &res);
 	USSERT_NOT(err);
@@ -276,7 +276,7 @@ TESTDECL_ROUTINE(strtos16)
 	errno = 0;
 	err = stx_strtos16(XC("-32769"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtos16(XC("-32768"), 10, &res);
 	USSERT_NOT(err);
@@ -290,7 +290,7 @@ TESTDECL_ROUTINE(strtou8)
 	errno = 0;
 	err = stx_strtou8(XC("256"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtou8(XC("255"), 10, &res);
 	USSERT_NOT(err);
@@ -304,7 +304,7 @@ TESTDECL_ROUTINE(strtos8)
 	errno = 0;
 	err = stx_strtos8(XC("128"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtos8(XC("127"), 10, &res);
 	USSERT_NOT(err);
@@ -312,7 +312,7 @@ TESTDECL_ROUTINE(strtos8)
 	errno = 0;
 	err = stx_strtos8(XC("-129"), 10, &res);
 	USSERT_IS(err);
-	USSERT_EQUAL(errno, ERANGE);
+	USSERT_EQ(errno, ERANGE);
 
 	err = stx_strtos8(XC("-128"), 10, &res);
 	USSERT_NOT(err);

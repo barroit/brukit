@@ -42,8 +42,8 @@ do {								\
 #define MUST_PASS(x) !(x)
 #define MUST_FAIL(x) !!(x)
 
-#define MUST_EQUAL(a, b) a != b
-#define MUST_DIFF(a, b)  a == b
+#define MUST_EQ(a, b) a != b
+#define MUST_NE(a, b) a == b
 
 #define MUST_LT(a, b) a >= b
 #define MUST_GT(a, b) a <= b
@@ -54,8 +54,8 @@ do {								\
 #define USSERT_PASS(x) __ERROR_RETURN_ON(MUST_PASS(x))
 #define USSERT_FAIL(x) __ERROR_RETURN_ON(MUST_FAIL(x))
 
-#define USSERT_ZERO(x)    __ERROR_RETURN_ON(MUST_EQUAL(x, 0))
-#define USSERT_NONNULL(x) __ERROR_RETURN_ON(MUST_DIFF(x, NULL))
+#define USSERT_ZERO(x)    __ERROR_RETURN_ON(MUST_EQ(x, 0))
+#define USSERT_NONNULL(x) __ERROR_RETURN_ON(MUST_NE(x, NULL))
 
 #define USSERT_IS(x)  __ERROR_RETURN_ON(IS(x))
 #define USSERT_NOT(x) __ERROR_RETURN_ON(NOT(x))
@@ -83,8 +83,8 @@ do {									\
 	}								\
 } while (0)
 
-#define USSERT_EQUAL(a, b) __USSERT_INTCMP(a, b, EQUAL(a, b))
-#define USSERT_DIFF(a, b)  __USSERT_INTCMP(a, b, DIFF(a, b))
+#define USSERT_EQ(a, b) __USSERT_INTCMP(a, b, EQ(a, b))
+#define USSERT_NE(a, b) __USSERT_INTCMP(a, b, NE(a, b))
 
 #define USSERT_LT(a, b) __USSERT_INTCMP(a, b, LT(a, b))
 #define USSERT_GT(a, b) __USSERT_INTCMP(a, b, GT(a, b))
@@ -125,7 +125,7 @@ do {									\
 
 #define USSERT_PTREQUAL(p1, p2) 				\
 do {								\
-	if (__error_printf_on(MUST_EQUAL(p1, p2),		\
+	if (__error_printf_on(MUST_EQ(p1, p2),			\
 			      "\na %p\nb %p", p1, p2)) {	\
 		__test_failure_count += 1;			\
 		return;						\
