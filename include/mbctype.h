@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later or MIT */
 /*
- * Copyright 2024 Jiamu Sun <barroit@linux.com>
+ * Copyright 2024, 2025 Jiamu Sun <barroit@linux.com>
  */
 
 #ifndef NG39_MBTYPE_H
@@ -16,7 +16,11 @@ enum mbctype {
 	_9D,   /* 4-byte */
 };
 
+/*
+ * This can also be used to check the length of a multibyte sequence.
+ */
 #define __mbctype(c) _39mbctype[(int)(unsigned char)(c)]
+
 #define __ismbctype(c, t) (__mbctype(c) == t)
 
 #define ismb1(c)  __ismbctype(c, _9A)
