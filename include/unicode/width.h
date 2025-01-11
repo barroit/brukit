@@ -10,10 +10,6 @@
 
 #include "attr.h"
 
-#define uniwidth_size 59
-
-extern const wchar_t uniwidth[][2];
-
-int isfullwidth(wchar_t c) __leaf __pure;
+int iswide(wchar_t c) __leaf __pure;
 
 #endif /* NG39_UNICODE_WIDTH_H */

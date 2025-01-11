@@ -9,7 +9,7 @@
 
 #include "calc.h"
 
-const wchar_t uniwidth[][2] = {
+static const wchar_t width[][2] = {
 	{ 0x1100, 0x115f },
 	{ 0x231a, 0x231b },
 	{ 0x2329, 0x232a },
@@ -71,17 +71,17 @@ const wchar_t uniwidth[][2] = {
 	{ 0xffe0, 0xffe6 },
 };
 
-int isfullwidth(wchar_t c)
+int iswide(wchar_t c)
 {
 	size_t l = 0;
-	size_t r = sizeof_array(uniwidth);
+	size_t r = sizeof_array(width);
 
 	while (l < r) {
 		size_t m = (l + r) >> 1;
 
-		if (c < uniwidth[m][0])
+		if (c < width[m][0])
 			r = m;
-		else if (c > uniwidth[m][1])
+		else if (c > width[m][1])
 			l = m + 1;
 		else
 			return 1;

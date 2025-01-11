@@ -45,11 +45,7 @@ print(f'''\
 
 #include "attr.h"
 
-#define uniwidth_size {len(res)}
-
-extern const wchar_t uniwidth[][2];
-
-int isfullwidth(wchar_t c) __leaf __pure;
+int iswide(wchar_t c) __leaf __pure;
 
 #endif /* NG39_UNICODE_WIDTH_H */\
 ''')
@@ -69,7 +65,7 @@ print('''\
 
 #include "calc.h"
 
-const wchar_t uniwidth[][2] = {\
+static const wchar_t width[][2] = {\
 ''')
 
 for val in res:
@@ -78,17 +74,17 @@ for val in res:
 print('''\
 };
 
-int isfullwidth(wchar_t c)
+int iswide(wchar_t c)
 {
 	size_t l = 0;
-	size_t r = sizeof_array(uniwidth);
+	size_t r = sizeof_array(width);
 
 	while (l < r) {
 		size_t m = (l + r) >> 1;
 
-		if (c < uniwidth[m][0])
+		if (c < width[m][0])
 			r = m;
-		else if (c > uniwidth[m][1])
+		else if (c > width[m][1])
 			l = m + 1;
 		else
 			return 1;
