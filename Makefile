@@ -75,4 +75,4 @@ $(args):
 .PHONY: $(scripts)
 
 $(scripts):
-	@bash $@ $(args)
+	@./$@ $(args)
