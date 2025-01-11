@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later or MIT */
 /*
- * Copyright 2024 Jiamu Sun <barroit@linux.com>
+ * Copyright 2024, 2025 Jiamu Sun <barroit@linux.com>
  */
 
 /*
@@ -17,6 +17,8 @@
 
 #include "attr.h"
 #include "types.h"
+
+xchar *__strchrnul(const xchar *s, xchar c) __leaf __pure;
 
 size_t __mbslen(const char *s) __leaf __pure;
 

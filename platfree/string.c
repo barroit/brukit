@@ -1,11 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later or MIT
 /*
- * Copyright 2024 Jiamu Sun <barroit@linux.com>
+ * Copyright 2024, 2025 Jiamu Sun <barroit@linux.com>
  */
 
 #include "string.h"
 
 #include "mbctype.h"
+
+xchar *__strchrnul(const xchar *s, xchar c)
+{
+	while(*s && *s != c)
+		s++;
+
+	return (xchar *)s;
+}
 
 size_t __mbslen(const char *s)
 {
