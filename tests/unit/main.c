@@ -9,11 +9,23 @@
 #include "iter.h"
 #include "tercol.h"
 
+#ifdef CONFIG_WIDE_CHAR
+# include <unistd.h>
+# include <fcntl.h>
+#endif
+
 int main(void)
 {
 	uint i;
 	uint n = __testdecl_end - __testdecl_begin - 1;
 	unitest_routine_t *func = (typeof(func))__testdecl_begin + 1;
+
+#ifdef CONFIG_WIDE_CHAR
+	/*
+	 * Debug output only.
+	 */
+	_setmode(STDOUT_FILENO, _O_U16TEXT);
+#endif
 
 	if (__testdecl_teardown)
 		atexit_push(__testdecl_teardown);
