@@ -3,8 +3,8 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-#ifndef NG39_UNIWIDTH_H
-#define NG39_UNIWIDTH_H
+#ifndef NG39_UNICODE_WIDTH_H
+#define NG39_UNICODE_WIDTH_H
 
 #include <stddef.h>
 
@@ -16,4 +16,4 @@ extern const wchar_t uniwidth[][2];
 
 int isfullwidth(wchar_t c) __leaf __pure;
 
-#endif /* NG39_UNIWIDTH_H */
+#endif /* NG39_UNICODE_WIDTH_H */

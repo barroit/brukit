@@ -24,6 +24,8 @@ locale/generated.pot
 .tmp
 DRAFT
 
+EastAsianWidth.txt
+
 # みくみくにしてあげる♪
 .program
 *.ico
