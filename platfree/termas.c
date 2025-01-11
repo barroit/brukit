@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later or MIT
 /*
- * Copyright 2024 Jiamu Sun <barroit@linux.com>
+ * Copyright 2024, 2025 Jiamu Sun <barroit@linux.com>
  */
 
 #include "termas.h"
@@ -155,7 +155,7 @@ int __termas(const char *file, int line,
 	size_t avail = cap;
 	ssize_t nr;
 
-	if (cc_termas_with_ts || !tag->name) {
+	if (udef_termas_ts || !tag->name) {
 		struct timespec ts;
 
 		ts_mono(&ts);
@@ -163,7 +163,7 @@ int __termas(const char *file, int line,
 		u64 s = ts.tv_sec;
 		u64 us = ts.tv_nsec / 1000;
 
-		const char *mas = !cc_use_tercol ?
+		const char *mas = !udef_use_tercol ?
 				  "[%" PRIu64 ".%" PRIu64 "] " :
 				  H("[%" PRIu64 ".%" PRIu64 "] ", GREEN);
 
@@ -172,9 +172,9 @@ int __termas(const char *file, int line,
 			goto out;
 	}
 
-	if (cc_termas_with_pid) {
+	if (udef_termas_pid) {
 		long pid = getpid();
-		const char *mas = !cc_use_tercol ? ">%ld " :
+		const char *mas = !udef_use_tercol ? ">%ld " :
 						   H(">", BOLD) "%ld ";
 
 		nr = snprintf(&buf[size], avail + 1, mas, pid);
@@ -185,7 +185,7 @@ int __termas(const char *file, int line,
 	if (tag->name) {
 		int show_pos = flags & MAS_SHOW_FILE ||
 			       (flags & MAS_SHOW_FUNC);
-		const char *t = cc_use_tercol ? tag->colored : tag->name;
+		const char *t = udef_use_tercol ? tag->colored : tag->name;
 		size_t len = strlen(t) + !show_pos;
 
 		if (len > avail)
@@ -202,7 +202,7 @@ int __termas(const char *file, int line,
 	}
 
 	if (flags & MAS_SHOW_FILE) {
-		const char *mas = !cc_use_tercol ? "%s:%d:%s" :
+		const char *mas = !udef_use_tercol ? "%s:%d:%s" :
 						   H("%s:%d:%s", BOLD);
 
 		nr = snprintf(&buf[size], avail + 1, mas,
@@ -212,7 +212,7 @@ int __termas(const char *file, int line,
 	}
 
 	if (flags & MAS_SHOW_FUNC) {
-		const char *mas = !cc_use_tercol ? "%s: " : H("%s: ", BOLD);
+		const char *mas = !udef_use_tercol ? "%s: " : H("%s: ", BOLD);
 
 		nr = snprintf(&buf[size], avail + 1, mas, func);
 		if (!__test_add_buf_size(nr, &size, &avail))
@@ -223,7 +223,7 @@ int __termas(const char *file, int line,
 		size_t len = strlen(__fmtcol(RESET));
 		size_t tail;
 
-		if (cc_use_tercol) {
+		if (udef_use_tercol) {
 			size -= len;
 			tail = size;
 		}
@@ -231,7 +231,7 @@ int __termas(const char *file, int line,
 		while (isspace(buf[size - 1]) || buf[size - 1] == ':')
 			size--;
 
-		if (cc_use_tercol) {
+		if (udef_use_tercol) {
 			memmove(&buf[size], &buf[tail], len);
 			size += len;
 		}
