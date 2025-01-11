@@ -6,6 +6,7 @@
 #ifndef NG39_STRLIST_H
 #define NG39_STRLIST_H
 
+#include "compiler.h"
 #include "list.h"
 #include "types.h"
 
@@ -30,13 +31,11 @@ struct strlist {
 
 /*
  * SL_STORE_COPY [| SL_DUP_ON_POP]
+ * SL_DUP_ON_POP [|(SL_STORE_COPY | SL_STORE_REF)]
  *	sl_pop() returns malloc'ed address
  *
  * (SL_STORE_SBUF | SL_STORE_REF)
- *	do not pass address returned by sl_pop() to free(3)
- *
- * SL_DUP_ON_POP | [(SL_STORE_COPY | SL_STORE_REF)]
- *	sl_pop() returns malloc'ed address
+ *	don't call free(3) on the return value of sl_pop()
  *
  * Hope we don't repeat the messy API of win32 :(
  */
@@ -49,13 +48,21 @@ struct strlist {
 #define SL_DUP_ON_POP (1 << 4)  /* SL_STORE_COPY has this enabled by default
 				   due to internal implementation */
 
-#define SL_INIT(name) {				\
+#define __SL_DEF_FLAGS (SL_STORE_COPY | SL_DUP_ON_POP)
+
+#define SL_INIT(...) ADAP_CALL(__SL_INIT_, __VA_ARGS__)
+
+#define __SL_INIT_1(name) __SL_INIT_2(name, __SL_DEF_FLAGS)
+#define __SL_INIT_2(name, f) {			\
 	.head  = LIST_HEAD_INIT(name.head),	\
 	.idle  = LIST_HEAD_INIT(name.idle),	\
-	.flags = SL_STORE_COPY | SL_DUP_ON_POP,	\
+	.flags = f,				\
 }
 
-#define STRLIST(name) struct strlist name = SL_INIT(name)
+#define STRLIST(...) ADAP_CALL(__STRLIST_, __VA_ARGS__)
+
+#define __STRLIST_1(name)    __STRLIST_2(name, __SL_DEF_FLAGS)
+#define __STRLIST_2(name, f) struct strlist name = __SL_INIT_2(name, f)
 
 void sl_init(struct strlist *sl, u32 flags);
 
