@@ -101,6 +101,8 @@ static inline xchar *sl_pop_front(struct strlist *sl)
  * LC_CTYPE-insensitive implementation for reading a string into lines. Be
  * sure to use this function only on verified strings, as it doesn't handle
  * many edge cases and may encounter unexpected results.
+ *
+ * This function uses sl_push_back(), so it must pair with sl_pop_front().
  */
 void sl_read_line(struct strlist *sl, const xchar *s, uint wrap);
 

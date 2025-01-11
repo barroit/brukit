@@ -290,7 +290,7 @@ static __maybe_unused void sl_read_line_mb(struct strlist *sl,
 		if (iswspace(c))
 			buf[prev - str] = 0;
 
-		sl_push(sl, (xchar *)buf);
+		sl_push_back(sl, (xchar *)buf);
 		str = next;
 	}
 
@@ -370,7 +370,7 @@ static __maybe_unused void sl_read_line_wc(struct strlist *sl,
 		if (iswspace(*prev))
 			buf[prev - str] = 0;
 
-		sl_push(sl, (xchar *)buf);
+		sl_push_back(sl, (xchar *)buf);
 		str = next;
 	}
 
