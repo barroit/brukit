@@ -36,10 +36,10 @@ struct strlist {
 
 /*
  * SL_STORE_COPY [| SL_DUP_ON_POP]
- * SL_DUP_ON_POP [|(SL_STORE_COPY | SL_STORE_REF)]
+ * SL_DUP_ON_POP [| (SL_STORE_COPY or SL_STORE_REF)]
  *	sl_pop() returns malloc'ed address
  *
- * (SL_STORE_SBUF | SL_STORE_REF)
+ * (SL_STORE_SBUF or SL_STORE_REF)
  *	don't call free(3) on the return value of sl_pop()
  *
  * Hope we don't repeat the messy API of win32 :(

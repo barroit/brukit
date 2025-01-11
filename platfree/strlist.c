@@ -21,7 +21,7 @@
 
 #define __slmask(f) ((f) & (-1U >> 29))
 
-#define WORD_ALG_LEN 8
+#define WORD_AVG_LEN 8
 
 void sl_init(struct strlist *sl, u32 flags)
 {
@@ -276,7 +276,7 @@ static __maybe_unused void sl_read_line_mb(struct strlist *sl,
 		prev = next;
 
 		if (*prev) {
-			prev = rewind_word_mb(prev, str, WORD_ALG_LEN);
+			prev = rewind_word_mb(prev, str, WORD_AVG_LEN);
 			next = next_word_mb(prev);
 		}
 
@@ -358,7 +358,7 @@ static __maybe_unused void sl_read_line_wc(struct strlist *sl,
 		prev = next;
 
 		if (*prev) {
-			prev = rewind_word_wc(prev, str, WORD_ALG_LEN);
+			prev = rewind_word_wc(prev, str, WORD_AVG_LEN);
 			next = next_word_wc(prev);
 		}
 

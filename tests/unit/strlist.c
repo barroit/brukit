@@ -38,60 +38,172 @@ TESTDECL_BEGIN(setup)
 	setlocale(LC_ALL, "C.UTF-8");
 }
 
-TESTDECL_ROUTINE(SL_INIT)
+TESTDECL_ROUTINE(sl__0)
 {
-	struct strlist __cleanup(sl_destroy) sl = SL_INIT(sl);
+	xchar __cleanup(__free) *res;
+	struct strlist __cleanup(sl_destroy) sl;
+
+	sl_init(&sl, 0);
 
 	sl_push(&sl, XC("miku"));
 	sl_push(&sl, XC("3939"));
 
-	xchar __cleanup(__free) *res1 = sl_pop(&sl);
-	xchar __cleanup(__free) *res2 = sl_pop(&sl);
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("3939"));
+	free(res);
 
-	USSERT_NONNULL(res1);
-	USSERT_NONNULL(res2);
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("miku"));
+	free(res);
 
-	USSERT_STREQUAL(res1, XC("3939"));
-	USSERT_STREQUAL(res2, XC("miku"));
+	sl_push_back(&sl, XC("miku"));
+	sl_push_back(&sl, XC("3939"));
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("miku"));
+	free(res);
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("3939"));
+	free(res);
+
+	res = NULL;
 }
 
-TESTDECL_ROUTINE(sl_init)
+TESTDECL_ROUTINE(sl__SL_STORE_SBUF)
 {
 	xchar *res;
-	struct strlist sl;
-
-	sl_init(&sl, 0);
-	sl_push(&sl, XC("miku"));
-	res = sl_pop(&sl);
-	USSERT_NONNULL(res);
-	sl_destroy(&sl);
-	free(res);
+	struct strlist __cleanup(sl_destroy) sl;
 
 	sl_init(&sl, SL_STORE_SBUF);
+
 	sl_push(&sl, XC("miku"));
+	sl_push(&sl, XC("3939"));
+
 	res = sl_pop(&sl);
 	USSERT_NONNULL(res);
-	sl_destroy(&sl);
+	USSERT_STREQUAL(res, XC("3939"));
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("miku"));
+
+	sl_push_back(&sl, XC("miku"));
+	sl_push_back(&sl, XC("3939"));
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("miku"));
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("3939"));
+}
+
+TESTDECL_ROUTINE(sl__SL_STORE_REF)
+{
+	xchar *res;
+	struct strlist __cleanup(sl_destroy) sl;
 
 	sl_init(&sl, SL_STORE_REF);
+
 	sl_push(&sl, XC("miku"));
+	sl_push(&sl, XC("3939"));
+
 	res = sl_pop(&sl);
 	USSERT_NONNULL(res);
-	sl_destroy(&sl);
+	USSERT_STREQUAL(res, XC("3939"));
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("miku"));
+
+	sl_push_back(&sl, XC("miku"));
+	sl_push_back(&sl, XC("3939"));
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("miku"));
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("3939"));
+}
+
+TESTDECL_ROUTINE(sl__SL_STORE_REF__SL_DUP_ON_POP)
+{
+	xchar __cleanup(__free) *res;
+	struct strlist __cleanup(sl_destroy) sl;
 
 	sl_init(&sl, SL_STORE_REF | SL_DUP_ON_POP);
+
 	sl_push(&sl, XC("miku"));
+	sl_push(&sl, XC("3939"));
+
 	res = sl_pop(&sl);
 	USSERT_NONNULL(res);
-	sl_destroy(&sl);
+	USSERT_STREQUAL(res, XC("3939"));
 	free(res);
 
-	sl_init(&sl, SL_STORE_SBUF | SL_DUP_ON_POP);
-	sl_push(&sl, XC("miku"));
 	res = sl_pop(&sl);
 	USSERT_NONNULL(res);
-	sl_destroy(&sl);
+	USSERT_STREQUAL(res, XC("miku"));
 	free(res);
+
+	sl_push_back(&sl, XC("miku"));
+	sl_push_back(&sl, XC("3939"));
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("miku"));
+	free(res);
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("3939"));
+	free(res);
+
+	res = NULL;
+}
+
+TESTDECL_ROUTINE(sl__SL_STORE_SBUF__SL_DUP_ON_POP)
+{
+	xchar __cleanup(__free) *res;
+	struct strlist __cleanup(sl_destroy) sl;
+
+	sl_init(&sl, SL_STORE_SBUF | SL_DUP_ON_POP);
+
+	sl_push(&sl, XC("miku"));
+	sl_push(&sl, XC("3939"));
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("3939"));
+	free(res);
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("miku"));
+	free(res);
+
+	sl_push_back(&sl, XC("miku"));
+	sl_push_back(&sl, XC("3939"));
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("miku"));
+	free(res);
+
+	res = sl_pop(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL(res, XC("3939"));
+	free(res);
+
+	res = NULL;
 }
 
 TESTDECL_ROUTINE(sl_read_line)
@@ -99,6 +211,7 @@ TESTDECL_ROUTINE(sl_read_line)
 	uint i;
 	struct strlist __cleanup(sl_destroy) sl = SL_INIT(sl);
 	xchar __cleanup(__free) *line = NULL;
+
 	xchar *sample_jp[] = {
 		[0] = XC(miku_jp_6),
 		[1] = XC(miku_jp_5),
