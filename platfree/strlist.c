@@ -66,6 +66,7 @@ uint __sl_push(struct strlist *sl, const xchar *str, int is_que)
 
 	if (sl->flags & SL_STORE_SBUF && !list_is_empty(&sl->idle)) {
 		item = list_first_entry(&sl->idle, struct strlist_item, list);
+		sb_trunc(item->sb, item->sb->len);
 		list_del(&item->list);
 	}
 
@@ -148,12 +149,10 @@ xchar *__sl_pop(struct strlist *sl, int is_que)
 	if (sl->flags & SL_DUP_ON_POP)
 		ret = xc_strdup(ret);
 
-	if (sl->flags & SL_STORE_SBUF) {
-		sb_trunc(item->sb, item->sb->len);
+	if (sl->flags & SL_STORE_SBUF)
 		list_add(&item->list, &sl->idle);
-	} else {
+	else
 		free(item);
-	}
 
 	return ret;
 }
