@@ -1,0 +1,386 @@
+// SPDX-License-Identifier: GPL-3.0-or-later or MIT
+/*
+ * Copyright 2024, 2025 Jiamu Sun <barroit@linux.com>
+ */
+
+#include "strlist.h"
+
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "bitopt.h"
+#include "compiler.h"
+#include "mbctype.h"
+#include "strbuf.h"
+#include "unicode/width.h"
+#include "unicode/clause.h"
+#include "wcctype.h"
+#include "xalloc.h"
+#include "xchar.h"
+
+#define __slmask(f) ((f) & (-1U >> 29))
+
+#define WORD_ALG_LEN 8
+
+void sl_init(struct strlist *sl, u32 flags)
+{
+	if (popcount(__slmask(flags)) == 0)
+		flags |= SL_STORE_COPY;
+	if (flags & SL_STORE_COPY)
+		flags |= SL_DUP_ON_POP;
+
+	BUG_ON(flags & SL_CALC_SRLEN &&
+	       (flags & (__slmask(flags) ^ SL_STORE_REF)));
+	BUG_ON(popcount(__slmask(flags)) > 1);
+
+	sl->flags = flags;
+	list_head_init(&sl->head);
+
+	if (sl->flags & SL_STORE_SBUF)
+		list_head_init(&sl->idle);
+}
+
+static void __sl_destroy(struct strlist *sl, struct list_head *head)
+{
+	struct strlist_item *item, *tmp;
+
+	list_for_each_entry_safe(item, tmp, head, list) {
+		if (sl->flags & SL_STORE_SBUF)
+			sb_destroy(item->sb);
+		free(item);
+	}
+}
+
+void sl_destroy(struct strlist *sl)
+{
+	__sl_destroy(sl, &sl->head);
+	if (sl->flags & SL_STORE_SBUF)
+		__sl_destroy(sl, &sl->idle);
+}
+
+uint sl_push(struct strlist *sl, const xchar *s)
+{
+	uint ret = 0;
+	struct strlist_item *item = NULL;
+
+	if (sl->flags & SL_STORE_SBUF && !list_is_empty(&sl->idle)) {
+		item = list_first_entry(&sl->idle, struct strlist_item, list);
+		list_del(&item->list);
+	}
+
+	if (!item) {
+		size_t n = sizeof(*item);
+		void *buf;
+
+		switch (__slmask(sl->flags)) {
+		case SL_STORE_COPY:
+			ret = xc_strlen(s);
+			n += (ret + 1) * sizeof(*s);
+		case SL_STORE_SBUF:
+			n += sizeof(*item->sb);
+			break;
+		}
+
+		item = xcalloc(1, n);
+		buf = (void *)item + sizeof(*item);
+
+		switch (__slmask(sl->flags)) {
+		case SL_STORE_SBUF:
+			item->sb = buf;
+			BUILD_BUG_ON(alignof(*item) < alignof(*item->sb));
+			break;
+		case SL_STORE_COPY:
+			item->sc = buf;
+			BUILD_BUG_ON(alignof(*item) < alignof(s));
+		}
+
+		list_head_init(&item->list);
+	}
+
+	switch (__slmask(sl->flags)) {
+	case SL_STORE_COPY:
+		memcpy(item->sc, s, (ret + 1) * sizeof(*s));
+		break;
+	case SL_STORE_SBUF:
+		ret = sb_puts(item->sb, s);
+		break;
+	case SL_STORE_REF:
+		item->sr = s;
+		if (sl->flags & SL_CALC_SRLEN)
+			ret = xc_strlen(s);
+	}
+
+	list_add(&item->list, &sl->head);
+	return ret;
+}
+
+xchar *sl_pop(struct strlist *sl)
+{
+	if (list_is_empty(&sl->head))
+		return NULL;
+
+	xchar *ret;
+	struct strlist_item *item = list_first_entry(&sl->head,
+						     typeof(*item), list);
+
+	list_del(&item->list);
+
+	switch (__slmask(sl->flags)) {
+	case SL_STORE_COPY:
+		ret = item->sc;
+		break;
+	case SL_STORE_SBUF:
+		ret = item->sb->buf;
+		break;
+	case SL_STORE_REF:
+		ret = (typeof(ret))item->sr;
+	}
+
+	if (sl->flags & SL_DUP_ON_POP)
+		ret = xc_strdup(ret);
+
+	if (sl->flags & SL_STORE_SBUF) {
+		sb_trunc(item->sb, item->sb->len);
+		list_add(&item->list, &sl->idle);
+	} else {
+		free(item);
+	}
+
+	return ret;
+}
+
+static inline int need_rewind_sb(const char c)
+{
+	return isspace(c) || iseoc(c);
+}
+
+static inline int need_rewind_wc(wchar_t c)
+{
+	return iswspace(c) || iseoc(c);
+}
+
+static char *prev_word_mb(const char *seq)
+{
+	while (ismbcb(*--seq));
+
+	return (char *)seq;
+}
+
+static char *next_word_mb(const char *seq)
+{
+	while (ismbcb(*++seq));
+
+	return (char *)seq;
+}
+
+static inline wchar_t *prev_word_wc(const wchar_t *str)
+{
+	wchar_t *prev = (wchar_t *)str - 1;
+
+	return prev - iswcspl(*prev);
+}
+
+static inline wchar_t *next_word_wc(const wchar_t *str)
+{
+	wchar_t *prev = (wchar_t *)str;
+
+	return iswcsp(*str) ? &prev[2] : &prev[1];
+}
+
+static const char *advance_word_mb(const char *ptr,
+				   const char *tail, uint limit)
+{
+	uint cnt = 0;
+
+	while (ptr < tail && cnt < limit) {
+		wchar_t c;
+		uint len = __mbctype(*ptr);
+
+		switch (len) {
+		case _9D:
+		case _9C:
+			c = __mbtowc(ptr);
+			cnt += 1 + iswide(c);
+			break;
+		case _9B:
+		case _9A:
+			cnt++;
+		}
+
+		ptr += len;
+	}
+
+	return ptr;
+}
+
+static const char *rewind_word_mb(const char *ptr,
+				  const char *head, uint limit)
+{
+	uint cnt = 0;
+	const char *__ptr = ptr;
+
+	while (ptr > head && cnt < limit) {
+		wchar_t c;
+		uint len = __mbctype(*ptr);
+
+		switch (len) {
+		case _9D:
+		case _9C:
+		case _9B:
+	 		c = __mbtowc(ptr);
+			if (need_rewind_wc(c))
+				return ptr;
+
+			cnt += iswide(c);
+			break;
+		case _9A:
+			if (need_rewind_sb(*ptr))
+				return ptr;
+		}
+
+		cnt += 1;
+		ptr = prev_word_mb(ptr);
+	}
+
+	return __ptr;
+}
+
+static __maybe_unused void sl_read_line_mb(struct strlist *sl,
+					   const char *str, uint wrap)
+{
+	size_t len = strlen(str);
+
+	const char *tail = &str[len];
+	const char *prev;
+	const char *next = str;
+
+	size_t size = (wrap + 1) * 4 + 1;
+	size_t __size = strlen(str) + 1;
+
+	if (size > __size)
+		size = __size;
+
+	char *buf = xmalloc(size);
+
+	while (next < tail) {
+		next = advance_word_mb(next, tail, wrap + 1);
+		prev = next;
+
+		if (*prev) {
+			prev = rewind_word_mb(prev, str, WORD_ALG_LEN);
+			next = next_word_mb(prev);
+		}
+
+		size_t n = next - str;
+
+		memcpy(buf, str, n);
+		buf[n] = 0;
+
+		wchar_t c = __mbtowc(prev);
+
+		if (iswspace(c))
+			buf[prev - str] = 0;
+
+		sl_push(sl, (xchar *)buf);
+		str = next;
+	}
+
+	free(buf);
+}
+
+static const wchar_t *advance_word_wc(const wchar_t *ptr,
+				      const wchar_t *tail, uint limit)
+{
+	uint cnt = 0;
+
+	while (ptr < tail && cnt < limit) {
+		switch (__wcspmask(*ptr)) {
+		case _3WH:
+			cnt++;
+			ptr++;
+			break;
+		default:
+			cnt += iswide(*ptr);
+		}
+
+		cnt++;
+		ptr++;
+	}
+
+	return ptr;
+}
+
+static const wchar_t *rewind_word_wc(const wchar_t *ptr,
+				     const wchar_t *head, uint limit)
+{
+	uint cnt = 0;
+	const wchar_t *__ptr = ptr;
+
+	while (ptr > head && cnt < limit) {
+		switch (__wcspmask(*ptr)) {
+		case _3WH:
+			cnt++;
+			break;
+		default:
+			if (need_rewind_wc(*ptr))
+				return ptr;
+			cnt += iswide(*ptr);
+		}
+
+		cnt++;
+		ptr = prev_word_wc(ptr);
+	}
+
+	return __ptr;
+}
+
+static __maybe_unused void sl_read_line_wc(struct strlist *sl,
+					   const wchar_t *str, uint wrap)
+{
+	size_t len = wcslen(str);
+	const wchar_t *tail = &str[len];
+	const wchar_t *prev;
+	const wchar_t *next = str;
+
+	wchar_t *buf = xmalloc((wrap + 1 + 1) * sizeof(*str));
+
+	while (next < tail) {
+		next = advance_word_wc(next, tail, wrap + 1);
+		prev = next;
+
+		if (*prev) {
+			prev = rewind_word_wc(prev, str, WORD_ALG_LEN);
+			next = next_word_wc(prev);
+		}
+
+		size_t n = next - str;
+
+		memcpy(buf, str, n * sizeof(*str));
+		buf[n] = 0;
+
+		if (iswspace(*prev))
+			buf[prev - str] = 0;
+
+		sl_push(sl, (xchar *)buf);
+		str = next;
+	}
+
+	free(buf);
+}
+
+#ifdef CONFIG_WIDE_CHAR
+# define __sl_read_line sl_read_line_wc
+#else
+# define __sl_read_line sl_read_line_mb
+#endif
+
+void sl_read_line(struct strlist *sl, const xchar *s, uint wrap)
+{
+	BUG_ON(sl->flags & SL_STORE_REF);
+
+	if (wrap == -1)
+		wrap = CONFIG_LINE_WIDTH;
+
+	__sl_read_line(sl, s, wrap);
+}
