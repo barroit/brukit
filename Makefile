@@ -33,9 +33,6 @@ configure:
 
 all: configure build
 
-test:
-	@ctest --test-dir build/tests --parallel
-
 .PHONY: clean distclean
 
 clean:
@@ -52,8 +49,23 @@ distclean:
 menuconfig:
 	@scripts/kconfig.py menuconfig
 
+__tests := $(wildcard build/t/*.t)
+tests   := $(patsubst build/%,%,$(__tests))
+
+.PHONY: $(tests)
+
+$(tests):
+	@./build/$@
+
+ifneq ($(tests),)
+.PHONY: t/all
+
+t/all:
+	@ctest --test-dir build/tests --parallel
+endif
+
 scripts := $(wildcard scripts/*.sh) $(wildcard scripts/*.py)
-args    := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
+args    := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 .PHONY: $(args)
 

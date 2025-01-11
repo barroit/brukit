@@ -10,7 +10,7 @@
 build/*
 !build/locale
 !build/scripts
-!build/unitest
+!build/t
 
 include/generated
 include/arch
