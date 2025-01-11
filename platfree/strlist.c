@@ -59,7 +59,7 @@ void sl_destroy(struct strlist *sl)
 		__sl_destroy(sl, &sl->idle);
 }
 
-uint sl_push(struct strlist *sl, const xchar *s)
+uint __sl_push(struct strlist *sl, const xchar *str, int is_que)
 {
 	uint ret = 0;
 	struct strlist_item *item = NULL;
@@ -75,8 +75,8 @@ uint sl_push(struct strlist *sl, const xchar *s)
 
 		switch (__slmask(sl->flags)) {
 		case SL_STORE_COPY:
-			ret = xc_strlen(s);
-			n += (ret + 1) * sizeof(*s);
+			ret = xc_strlen(str);
+			n += (ret + 1) * sizeof(*str);
 		case SL_STORE_SBUF:
 			n += sizeof(*item->sb);
 			break;
@@ -92,7 +92,7 @@ uint sl_push(struct strlist *sl, const xchar *s)
 			break;
 		case SL_STORE_COPY:
 			item->sc = buf;
-			BUILD_BUG_ON(alignof(*item) < alignof(s));
+			BUILD_BUG_ON(alignof(*item) < alignof(str));
 		}
 
 		list_head_init(&item->list);
@@ -100,29 +100,37 @@ uint sl_push(struct strlist *sl, const xchar *s)
 
 	switch (__slmask(sl->flags)) {
 	case SL_STORE_COPY:
-		memcpy(item->sc, s, (ret + 1) * sizeof(*s));
+		memcpy(item->sc, str, (ret + 1) * sizeof(*str));
 		break;
 	case SL_STORE_SBUF:
-		ret = sb_puts(item->sb, s);
+		ret = sb_puts(item->sb, str);
 		break;
 	case SL_STORE_REF:
-		item->sr = s;
+		item->sr = str;
 		if (sl->flags & SL_CALC_SRLEN)
-			ret = xc_strlen(s);
+			ret = xc_strlen(str);
 	}
 
-	list_add(&item->list, &sl->head);
+	if (is_que)
+		list_add_tail(&item->list, &sl->head);
+	else
+		list_add(&item->list, &sl->head);
+
 	return ret;
 }
 
-xchar *sl_pop(struct strlist *sl)
+xchar *__sl_pop(struct strlist *sl, int is_que)
 {
 	if (list_is_empty(&sl->head))
 		return NULL;
 
 	xchar *ret;
-	struct strlist_item *item = list_first_entry(&sl->head,
-						     typeof(*item), list);
+	struct strlist_item *item;
+
+	if (is_que)
+		item = list_last_entry(&sl->head, typeof(*item), list);
+	else
+		item = list_first_entry(&sl->head, typeof(*item), list);
 
 	list_del(&item->list);
 

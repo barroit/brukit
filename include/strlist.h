@@ -3,6 +3,11 @@
  * Copyright 2024, 2025 Jiamu Sun <barroit@linux.com>
  */
 
+/*
+ * NB: if you mix push() with push_back(), or pop() with pop_front(), the
+ * behavior is undefined.
+ */
+
 #ifndef NG39_STRLIST_H
 #define NG39_STRLIST_H
 
@@ -68,9 +73,29 @@ void sl_init(struct strlist *sl, u32 flags);
 
 void sl_destroy(struct strlist *sl);
 
-uint sl_push(struct strlist *sl, const xchar *s);
+uint __sl_push(struct strlist *sl, const xchar *s, int is_que);
 
-xchar *sl_pop(struct strlist *sl);
+static inline uint sl_push(struct strlist *sl, const xchar *str)
+{
+	return __sl_push(sl, str, 0);
+}
+
+static inline uint sl_push_back(struct strlist *sl, const xchar *str)
+{
+	return __sl_push(sl, str, 1);
+}
+
+xchar *__sl_pop(struct strlist *sl, int is_que);
+
+static inline xchar *sl_pop(struct strlist *sl)
+{
+	return __sl_pop(sl, 0);
+}
+
+static inline xchar *sl_pop_front(struct strlist *sl)
+{
+	return __sl_pop(sl, 1);
+}
 
 /*
  * LC_CTYPE-insensitive implementation for reading a string into lines. Be
