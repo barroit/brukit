@@ -18,4 +18,7 @@
 #define idx_for_each_reverse(idx, init) \
 	for (idx = init; idx != maxof(idx); idx--)
 
+#define idx_for_each_from(idx, step) \
+	for (; idx < step; idx++)
+
 #endif /* NG39_ITER_H */
