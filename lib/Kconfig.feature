@@ -23,8 +23,16 @@ config ALT_CNTRL
 endif
 
 config LINE_WIDTH
-	int "Default line wrap threshold"
+	int "Line wrap threshold"
 	default 80
+
+config HELP_OPT_INDENT
+	int "Help message indentation"
+	default 2
+
+config HELP_OPT_WRAP
+	int "Help message wrap threshold"
+	default 16
 
 endmenu # Character settings
 
