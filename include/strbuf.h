@@ -77,8 +77,20 @@ uint sb_pth_append_at_ws(struct strbuf *sb, const xchar *name);
 
 void sb_pth_to_dirname(struct strbuf *sb);
 
-char *sb_mb_str(struct strbuf *sb) __malloc;
+/*
+ * __sb_mb_str*
+ *	do not copy the string if the buffer type is already char *
+ *
+ * sb_mb_str*
+ *	returns a copy of the string, which must be freed using free(3)
+ */
 
-char *sb_mb_str_fb(struct strbuf *sb, const char *fb) __malloc;
+char *__sb_mb_str(struct strbuf *sb);
+
+char *__sb_mb_str_fb(struct strbuf *sb, const char *fb);
+
+char *sb_mb_str(struct strbuf *sb);
+
+char *sb_mb_str_fb(struct strbuf *sb, const char *fb);
 
 #endif /* NG39_STRBUF_H */
