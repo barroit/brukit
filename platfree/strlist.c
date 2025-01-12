@@ -399,7 +399,7 @@ static __maybe_unused void sl_read_line_wc(struct strlist *sl,
 void sl_read_line(struct strlist *sl, const xchar *str, uint wrap)
 {
 	if (wrap == -1)
-		wrap = CONFIG_LINE_WIDTH;
+		wrap = CONFIG_LINE_WRAP;
 
 	__sl_read_line(sl, str, wrap);
 }
@@ -407,7 +407,7 @@ void sl_read_line(struct strlist *sl, const xchar *str, uint wrap)
 void sl_read_line_chr(struct strlist *sl, const char *str, uint wrap)
 {
 	if (wrap == -1)
-		wrap = CONFIG_LINE_WIDTH;
+		wrap = CONFIG_LINE_WRAP;
 
 	sl_read_line_mb(sl, str, wrap);
 }

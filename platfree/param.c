@@ -487,10 +487,10 @@ static void show_cmd_usage(const char **usage)
 
 		size_t len = rest - line;
 		size_t pad = __len + len;
-		size_t wrap = CONFIG_LINE_WIDTH - __len;
+		size_t wrap = CONFIG_LINE_WRAP - __len;
 		char *str;
 
-		if ((CONFIG_LINE_WIDTH >> 1) > pad)
+		if ((CONFIG_LINE_WRAP >> 1) > pad)
 			wrap -= len;
 
 		sl_read_line_chr(&sl, rest, wrap);
@@ -558,7 +558,7 @@ static void show_opt_usage(struct option *opts)
 
 		size_t __pad = CONFIG_HELP_OPT_WRAP + 2;
 		size_t pad = __pad - len;
-		size_t wrap = CONFIG_LINE_WIDTH - __pad;
+		size_t wrap = CONFIG_LINE_WRAP - __pad;
 		char *str;
 
 		sl_read_line(&sl, _(opt->usage), wrap);

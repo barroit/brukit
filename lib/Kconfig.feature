@@ -8,7 +8,7 @@ menu "Core features"
 config I18N_SUPP
 	bool "Enable i18n support"
 
-menu "Character settings"
+menu "Formatting options"
 
 menuconfig SPEC_ALT_CNTRL
 	bool "Customize control character replacement"
@@ -22,7 +22,7 @@ config ALT_CNTRL
 
 endif
 
-config LINE_WIDTH
+config LINE_WRAP
 	int "Line wrap threshold"
 	default 80
 
