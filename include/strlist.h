@@ -5,7 +5,7 @@
 
 /*
  * The behavior is undefined if
- *	mixing push() with push_back(), or pop() with pop_front()
+ *	mixing push() with push_back()
  *	non-SL_STORE_CHR mode strlist uses sl_*_chr() functions
  *	SL_STORE_REF mode strlist uses sl_read_line()
  */
@@ -122,34 +122,17 @@ static inline uint sl_push_back_chr(struct strlist *sl, const char *str)
 	return sl_push_back(sl, (xchar *)str);
 }
 
-xchar *__sl_pop(struct strlist *sl, int is_que);
-
-static inline xchar *sl_pop(struct strlist *sl)
-{
-	return __sl_pop(sl, 0);
-}
+xchar *sl_pop(struct strlist *sl);
 
 static inline char *sl_pop_chr(struct strlist *sl)
 {
 	return (char *)sl_pop(sl);
 }
 
-static inline xchar *sl_pop_front(struct strlist *sl)
-{
-	return __sl_pop(sl, 1);
-}
-
-static inline char *sl_pop_front_chr(struct strlist *sl)
-{
-	return (char *)sl_pop_front(sl);
-}
-
 /*
  * LC_CTYPE-insensitive implementation for reading a string into lines. Be
  * sure to use this function only on verified strings, as it doesn't handle
  * many edge cases and may encounter unexpected results.
- *
- * This function uses sl_push_back(), so it must pair with sl_pop_front().
  */
 void sl_read_line(struct strlist *sl, const xchar *str, uint wrap);
 

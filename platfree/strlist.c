@@ -131,18 +131,14 @@ uint __sl_push(struct strlist *sl, const xchar *str, int is_que)
 	return ret;
 }
 
-xchar *__sl_pop(struct strlist *sl, int is_que)
+xchar *sl_pop(struct strlist *sl)
 {
 	if (list_is_empty(&sl->head))
 		return NULL;
 
 	xchar *ret;
-	struct strlist_item *item;
-
-	if (is_que)
-		item = list_last_entry(&sl->head, typeof(*item), list);
-	else
-		item = list_first_entry(&sl->head, typeof(*item), list);
+	struct strlist_item *item = list_first_entry(&sl->head,
+						     typeof(*item), list);
 
 	list_del(&item->list);
 

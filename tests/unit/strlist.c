@@ -249,22 +249,22 @@ TESTDECL_ROUTINE(sl_read_line)
 	xchar __cleanup(__free) *line = NULL;
 
 	xchar *sample_jp[] = {
-		[0] = XC(miku_jp_6),
-		[1] = XC(miku_jp_5),
-		[2] = XC(miku_jp_4),
-		[3] = XC(miku_jp_3),
-		[4] = XC(miku_jp_2),
-		[5] = XC(miku_jp_1),
+		[0] = XC(miku_jp_1),
+		[1] = XC(miku_jp_2),
+		[2] = XC(miku_jp_3),
+		[3] = XC(miku_jp_4),
+		[4] = XC(miku_jp_5),
+		[5] = XC(miku_jp_6),
 	};
 	xchar *sample_en[] = {
-		[0] = XC(miku_en_3),
+		[0] = XC(miku_en_1),
 		[1] = XC(miku_en_2),
-		[2] = XC(miku_en_1),
+		[2] = XC(miku_en_3),
 	};
 
 	sl_read_line(&sl, XC(miku_jp), 80);
 	idx_for_each(i, sizeof_array(sample_jp)) {
-		line = sl_pop_front(&sl);
+		line = sl_pop(&sl);
 		USSERT_NONNULL(line);
 
 		USSERT_STREQUAL(line, sample_jp[i]);
@@ -273,7 +273,7 @@ TESTDECL_ROUTINE(sl_read_line)
 
 	sl_read_line(&sl, XC(miku_en), 80);
 	idx_for_each(i, sizeof_array(sample_en)) {
-		line = sl_pop_front(&sl);
+		line = sl_pop(&sl);
 		USSERT_NONNULL(line);
 
 		USSERT_STREQUAL(line, sample_en[i]);
