@@ -258,13 +258,15 @@ void sb_pth_to_dirname(struct strbuf *sb)
 
 char *sb_mbs(struct strbuf *sb)
 {
-	char *ret = (typeof(ret))sb->buf;
+	char *ret;
 
 	if (IS_ENABLED(CONFIG_WIDE_CHAR)) {
 		size_t len = mb_wcstombs(&ret, (wchar_t *)sb->buf);
 
 		if (len == maxof(len))
 			ret = NULL;
+	} else {
+		ret = strdup((char *)sb->buf);
 	}
 
 	return ret;
@@ -272,10 +274,12 @@ char *sb_mbs(struct strbuf *sb)
 
 char *sb_mbs_fb(struct strbuf *sb, const char *alt)
 {
-	char *ret = (typeof(ret))sb->buf;
+	char *ret;
 
 	if (IS_ENABLED(CONFIG_WIDE_CHAR))
 		mb_wcstombs_fb(&ret, (wchar_t *)sb->buf, alt);
+	else
+		ret = strdup((char *)sb->buf);
 
 	return ret;
 }
