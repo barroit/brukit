@@ -256,7 +256,7 @@ void sb_pth_to_dirname(struct strbuf *sb)
 	sb->buf[sb->len] = 0;
 }
 
-char *sb_mbs(struct strbuf *sb)
+char *sb_mb_str(struct strbuf *sb)
 {
 	char *ret;
 
@@ -272,12 +272,12 @@ char *sb_mbs(struct strbuf *sb)
 	return ret;
 }
 
-char *sb_mbs_fb(struct strbuf *sb, const char *alt)
+char *sb_mb_str_fb(struct strbuf *sb, const char *fb)
 {
 	char *ret;
 
 	if (IS_ENABLED(CONFIG_WIDE_CHAR))
-		mb_wcstombs_fb(&ret, (wchar_t *)sb->buf, alt);
+		mb_wcstombs_fb(&ret, (wchar_t *)sb->buf, fb);
 	else
 		ret = strdup((char *)sb->buf);
 
