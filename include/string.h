@@ -18,6 +18,10 @@
 #include "attr.h"
 #include "types.h"
 
+xchar *strskip(const xchar *s1, const xchar *s2) __leaf __pure;
+
+int strskip2(const xchar *s1, const xchar *s2, const xchar **res);
+
 xchar *__strchrnul(const xchar *s, xchar c) __leaf __pure;
 
 size_t __mbslen(const char *s) __leaf __pure;

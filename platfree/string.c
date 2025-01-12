@@ -7,6 +7,27 @@
 
 #include "mbctype.h"
 
+xchar *strskip(const xchar *s1, const xchar *s2)
+{
+	do {
+		if (!s2[0])
+			return (xchar *)s1;
+	} while (*s1++ == *s2++);
+
+	return NULL;
+}
+
+int strskip2(const xchar *s1, const xchar *s2, const xchar **res)
+{
+	const xchar *rest = strskip(s1, s2);
+
+	if (rest == NULL)
+		return -1;
+
+	*res = rest;
+	return 0;
+}
+
 xchar *__strchrnul(const xchar *s, xchar c)
 {
 	while(*s && *s != c)
