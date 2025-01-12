@@ -1,8 +1,16 @@
                                   TODO LIST
 
 ----
-Apply xgettext to macro like H_(N_("warning: "), MAGENTA)
-To do so:
+Make timestamp work properly on Windows.
 
-	run preprocessor on files
-	use xgettext with -E and custom keyword (like HN_)
+----
+Fix project information not filling by CMake
+
+----
+Implement test framework for program-level testing.
+
+----
+Write tests for the command-line argument parser.
+
+----
+Documentation?
