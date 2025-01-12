@@ -134,6 +134,42 @@ TESTDECL_ROUTINE(sl__SL_STORE_REF)
 	USSERT_STREQUAL(res, XC("3939"));
 }
 
+TESTDECL_ROUTINE(sl__SL_STORE_CHR)
+{
+	char __cleanup(__free) *res;
+	struct strlist __cleanup(sl_destroy) sl;
+
+	sl_init(&sl, SL_STORE__CHR);
+
+	sl_push_chr(&sl, "miku");
+	sl_push_chr(&sl, "3939");
+
+	res = sl_pop_chr(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL_MB(res, "3939");
+	free(res);
+
+	res = sl_pop_chr(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL_MB(res, "miku");
+	free(res);
+
+	sl_push_back_chr(&sl, "miku");
+	sl_push_back_chr(&sl, "3939");
+
+	res = sl_pop_chr(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL_MB(res, "miku");
+	free(res);
+
+	res = sl_pop_chr(&sl);
+	USSERT_NONNULL(res);
+	USSERT_STREQUAL_MB(res, "3939");
+	free(res);
+
+	res = NULL;
+}
+
 TESTDECL_ROUTINE(sl__SL_STORE_REF__SL_DUP_ON_POP)
 {
 	xchar __cleanup(__free) *res;

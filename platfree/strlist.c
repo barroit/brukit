@@ -19,20 +19,21 @@
 #include "xalloc.h"
 #include "xchar.h"
 
-#define __slmask(f) ((f) & (-1U >> 29))
+#define __sl_mode_mask (-1U << 28)
+#define __sl_mode(f)   ((f) & __sl_mode_mask)
 
 #define WORD_AVG_LEN 8
 
 void sl_init(struct strlist *sl, u32 flags)
 {
-	if (popcount(__slmask(flags)) == 0)
+	if (popcount(__sl_mode(flags)) == 0)
 		flags |= SL_STORE_COPY;
-	if (flags & SL_STORE_COPY)
+	if (flags & (SL_STORE_COPY | SL_STORE_CHR))
 		flags |= SL_DUP_ON_POP;
 
+	BUG_ON(popcount(__sl_mode(flags)) > 1);
 	BUG_ON(flags & SL_CALC_SRLEN &&
-	       (flags & (__slmask(flags) ^ SL_STORE_REF)));
-	BUG_ON(popcount(__slmask(flags)) > 1);
+	       (flags & (__sl_mode(flags) ^ SL_STORE_REF)));
 
 	sl->flags = flags;
 	list_head_init(&sl->head);
@@ -74,32 +75,39 @@ uint __sl_push(struct strlist *sl, const xchar *str, int is_que)
 		size_t n = sizeof(*item);
 		void *buf;
 
-		switch (__slmask(sl->flags)) {
+		switch (__sl_mode(sl->flags)) {
 		case SL_STORE_COPY:
 			ret = xc_strlen(str);
 			n += (ret + 1) * sizeof(*str);
+			break;
 		case SL_STORE_SBUF:
 			n += sizeof(*item->sb);
 			break;
+		case SL_STORE_CHR:
+			ret = strlen((char *)str);
+			n += ret + 1;
 		}
 
 		item = xcalloc(1, n);
 		buf = (void *)item + sizeof(*item);
 
-		switch (__slmask(sl->flags)) {
+		switch (__sl_mode(sl->flags)) {
+		case SL_STORE_COPY:
+			item->sc = buf;
+			BUILD_BUG_ON(alignof(*item) < alignof(str));
 		case SL_STORE_SBUF:
 			item->sb = buf;
 			BUILD_BUG_ON(alignof(*item) < alignof(*item->sb));
 			break;
-		case SL_STORE_COPY:
-			item->sc = buf;
-			BUILD_BUG_ON(alignof(*item) < alignof(str));
+		case SL_STORE_CHR:
+			item->__sc = buf;
+			BUILD_BUG_ON(alignof(*item) < alignof((char *)str));
 		}
 
 		list_head_init(&item->list);
 	}
 
-	switch (__slmask(sl->flags)) {
+	switch (__sl_mode(sl->flags)) {
 	case SL_STORE_COPY:
 		memcpy(item->sc, str, (ret + 1) * sizeof(*str));
 		break;
@@ -110,6 +118,9 @@ uint __sl_push(struct strlist *sl, const xchar *str, int is_que)
 		item->sr = str;
 		if (sl->flags & SL_CALC_SRLEN)
 			ret = xc_strlen(str);
+		break;
+	case SL_STORE_CHR:
+		memcpy(item->__sc, (char *)str, ret + 1);
 	}
 
 	if (is_que)
@@ -135,7 +146,7 @@ xchar *__sl_pop(struct strlist *sl, int is_que)
 
 	list_del(&item->list);
 
-	switch (__slmask(sl->flags)) {
+	switch (__sl_mode(sl->flags)) {
 	case SL_STORE_COPY:
 		ret = item->sc;
 		break;
@@ -143,10 +154,15 @@ xchar *__sl_pop(struct strlist *sl, int is_que)
 		ret = item->sb->buf;
 		break;
 	case SL_STORE_REF:
-		ret = (typeof(ret))item->sr;
+		ret = (xchar *)item->sr;
+		break;
+	case SL_STORE_CHR:
+		ret = (xchar *)item->__sc;
 	}
 
-	if (sl->flags & SL_DUP_ON_POP)
+	if (sl->flags & SL_STORE_CHR)
+		ret = (xchar *)strdup((char *)ret);
+	else if (sl->flags & SL_DUP_ON_POP)
 		ret = xc_strdup(ret);
 
 	if (sl->flags & SL_STORE_SBUF)
@@ -289,7 +305,7 @@ static __maybe_unused void sl_read_line_mb(struct strlist *sl,
 		if (iswspace(c))
 			buf[prev - str] = 0;
 
-		sl_push_back(sl, (xchar *)buf);
+		sl_push_back_chr(sl, buf);
 		str = next;
 	}
 
@@ -346,11 +362,13 @@ static __maybe_unused void sl_read_line_wc(struct strlist *sl,
 					   const wchar_t *str, uint wrap)
 {
 	size_t len = wcslen(str);
+
 	const wchar_t *tail = &str[len];
 	const wchar_t *prev;
 	const wchar_t *next = str;
 
-	wchar_t *buf = xmalloc((wrap + 1 + 1) * sizeof(*str));
+	size_t size = (wrap + 1 + 1) * sizeof(*str);
+	wchar_t *buf = xmalloc(size);
 
 	while (next < tail) {
 		next = advance_word_wc(next, tail, wrap + 1);
@@ -382,12 +400,18 @@ static __maybe_unused void sl_read_line_wc(struct strlist *sl,
 # define __sl_read_line sl_read_line_mb
 #endif
 
-void sl_read_line(struct strlist *sl, const xchar *s, uint wrap)
+void sl_read_line(struct strlist *sl, const xchar *str, uint wrap)
 {
-	BUG_ON(sl->flags & SL_STORE_REF);
-
 	if (wrap == -1)
 		wrap = CONFIG_LINE_WIDTH;
 
-	__sl_read_line(sl, s, wrap);
+	__sl_read_line(sl, str, wrap);
+}
+
+void sl_read_line_chr(struct strlist *sl, const char *str, uint wrap)
+{
+	if (wrap == -1)
+		wrap = CONFIG_LINE_WIDTH;
+
+	sl_read_line_mb(sl, str, wrap);
 }

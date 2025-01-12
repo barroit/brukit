@@ -4,8 +4,10 @@
  */
 
 /*
- * NB: if you mix push() with push_back(), or pop() with pop_front(), the
- * behavior is undefined.
+ * The behavior is undefined if
+ *	mixing push() with push_back(), or pop() with pop_front()
+ *	non-SL_STORE_CHR mode strlist uses sl_*_chr() functions
+ *	SL_STORE_REF mode strlist uses sl_read_line()
  */
 
 #ifndef NG39_STRLIST_H
@@ -22,6 +24,7 @@ struct strlist_item {
 		struct strbuf *sb;
 		const xchar *sr;
 		xchar *sc;
+		char *__sc;
 	};
 
 	struct list_head list;
@@ -35,29 +38,53 @@ struct strlist {
 };
 
 /*
- * SL_STORE_COPY [| SL_DUP_ON_POP]
- * SL_DUP_ON_POP [| (SL_STORE_COPY or SL_STORE_REF)]
+ * flags & SL_STORE_COPY
+ * flags & SL_DUP_ON_POP
  *	sl_pop() returns malloc'ed address
  *
- * (SL_STORE_SBUF or SL_STORE_REF)
+ * (flags & (SL_STORE_SBUF | SL_DUP_ON_POP)) == SL_STORE_SBUF
+ * (flags & (SL_STORE_REF | SL_DUP_ON_POP)) == SL_STORE_REF
  *	don't call free(3) on the return value of sl_pop()
- *
- * Hope we don't repeat the messy API of win32 :(
  */
 
-#define SL_STORE_COPY (1 << 0)
-#define SL_STORE_SBUF (1 << 1)
-#define SL_STORE_REF  (1 << 2)
-#define SL_CALC_SRLEN (1 << 3)  /* calculate string length; applicable to
-				   SL_STORE_REF only */
-#define SL_DUP_ON_POP (1 << 4)  /* SL_STORE_COPY has this enabled by default
-				   due to internal implementation */
+/*
+ * General-purpose flags
+ *
+ * SL_CALC_SRLEN
+ *	calculate string length, only works with SL_STORE_REF
+ *
+ * SL_DUP_ON_POP
+ *	duplicate strings when pop-related functions return, default for
+ *	SL_STORE_COPY
+ *
+ * Operating modes
+ *
+ * SL_STORE_COPY
+ *	store a copy of the strings
+ *
+ * SL_STORE_SBUF
+ *	store strings in strbuf
+ *
+ * SL_STORE_REF
+ *	store references to the strings
+ *
+ * SL_STORE_CHR
+ *	like SL_STORE_COPY but forces narrow character storage
+ */
+#define SL_CALC_SRLEN (1U << 0)
+#define SL_DUP_ON_POP (1U << 1)
 
-#define __SL_DEF_FLAGS (SL_STORE_COPY | SL_DUP_ON_POP)
+#define SL_STORE_CHR  (1U << 28)
+#define SL_STORE_REF  (1U << 29)
+#define SL_STORE_SBUF (1U << 30)
+#define SL_STORE_COPY (1U << 31)
+
+#define SL_STORE__CHR  (SL_STORE_CHR | SL_DUP_ON_POP)
+#define SL_STORE__COPY (SL_STORE_COPY | SL_DUP_ON_POP)
 
 #define SL_INIT(...) ADAP_CALL(__SL_INIT_, __VA_ARGS__)
 
-#define __SL_INIT_1(name) __SL_INIT_2(name, __SL_DEF_FLAGS)
+#define __SL_INIT_1(name) __SL_INIT_2(name, SL_STORE__COPY)
 #define __SL_INIT_2(name, f) {			\
 	.head  = LIST_HEAD_INIT(name.head),	\
 	.idle  = LIST_HEAD_INIT(name.idle),	\
@@ -66,23 +93,33 @@ struct strlist {
 
 #define STRLIST(...) ADAP_CALL(__STRLIST_, __VA_ARGS__)
 
-#define __STRLIST_1(name)    __STRLIST_2(name, __SL_DEF_FLAGS)
+#define __STRLIST_1(name)    __STRLIST_2(name, SL_STORE__COPY)
 #define __STRLIST_2(name, f) struct strlist name = __SL_INIT_2(name, f)
 
 void sl_init(struct strlist *sl, u32 flags);
 
 void sl_destroy(struct strlist *sl);
 
-uint __sl_push(struct strlist *sl, const xchar *s, int is_que);
+uint __sl_push(struct strlist *sl, const xchar *str, int is_que);
 
 static inline uint sl_push(struct strlist *sl, const xchar *str)
 {
 	return __sl_push(sl, str, 0);
 }
 
+static inline uint sl_push_chr(struct strlist *sl, const char *str)
+{
+	return sl_push(sl, (xchar *)str);
+}
+
 static inline uint sl_push_back(struct strlist *sl, const xchar *str)
 {
 	return __sl_push(sl, str, 1);
+}
+
+static inline uint sl_push_back_chr(struct strlist *sl, const char *str)
+{
+	return sl_push_back(sl, (xchar *)str);
 }
 
 xchar *__sl_pop(struct strlist *sl, int is_que);
@@ -92,9 +129,19 @@ static inline xchar *sl_pop(struct strlist *sl)
 	return __sl_pop(sl, 0);
 }
 
+static inline char *sl_pop_chr(struct strlist *sl)
+{
+	return (char *)sl_pop(sl);
+}
+
 static inline xchar *sl_pop_front(struct strlist *sl)
 {
 	return __sl_pop(sl, 1);
+}
+
+static inline char *sl_pop_front_chr(struct strlist *sl)
+{
+	return (char *)sl_pop_front(sl);
 }
 
 /*
@@ -104,6 +151,8 @@ static inline xchar *sl_pop_front(struct strlist *sl)
  *
  * This function uses sl_push_back(), so it must pair with sl_pop_front().
  */
-void sl_read_line(struct strlist *sl, const xchar *s, uint wrap);
+void sl_read_line(struct strlist *sl, const xchar *str, uint wrap);
+
+void sl_read_line_chr(struct strlist *sl, const char *str, uint wrap);
 
 #endif /* NG39_STRLIST_H */
