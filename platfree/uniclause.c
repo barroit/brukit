@@ -3,7 +3,7 @@
  * Copyright 2024, 2025 Jiamu Sun <barroit@linux.com>
  */
 
-#include "unicode/clause.h"
+#include "unicode.h"
 
 #include "calc.h"
 
