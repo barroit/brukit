@@ -30,6 +30,7 @@ void *reallocarray(void *ptr, size_t nmemb, size_t size) __warn_unused_result;
 # define xrealloc      realloc
 # define xreallocarray reallocarray
 # define xstrdup       strdup
+# define xwcsdup       wcsdup
 #endif
 
 void *__malloc_x(const char *file,
