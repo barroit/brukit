@@ -284,7 +284,7 @@ char *sb_mb_str(struct strbuf *sb)
 {
 	char *ret = __sb_mb_str(sb);
 
-	if (ret == sb->buf)
+	if (__same_type(ret, sb->buf) && ret == (char *)sb->buf)
 		ret = strdup((char *)ret);
 
 	return ret;
@@ -294,7 +294,7 @@ char *sb_mb_str_fb(struct strbuf *sb, const char *fb)
 {
 	char *ret = __sb_mb_str_fb(sb, fb);
 
-	if (ret == sb->buf)
+	if (__same_type(ret, sb->buf) && ret == (char *)sb->buf)
 		ret = strdup((char *)ret);
 
 	return ret;

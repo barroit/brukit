@@ -136,7 +136,7 @@ xchar *sl_pop(struct strlist *sl)
 	if (list_is_empty(&sl->head))
 		return NULL;
 
-	xchar *ret;
+	xchar *ret = NULL;
 	struct strlist_item *item = list_first_entry(&sl->head,
 						     typeof(*item), list);
 
