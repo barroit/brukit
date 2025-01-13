@@ -253,7 +253,7 @@ static const xchar *parse_shrt_opt(struct param *ctx, const xchar *args)
 			arg = NULL;
 		} else if (args[1]) {
 			arg = &args[1];
-			ret = "";
+			ret = XC("");
 		} else if (ctx->argc > 1) {
 			arg = ctx->argv[0];
 			ctx->argc--;
