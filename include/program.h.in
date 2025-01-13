@@ -3,7 +3,7 @@
  * Copyright 2024 Jiamu Sun <barroit@linux.com>
  */
 
-#define PROGRAM_NAME	"@name@"
-#define PROGRAM_VERSION	"@version@"
-#define PROGRAM_ARCH	"@arch@"
-#define PROGRAM_BUILD	"@build@"
+#define PROGRAM_NAME	"@CONFIG_PROG_NAME@"
+#define PROGRAM_VERSION	"@CONFIG_PROG_VERSION@"
+#define PROGRAM_ARCH	"@CONFIG_PROG_ARCH@"
+#define PROGRAM_BUILD	"@CONFIG_PROG_BUILD@"
