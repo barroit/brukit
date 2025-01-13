@@ -561,7 +561,7 @@ static void show_opt_usage(struct option *opts)
 		size_t wrap = CONFIG_LINE_WRAP - __pad;
 		char *str;
 
-		sl_read_line(&sl, _(opt->usage), wrap);
+		sl_read_line_chr(&sl, _(opt->usage), wrap);
 
 		str = sl_pop_chr(&sl);
 		printf("%*s%s\n", (int)pad, "", str);
