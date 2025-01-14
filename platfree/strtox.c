@@ -44,7 +44,7 @@ static uint parse_integer(const xchar *s, uint base,
 		if ('0' <= c && c <= '9')
 			val = c - '0';
 		else if ('a' <= lc && lc <= 'z')
-			val = lc - 'a';
+			val = lc - 'a' + 10;
 		else
 			break;
 
