@@ -85,7 +85,7 @@ int parse_param(int argc, const xchar **argv,
 	.__snam = s,			\
 	.__lnam = l,			\
 	.ptr    = __opt_ptr(p, u32),	\
-	.argh   = N_("n"),		\
+	.argh   = "N",			\
 	.usage  = h,			\
 	.flags  = f,			\
 }
