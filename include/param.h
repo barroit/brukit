@@ -113,7 +113,6 @@ int parse_param(int argc, const xchar **argv,
 #define __OPT_COMMAND(l, p, c, f) {			\
 	.type   = OPTION__COMMAND,			\
 	.lnam   = __opt_lnam(l),			\
-	.__snam = s,					\
 	.__lnam = l,					\
 	.ptr    = __opt_ptr(p, command_callback_t),	\
 	.cmd    = c,					\
