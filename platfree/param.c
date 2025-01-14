@@ -62,6 +62,18 @@ static void __noreturn show_help(const char **usage, struct option *opts);
 static struct strbuf __cmdname = SB_INIT;
 static char *cmdname;
 
+static int has_command(struct option *opts)
+{
+	struct option *opt;
+
+	opt_for_each(opt, opts) {
+		if (opt->type == OPTION__COMMAND)
+			return 1;
+	}
+
+	return 0;
+}
+
 static void cmdname_append(const xchar *name)
 {
 	if (__cmdname.len != 0)
@@ -390,7 +402,7 @@ static int parse_cmd_arg(struct param *ctx)
 		if (ctx->flags & PRM_STOP_AT_NON_OPT)
 			return 39;
 
-		if (ctx->flags & PRM_PARSE_COMMAND)
+		if (ctx->flags & __PRM_PARSE_COMMAND)
 			parse_command(ctx->opts, str);
 
 		ctx->outv[ctx->outc] = str;
@@ -429,7 +441,10 @@ static int parse_cmd_arg(struct param *ctx)
 int parse_param(int argc, const xchar **argv,
 		const char **usage, struct option *opts, u32 flags)
 {
-	BUG_ON(match_bit(flags, PRM_STOP_AT_NON_OPT | PRM_PARSE_COMMAND));
+	if (has_command(opts)) {
+		BUG_ON(flags & PRM_STOP_AT_NON_OPT);
+		flags |= __PRM_PARSE_COMMAND;
+	}
 
 	struct param ctx = {
 		.argc  = argc - 1,
