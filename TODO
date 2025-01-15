@@ -1,16 +1,1 @@
                                   TODO LIST
-
-----
-Make timestamp work properly on Windows.
-
-----
-Fix project information not filling by CMake
-
-----
-Implement test framework for program-level testing.
-
-----
-Write tests for the command-line argument parser.
-
-----
-Documentation?
