@@ -484,9 +484,14 @@ static void show_cmd_usage(const char **usage)
 		if ((CONFIG_LINE_WRAP >> 1) > pad)
 			wrap -= len;
 
+		printf("%*s%.*s", (int)__len, pref, (int)len, line);
+
+		if (!*rest) {
+			putchar('\n');
+			goto next;
+		}
 		sl_read_line_chr(&sl, rest, wrap);
 
-		printf("%*s%.*s", (int)__len, pref, (int)len, line);
 		str = sl_pop_chr(&sl);
 		puts(str);
 		free(str);
@@ -496,15 +501,18 @@ static void show_cmd_usage(const char **usage)
 			free(str);
 		}
 
+next:
 		usage++;
 		pref = "or: ";
 	}
 
 	sl_destroy(&sl);
+	putchar('\n');
 }
 
 static void show_opt_usage(struct option *opts)
 {
+	int cnt = 0;
 	struct option *opt;
 
 	STRLIST(sl, SL_STORE__CHR);
@@ -562,18 +570,20 @@ static void show_opt_usage(struct option *opts)
 			printf("%*s%s\n", (int)__pad, "", str);
 			free(str);
 		}
+
+		cnt++;
 	}
 
 	sl_destroy(&sl);
+	if (cnt)
+		putchar('\n');
 }
 
 static void show_help(const char **usage, struct option *opts)
 {
 	show_cmd_usage(usage);
-	putchar('\n');
 
 	show_opt_usage(opts);
-	putchar('\n');
 
 	exit(0);
 }
