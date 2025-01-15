@@ -48,9 +48,6 @@ struct abbrev {
 };
 
 struct cmdmode {
-	int val;
-	int *ptr;
-
 	struct option *opt;
 	u32 flags;
 
@@ -87,23 +84,6 @@ static void cmdname_append(const xchar *name)
 		cmdname = sb_mb_str_fb(&__cmdname, "����");
 	} else {
 		cmdname = (char *)__cmdname.buf;
-	}
-}
-
-static void cmdmode_init(struct list_head *mode, struct option *opts)
-{
-	struct cmdmode *cm;
-	struct option *opt;
-
-	opt_for_each(opt, opts) {
-		if (opt->type != OPTION_CMDMODE)
-			continue;
-
-		cm = xcalloc(1, sizeof(*cm));
-		list_add(&cm->list, mode);
-
-		cm->ptr = opt->ptr;
-		cm->val = *cm->ptr;
 	}
 }
 
@@ -149,23 +129,20 @@ static void cmdmode_record(struct list_head *mode,
 	struct cmdmode *cm;
 
 	list_for_each_entry(cm, mode, list) {
-		if (*cm->ptr == cm->val || cm->opt == opt)
+		if (cm->opt == opt)
 			continue;
 
-		if (cm->opt)
-			break;
+		char *n1 = pretty_opt_name(cm->opt, cm->flags);
+		char *n2 = pretty_opt_name(opt, flags);
 
-		cm->opt = opt;
-		cm->flags = flags;
+		die(_("options %s and %s cannot be used together"), n1, n2);
 	}
 
-	if (list_entry_is_head(cm, mode, list))
-		return;
+	cm = xcalloc(1, sizeof(*cm));
+	list_add(&cm->list, mode);
 
-	char *n1 = pretty_opt_name(cm->opt, cm->flags);
-	char *n2 = pretty_opt_name(opt, flags);
-
-	die(_("options %s and %s cannot be used together"), n1, n2);
+	cm->opt = opt;
+	cm->flags = flags;
 }
 
 static void parse_command(struct option *opts, const xchar *cmd)
@@ -462,7 +439,6 @@ int parse_param(int argc, const xchar **argv,
 	};
 
 	cmdname_append(argv[0]);
-	cmdmode_init(&ctx.mode, ctx.opts);
 
 	while (ctx.argc) {
 		int ret = parse_cmd_arg(&ctx);
