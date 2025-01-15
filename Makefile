@@ -57,12 +57,10 @@ tests   := $(patsubst build/%,%,$(__tests))
 $(tests):
 	@./build/$@
 
-ifneq ($(tests),)
 .PHONY: t/all
 
 t/all:
-	@ctest --test-dir build/tests --parallel
-endif
+	@ctest --test-dir build/tests --parallel $(shell nproc)
 
 scripts := $(wildcard scripts/*.sh) $(wildcard scripts/*.py)
 args    := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))

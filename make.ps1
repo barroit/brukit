@@ -66,7 +66,7 @@ if ($target -eq 'build' -or $target -eq 'all') {
 }
 
 if ($target -eq 'test') {
-	ctest --test-dir build/tests --parallel
+	ctest --test-dir build/tests --parallel $env:NUMBER_OF_PROCESSORS
 } elseif ($target -eq 'clean') {
 	cmake --build build --target clean
 } elseif ($target -eq 'distclean') {

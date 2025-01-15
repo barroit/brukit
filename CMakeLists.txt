@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.21)
 
 set(TREE $ENV{TREE})
 set(GEN  ${TREE}/include/generated)
+set(BIN  ${CMAKE_BINARY_DIR})
 
 file(MAKE_DIRECTORY ${GEN})
 
