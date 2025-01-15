@@ -54,6 +54,7 @@ struct option {
 #define PRM_STOP_AT_NON_OPT (1 << 0)
 #define __PRM_PARSE_COMMAND (1 << 1)
 #define PRM_NO_BUILTIN_HELP (1 << 2)
+#define PRM_OPT_COMMAND     (1 << 3)
 
 int parse_param(int argc, const xchar **argv,
 		const char **usage, struct option *opts, u32 flags);

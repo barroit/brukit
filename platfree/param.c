@@ -145,7 +145,7 @@ static void cmdmode_record(struct list_head *mode,
 	cm->flags = flags;
 }
 
-static void parse_command(struct option *opts, const xchar *cmd)
+static int parse_command(struct option *opts, const xchar *cmd)
 {
 	struct option *opt;
 
@@ -157,7 +157,7 @@ static void parse_command(struct option *opts, const xchar *cmd)
 			continue;
 
 		*(command_callback_t *)opt->ptr = opt->cmd;
-		return;
+		return 39;
 	}
 
 	char *name = pretty_arg_name(cmd, "����");
@@ -380,7 +380,7 @@ static int parse_cmd_arg(struct param *ctx)
 			return 39;
 
 		if (ctx->flags & __PRM_PARSE_COMMAND)
-			parse_command(ctx->opts, str);
+			return parse_command(ctx->opts, str);
 
 		ctx->outv[ctx->outc] = str;
 		ctx->outc += 1;
@@ -418,16 +418,18 @@ static int parse_cmd_arg(struct param *ctx)
 int parse_param(int argc, const xchar **argv,
 		const char **usage, struct option *opts, u32 flags)
 {
+	int __argc = argc - 1;
+
 	if (has_command(opts)) {
 		BUG_ON(flags & PRM_STOP_AT_NON_OPT);
 		flags |= __PRM_PARSE_COMMAND;
 	}
 
 	struct param ctx = {
-		.argc  = argc - 1,
+		.argc  = __argc,
 		.argv  = argv + 1,
 
-		.outc  = argc,
+		.outc  = 0,
 		.outv  = argv,
 
 		.opts  = opts,
@@ -456,6 +458,15 @@ int parse_param(int argc, const xchar **argv,
 	if (ctx.argc)
 		memmove(&ctx.outv[ctx.outc],
 			ctx.argv, ctx.argc * sizeof(*ctx.argv));
+
+	int ret = ctx.outc + ctx.argc;
+
+	if (flags & __PRM_PARSE_COMMAND && ret == 0) {
+		if (!(flags & PRM_OPT_COMMAND) && __argc)
+			error(_("'%s' requires a subcommand\n"), cmdname);
+
+		show_help(ctx.usage, ctx.opts);
+	}
 
 	argc = ctx.outc + ctx.argc;
 	ctx.outv[argc] = 0;
