@@ -14,6 +14,8 @@ foreach(name ${prog_test})
   add_test(NAME cmd_${name} COMMAND ${cmd} ${TEST}/${name}.sh ../${exec_name})
 endforeach()
 
-add_subdirectory(param)
+if(NOT CONFIG_WIDE_CHAR)
+  add_subdirectory(param)
+endif()
 
 add_subdirectory(unit)
