@@ -89,15 +89,18 @@ uint __sl_push(struct strlist *sl, const xchar *str, int is_que)
 			n += ret + 1;
 		}
 
-		item = xcalloc(1, n);
+		item = xmalloc(n);
 		buf = (void *)item + sizeof(*item);
+		((char *)item)[n - 1] = 0;
 
 		switch (__sl_mode(sl->flags)) {
 		case SL_STORE_COPY:
 			item->sc = buf;
 			BUILD_BUG_ON(alignof(*item) < alignof(str));
+			break;
 		case SL_STORE_SBUF:
 			item->sb = buf;
+			sb_init(item->sb);
 			BUILD_BUG_ON(alignof(*item) < alignof(*item->sb));
 			break;
 		case SL_STORE_CHR:
