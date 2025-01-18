@@ -26,6 +26,9 @@ xchar *__strchrnul(const xchar *s, xchar c) __leaf __pure;
 
 size_t __mbslen(const char *s) __leaf __pure;
 
+/*
+ * Only supports UTF-8 input.
+ */
 wchar_t __mbtowc(const char *seq) __leaf __pure;
 
 #endif /* NG39_STRING_H */

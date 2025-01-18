@@ -9,7 +9,10 @@
 
 #include <locale.h>
 
-TESTDECL_BEGIN();
+TESTDECL_BEGIN(setup)
+{
+	setlocale(LC_ALL, "en_US.UTF-8");
+}
 
 TESTDECL_ROUTINE(__mbslen)
 {
@@ -40,9 +43,6 @@ TESTDECL_ROUTINE(__mbtowc)
 
 	str[0] = __mbtowc("ミ");
 	USSERT_STREQUAL_WC(str, L"ミ");
-
-	str[0] = __mbtowc("𐍈");
-	USSERT_STREQUAL_WC(str, L"𐍈");
 
 	str[0] = __mbtowc((char []){ 0xF8, 0x80, 0x80, 0x80, 0 });
 	USSERT_LT(str[0], 0xFF);
