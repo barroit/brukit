@@ -319,4 +319,51 @@ TESTDECL_ROUTINE(sl_items)
 	res = NULL;
 }
 
+TESTDECL_ROUTINE(sl_to_argv)
+{
+	struct strlist __cleanup(sl_destroy) sl;
+	xchar *cmd[] = {
+		XC("miku"),
+		XC("run"),
+		XC("dev"),
+	};
+	uint i;
+	u32 __flags[] = {
+		SL_STORE_COPY,
+		SL_STORE_COPY | SL_DUP_ON_POP,
+		SL_STORE_SBUF,
+		SL_STORE_SBUF | SL_DUP_ON_POP,
+		SL_STORE_REF,
+		SL_STORE_REF | SL_DUP_ON_POP,
+		0,
+	};
+	u32 *flags = __flags;
+
+	while (*flags) {
+		sl_init(&sl, *flags);
+
+		idx_for_each(i, sizeof_array(cmd))
+			sl_push_back(&sl, cmd[i]);
+
+		xchar **__argv = sl_to_argv(&sl);
+		xchar **argv = __argv;
+
+		idx_for_each(i, sizeof_array(cmd)) {
+			USSERT_NONNULL(argv[i]);
+			USSERT_STREQUAL(argv[i], cmd[i]);
+		}
+
+		if (sl.flags & SL_DUP_ON_POP) {
+			while (*argv)
+				free(*argv++);
+		}
+
+		free(__argv);
+		sl_destroy(&sl);
+		flags++;
+	}
+
+	sl_init(&sl, 0);
+}
+
 TESTDECL_END();

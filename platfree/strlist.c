@@ -417,3 +417,16 @@ void sl_read_line_chr(struct strlist *sl, const char *str, uint wrap)
 
 	sl_read_line_mb(sl, str, wrap);
 }
+
+xchar **sl_to_argv(struct strlist *sl)
+{
+	xchar *str;
+	xchar **ret = xmalloc((sl->items + 1) * sizeof(void *));
+	xchar **ptr = ret;
+
+	while ((str = sl_pop(sl)) != NULL)
+		*ptr++ = str;
+
+	*ptr = NULL;
+	return ret;
+}

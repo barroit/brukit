@@ -140,4 +140,6 @@ void sl_read_line(struct strlist *sl, const xchar *str, uint wrap);
 
 void sl_read_line_chr(struct strlist *sl, const char *str, uint wrap);
 
+xchar **sl_to_argv(struct strlist *sl);
+
 #endif /* NG39_STRLIST_H */
