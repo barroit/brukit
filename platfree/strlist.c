@@ -39,6 +39,8 @@ void sl_init(struct strlist *sl, u32 flags)
 
 	if (sl->flags & SL_STORE_SBUF)
 		list_head_init(&sl->idle);
+
+	sl->items = 0;
 }
 
 static void __sl_destroy(struct strlist *sl, struct list_head *head)
@@ -127,6 +129,7 @@ uint __sl_push(struct strlist *sl, const xchar *str, int is_que)
 	else
 		list_add(&item->list, &sl->head);
 
+	sl->items++;
 	return ret;
 }
 
@@ -165,6 +168,7 @@ xchar *sl_pop(struct strlist *sl)
 	else
 		free(item);
 
+	sl->items--;
 	return ret;
 }
 

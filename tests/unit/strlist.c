@@ -283,4 +283,40 @@ TESTDECL_ROUTINE(sl_read_line)
 	line = NULL;
 }
 
+TESTDECL_ROUTINE(sl_items)
+{
+	xchar __cleanup(__free) *res;
+	struct strlist __cleanup(sl_destroy) sl = SL_INIT(sl);
+
+	sl_push(&sl, XC("miku"));
+	USSERT_EQ(sl.items, 1);
+
+	sl_push(&sl, XC("3939"));
+	USSERT_EQ(sl.items, 2);
+
+	res = sl_pop(&sl);
+	USSERT_EQ(sl.items, 1);
+	free(res);
+
+	res = sl_pop(&sl);
+	USSERT_EQ(sl.items, 0);
+	free(res);
+
+	sl_push_back(&sl, XC("miku"));
+	USSERT_EQ(sl.items, 1);
+
+	sl_push_back(&sl, XC("3939"));
+	USSERT_EQ(sl.items, 2);
+
+	res = sl_pop(&sl);
+	USSERT_EQ(sl.items, 1);
+	free(res);
+
+	res = sl_pop(&sl);
+	USSERT_EQ(sl.items, 0);
+	free(res);
+
+	res = NULL;
+}
+
 TESTDECL_END();

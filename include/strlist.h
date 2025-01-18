@@ -34,6 +34,8 @@ struct strlist {
 	struct list_head head;
 	struct list_head idle;
 
+	uint items;
+
 	u32 flags;
 };
 
