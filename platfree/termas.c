@@ -265,12 +265,11 @@ int __termas(const char *file, int line,
 out:
 	size = rm_bad_cntrl(buf, size, cap);
 
-	int is_err = !(flags & MAS_TO_STDOUT);
 	int fd = STDERR_FILENO;
 	int ret = -1;
 	FILE *stream = stderr;
 
-	if (!is_err) {
+	if (flags & MAS_TO_STDOUT) {
 		fd = STDOUT_FILENO;
 		stream = stdout;
 		ret = 0;
@@ -283,10 +282,11 @@ out:
 	xwrite(fd, buf, size);
 
 	switch (level) {
-	case TM_FATAL:
-		exit(128);
 	case TM_BUG:
 		abort();
+	case TM_FATAL:
+		if (!(flags & MAS_NO_EXIT))
+			exit(128);
 	default:
 		return ret;
 	}

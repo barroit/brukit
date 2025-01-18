@@ -26,6 +26,7 @@ enum tm_level {
 #define MAS_SHOW_FILE (1 << 0)	/* show file name and line number */
 #define MAS_SHOW_FUNC (1 << 1)	/* show function name */
 #define MAS_TO_STDOUT (1 << 2)	/* output to stdout */
+#define MAS_NO_EXIT   (1 << 3)	/* do not exit */
 
 /*
  * For 'hint' parameter in __warn(), __error(), and __die(). This argument
