@@ -16,6 +16,13 @@
 #include "termas.h"
 #include "xalloc.h"
 
+/*
+ * Windows SDK sucks!
+ */
+#ifdef __argc
+# undef __argc
+#endif
+
 #define opt_for_each(pos, opts) \
 	for (pos = opts; (pos)->type != OPTION__END; (pos)++)
 
