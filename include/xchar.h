@@ -33,6 +33,7 @@
 #define __isspace_a   isspace
 #define __isxdigit_a  isxdigit
 #define __tolower_a   tolower
+#define __mbws_a      mbsws
 
 #define __mbslen_u    wcslen
 #define __strchrnul_u __strchrnul
@@ -47,6 +48,7 @@
 #define __isspace_u   iswspace
 #define __isxdigit_u  iswxdigit
 #define __tolower_u   towlower
+#define __mbsws_u     wcsws
 
 #ifdef ANSI
 # define __xchar_type _a
@@ -76,5 +78,6 @@
 #define xc_isspace   __XCHAR_ALIAS(__isspace)
 #define xc_isxdigit  __XCHAR_ALIAS(__isxdigit)
 #define xc_tolower   __XCHAR_ALIAS(__tolower)
+#define xc_mbsws     __XCHAR_ALIAS(__mbsws)
 
 #endif /* NG39_XCHAR_H */

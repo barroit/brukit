@@ -31,4 +31,8 @@ size_t __mbslen(const char *s) __leaf __pure;
  */
 wchar_t __mbtowc(const char *seq) __leaf __pure;
 
+char *mbsws(const char *s);
+
+wchar_t *wcsws(const wchar_t *s);
+
 #endif /* NG39_STRING_H */

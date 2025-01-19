@@ -48,4 +48,22 @@ TESTDECL_ROUTINE(__mbtowc)
 	USSERT_LT(str[0], 0xFF);
 }
 
+TESTDECL_ROUTINE(mbsws)
+{
+	const char *str = "ミク　３９";
+	const char *rest = mbsws(str);
+
+	USSERT_NONNULL(rest);
+	USSERT_STREQUAL_MB(rest, "　３９");
+}
+
+TESTDECL_ROUTINE(wcsws)
+{
+	const wchar_t *str = L"ミク　３９";
+	const wchar_t *rest = wcsws(str);
+
+	USSERT_NONNULL(rest);
+	USSERT_STREQUAL_WC(rest, L"　３９");
+}
+
 TESTDECL_END();

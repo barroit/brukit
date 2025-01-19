@@ -5,7 +5,11 @@
 
 #include "string.h"
 
+#include <ctype.h>
+#include <wctype.h>
+
 #include "mbctype.h"
+#include "wcctype.h"
 
 xchar *strskip(const xchar *s1, const xchar *s2)
 {
@@ -73,4 +77,41 @@ wchar_t __mbtowc(const char *seq)
 	}
 
 	return res;
+}
+
+char *mbsws(const char *s)
+{
+	while (*s) {
+		uint len = __mbctype(*s);
+		wchar_t c;
+
+		switch (len) {
+		case _9A:
+			if (isspace(*s))
+				return (char *)s;
+			break;
+		default:
+			c = __mbtowc(s);
+			if (iswspace(c))
+				return (char *)s;
+		}
+
+		s += len;
+	}
+
+	return NULL;
+}
+
+wchar_t *wcsws(const wchar_t *s)
+{
+	while (*s) {
+		if (iswcsp(*s))
+			s += 2;
+		else if (iswspace(*s))
+			return (wchar_t *)s;
+		else
+			s += 1;
+	}
+
+	return NULL;
 }
