@@ -36,4 +36,9 @@ config HELP_OPT_WRAP
 
 endmenu # Character settings
 
+config NULL_DEVICE
+	string "Null device path"
+	default "NUL:" if $(WIN32)
+	default "/dev/null"
+
 endmenu # Program features
