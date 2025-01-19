@@ -21,7 +21,7 @@
 extern const unsigned char _ctype[];
 
 #define __ischrtype(x) (__same_type(x, char) || __same_type(x, unsigned char))
-#define __ischrrange(x) (__ischrtype(x) ? : ((unsigned char)(x) == x))
+#define __ischrrange(x) (__ischrtype(x) ? : ((unsigned char)(x) == (x)))
 
 #define __ismask(x) _ctype[(int)(unsigned char)(x)]
 #define __isctype(x, t) (__ischrrange(x) && (__ismask(x) & (t)) != 0)
