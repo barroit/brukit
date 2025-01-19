@@ -11,6 +11,10 @@
 
 #include "iter.h"
 
+#ifdef _WIN32
+# undef __argv
+#endif
+
 #define miku_jp_1 \
 "初音ミクの魅力は、誰もがプロデュースできるシンガーであることです。 「初音ミク」のリ"
 #define miku_jp_2 \
