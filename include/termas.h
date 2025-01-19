@@ -50,10 +50,13 @@ int __termas(const char *file, int line,
 #define __tm_error(hint, flags, fmt, ...) \
 	___termas(TM_ERROR, hint, flags, fmt, ##__VA_ARGS__)
 
-#define __tm_die(hint, flags, fmt, ...)				\
-({								\
-	___termas(TM_FATAL, hint, flags, fmt, ##__VA_ARGS__);	\
-	unreachable();						\
+#define ___tm_die(hint, flags, fmt, ...) \
+	___termas(TM_FATAL, hint, flags, fmt, ##__VA_ARGS__);
+
+#define __tm_die(hint, flags, fmt, ...)			\
+({							\
+	___tm_die(hint, flags, fmt, ##__VA_ARGS__);	\
+	unreachable();					\
 })
 
 #define __tm_bug(hint, flags, fmt, ...)				\
