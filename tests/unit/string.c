@@ -11,7 +11,7 @@
 
 TESTDECL_BEGIN(setup)
 {
-	setlocale(LC_ALL, "en_US.UTF-8");
+	setlocale(LC_ALL, "C.UTF-8");
 }
 
 TESTDECL_ROUTINE(__mbslen)
