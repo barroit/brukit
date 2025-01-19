@@ -7,8 +7,6 @@
 
 #include <windows.h>
 
-#include <stdio.h>
-
 #include "calc.h"
 #include "types.h"
 
