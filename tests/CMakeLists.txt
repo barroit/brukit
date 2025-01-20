@@ -19,3 +19,5 @@ if(NOT CONFIG_WIDE_CHAR)
 endif()
 
 add_subdirectory(unit)
+
+add_executable(masarg masarg.c)
