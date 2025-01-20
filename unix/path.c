@@ -15,17 +15,17 @@
 
 int pth_is_abs(const char *name)
 {
-	return name[0] == PTH_SEP;
+	return name[0] == PTH_SEP_UNI;
 }
 
 char *pth_next_sep(const char *s)
 {
-	return strchr(s, PTH_SEP);
+	return strchr(s, PTH_SEP_UNI);
 }
 
 char *pth_last_sep(const char *s)
 {
-	return strrchr(s, PTH_SEP);
+	return strrchr(s, PTH_SEP_UNI);
 }
 
 char *delink(const char *name)
