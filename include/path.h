@@ -12,13 +12,8 @@
 #include "attr.h"
 #include "types.h"
 
-#ifdef ANSI
-# define PTH_SEP_UNIX  '/'
-# define PTH_SEP_WIN32 '\\'
-#else
-# define PTH_SEP_UNIX  L'/'
-# define PTH_SEP_WIN32 L'\\'
-#endif
+#define PTH_SEP_UNIX  '/'
+#define PTH_SEP_WIN32 '\\'
 
 #if defined(__unix__)
 # define PTH_SEP PTH_SEP_UNIX
