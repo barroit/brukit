@@ -27,6 +27,9 @@ TESTDECL_ROUTINE(pth_last_sep)
 #if defined(_WIN32)
 	sep = pth_last_sep(XC("path\\to\\dir\\exe"));
 	USSERT_STREQUAL(sep, XC("\\exe"));
+
+	sep = pth_last_sep(XC("path\\to\\dir/exe"));
+	USSERT_STREQUAL(sep, XC("/exe"));
 #endif
 }
 
