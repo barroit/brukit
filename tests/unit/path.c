@@ -19,6 +19,20 @@ TESTDECL_ROUTINE(pth_is_abs)
 #endif
 }
 
+TESTDECL_ROUTINE(pth_next_sep)
+{
+	xchar *sep = pth_next_sep(XC("path/to/dir/exe"));
+	USSERT_STREQUAL(sep, XC("/to/dir/exe"));
+
+#if defined(_WIN32)
+	sep = pth_next_sep(XC("path\\to\\dir\\exe"));
+	USSERT_STREQUAL(sep, XC("\\to\\dir\\exe"));
+
+	sep = pth_next_sep(XC("path\\to\\dir/exe"));
+	USSERT_STREQUAL(sep, XC("\\to\\dir/exe"));
+#endif
+}
+
 TESTDECL_ROUTINE(pth_last_sep)
 {
 	xchar *sep = pth_last_sep(XC("path/to/dir/exe"));

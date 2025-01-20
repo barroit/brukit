@@ -13,9 +13,25 @@
 #include "xalloc.h"
 #include "xchar.h"
 
+static inline int chr_is_sep(xchar c)
+{
+	return c == XC(PTH_SEP_WIN) || c == XC(PTH_SEP_UNI);
+}
+
 int pth_is_abs(const xchar *name)
 {
 	return !PathIsRelative(name);
+}
+
+xchar *pth_next_sep(const xchar *s)
+{
+	while (*s) {
+		if (chr_is_sep(*s))
+			return (xchar *)s;
+		s++;
+	}
+
+	return NULL;
 }
 
 xchar *pth_last_sep(const xchar *s)
@@ -23,7 +39,7 @@ xchar *pth_last_sep(const xchar *s)
 	const xchar *sep = NULL;
 
 	while (*s) {
-		if (*s == XC(PTH_SEP_WIN) || *s == XC(PTH_SEP_UNI))
+		if (chr_is_sep(*s))
 			sep = s;
 		s++;
 	}

@@ -23,6 +23,8 @@
 
 int pth_is_abs(const xchar *name) __pure;
 
+xchar *pth_next_sep(const xchar *s) __pure;
+
 xchar *pth_last_sep(const xchar *s) __pure;
 
 static inline int pth_is_dot(const xchar *name)
