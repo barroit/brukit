@@ -20,7 +20,15 @@ int pth_is_abs(const xchar *name)
 
 xchar *pth_last_sep(const xchar *s)
 {
-	return xc_strrchr(s, PTH_SEP_WIN32) ? : xc_strrchr(s, PTH_SEP_UNIX);
+	const xchar *sep = NULL;
+
+	while (*s) {
+		if (*s == XC(PTH_SEP_WIN) || *s == XC(PTH_SEP_UNI))
+			sep = s;
+		s++;
+	}
+
+	return (xchar *)sep;
 }
 
 const xchar *pth_home(void)
