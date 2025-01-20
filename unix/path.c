@@ -13,12 +13,12 @@
 #include "termas.h"
 #include "xalloc.h"
 
-int pth_is_abs(const xchar *name)
+int pth_is_abs(const char *name)
 {
 	return name[0] == PTH_SEP;
 }
 
-xchar *pth_last_sep(const xchar *s)
+char *pth_last_sep(const char *s)
 {
 	return strrchr(s, PTH_SEP);
 }
