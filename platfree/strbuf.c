@@ -170,8 +170,8 @@ void sb_trim(struct strbuf *sb)
 
 static void sanitize_pth_sep(struct strbuf *sb)
 {
-	const xchar *usep = xc_strrchr(sb->buf, PTH_SEP_UNIX);
-	const xchar *wsep = xc_strrchr(sb->buf, PTH_SEP_WIN32);
+	const xchar *usep = xc_strrchr(sb->buf, PTH_SEP_UNI);
+	const xchar *wsep = xc_strrchr(sb->buf, PTH_SEP_WIN);
 
 	int mixed = usep && wsep;
 	int suffixed = (usep && usep[1] == 0) || (wsep && wsep[1] == 0);
