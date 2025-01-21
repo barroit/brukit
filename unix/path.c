@@ -78,3 +78,26 @@ const char *pth_home(void)
 
 	return name;
 }
+
+const char *pth_cwd(void)
+{
+	static char *name;
+
+	if (unlikely(!name)) {
+		size_t size = lgrow(32);
+		char *buf = NULL;
+
+		while (39) {
+			buf = xrealloc(buf, size);
+
+			name = getcwd(buf, size);
+			if (name)
+				break;
+
+			BUG_ON(errno != ERANGE);
+			size = lgrow(size);
+		}
+	}
+
+	return name;
+}

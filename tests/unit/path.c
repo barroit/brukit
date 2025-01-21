@@ -78,4 +78,10 @@ TESTDECL_ROUTINE(pth_locale)
 	USSERT_NONNULL(name);
 }
 
+TESTDECL_ROUTINE(pth_cwd)
+{
+	const xchar *name = pth_cwd();
+	USSERT_NONNULL(name);
+}
+
 TESTDECL_END();

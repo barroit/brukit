@@ -94,4 +94,19 @@ retry:
 	return name;
 }
 
+const xchar *pth_cwd(void)
+{
+	static xchar *name;
 
+	if (unlikely(!name)) {
+		DWORD size = GetCurrentDirectory(0, NULL);
+
+		name = xmalloc(size * sizeof(xchar));
+
+		int err = !GetCurrentDirectory(size, name);
+
+		BUG_ON(err);
+	}
+
+	return name;
+}

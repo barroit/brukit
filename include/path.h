@@ -47,4 +47,6 @@ const xchar *pth_prefix(void);
 
 const xchar *pth_locale(void);
 
+const xchar *pth_cwd(void);
+
 #endif /* NG39_PATH_H */
