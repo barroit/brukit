@@ -57,30 +57,35 @@ TESTDECL_ROUTINE(pth_is_dot)
 TESTDECL_ROUTINE(pth_home)
 {
 	const xchar *name = pth_home();
+
 	USSERT_NONNULL(name);
 }
 
 TESTDECL_ROUTINE(pth_executable)
 {
 	const xchar *name = pth_executable();
+
 	USSERT_NONNULL(name);
 }
 
 TESTDECL_ROUTINE(pth_prefix)
 {
 	const xchar *name = pth_prefix();
+
 	USSERT_NONNULL(name);
 }
 
 TESTDECL_ROUTINE(pth_locale)
 {
 	const xchar *name = pth_locale();
+
 	USSERT_NONNULL(name);
 }
 
 TESTDECL_ROUTINE(pth_cwd)
 {
 	const xchar *name = pth_cwd();
+
 	USSERT_NONNULL(name);
 }
 
