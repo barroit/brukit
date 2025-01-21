@@ -13,7 +13,7 @@
 #include "xalloc.h"
 #include "xchar.h"
 
-static inline int chr_is_sep(xchar c)
+int chr_is_sep(xchar c)
 {
 	return c == XC(PTH_SEP_WIN) || c == XC(PTH_SEP_UNI);
 }

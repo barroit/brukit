@@ -13,6 +13,11 @@
 #include "termas.h"
 #include "xalloc.h"
 
+int chr_is_sep(char c)
+{
+	return c == PTH_SEP_UNI;
+}
+
 int pth_is_abs(const char *name)
 {
 	return name[0] == PTH_SEP_UNI;

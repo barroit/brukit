@@ -21,6 +21,8 @@
 # define PTH_SEP PTH_SEP_WIN
 #endif
 
+int chr_is_sep(xchar c);
+
 int pth_is_abs(const xchar *name) __pure;
 
 xchar *pth_next_sep(const xchar *s) __pure;
