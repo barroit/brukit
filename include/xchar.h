@@ -12,6 +12,8 @@
 #include <wchar.h>
 #include <wctype.h>
 
+#include "xalloc.h"
+
 #define XC(x) __XC(x)
 
 #ifdef ANSI
