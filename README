@@ -1,13 +1,10 @@
 Brukit
 ======
 
-Brukit is a lightweight utility tailored for quickly setting up and running
-command-line programs. Designed with flexibility in mind, it offers a
-streamlined build system that allows you to get up and running in minimal time.
-Brukit is adaptable to different environments, including Windows and Linux,
-with the potential to support other platforms as well.
+Brukit is a utility designed for quickly starting a TUI project. It is tailored
+for C/C++ development and includes commonly used APIs, such as strbuf and
+strlist. Most importantly, it provides Unicode text handling and is compatible
+with Linux, macOS, FreeBSD, and Windows.
 
-The build system provides an easily customizable foundation, making it
-straightforward to adapt Brukit to new operating systems or environments as
-needed. For guidance on adding support for additional platforms, see
-platform-expansion.
+Brukit is dual-licensed under GPLv3 and MIT. You can choose either of these
+licenses or any license compatible with them and apply it to your project.
