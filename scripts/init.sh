@@ -43,8 +43,6 @@ EOF
 ln -s ../../.hooks/pre-commit .git/hooks/pre-commit
 ln -s ../../.hooks/prepare-commit-msg .git/hooks/prepare-commit-msg
 
-mkdir commands
-
 cat <<EOF > unix/main.c
 // SPDX-License-Identifier: $license
 /*
