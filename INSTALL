@@ -1,0 +1,19 @@
+                                   INSTALL
+
+This framework works with GCC (>= 9) and Clang (>= 6), as well as BFD and LLD.
+There's no plan to support other compilers or linkers, like MSVC, in the future.
+
+The following programs are required:
+
+	CMake	(>= 21)
+	Perl	(>= 5.8)
+	jq	(>= 1.0)
+	Bash	(>= 4.3)
+	Git
+
+To set up the project, first prepare a .program.in. Copying .program.in.example
+might be a good starting point. Once you've filled in the required information,
+run 'make scripts/init.sh', this will generate necessary files.
+
+After setup, you will have a commit titled 'INITIAL CONSUMER'. That commit
+contains the changes made by init.sh.

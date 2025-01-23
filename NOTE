@@ -5,25 +5,6 @@ Meaning of NG39
 ---------------
 NG39 stands for ネギミク, where ネギ (negi) is NG and ミク (miku) is 39 ;)
 
-Compiler and linker compatibility
----------------------------------
-This framework only supports GCC (>= 9) and Clang (>= 6), as well as BFD and
-LLD. There are no plans to support additional compilers or linkers in the
-future.
-
-Modularizing platform-specific functionality
---------------------------------------------
-Well, it's not implemented in this framework as it's not that generic, but
-there's an idea for it.
-
-  For structures under platspec directories, make each module its own
-  directory. This makes it easier to include the modules in the build system.
-
-  Define a Kconfig symbol to control whether the module should be enabled.
-
-  In CMakeLists.txt, collect the module sources and either make them a target
-  or add them to platspec.
-
 GNU Make behaviors
 ------------------
 When running make, the default target is not a complete "one-stop" build but
