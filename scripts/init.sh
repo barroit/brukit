@@ -142,7 +142,7 @@ x86	x86_64	amd64	x64
 EOF
 fi
 
-perl -i -ne 'last if /^# # みくみくにしてあげる♪$/; print' .gitignore
+perl -i -ne 'last if /^# みくみくにしてあげる♪$/; print' .gitignore
 sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' .gitignore
 
 rm .program.in*
