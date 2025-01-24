@@ -44,7 +44,7 @@ mv $$.tmp .vscode/settings.json
 setting=$(jq -r ".$fhc_key" .vscode/settings.json)
 year=$(jq -r .year <<< $setting)
 
-no_arch=$(echo $conf | grep no_arch)
+no_arch=$(grep no_arch <<< $conf)
 
 section readme .program.in > README
 
