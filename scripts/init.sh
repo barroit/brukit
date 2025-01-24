@@ -32,8 +32,6 @@ year=$(echo $setting | jq -r .year)
 
 if [[ ! -f .program.in ]]; then
 	die 'missing .program.in'
-elif [[ -f .program ]]; then
-	die "you've already set $(section name .program.in) up"
 elif [[ $license = 'GPL-3.0-or-later or MIT' ]]; then
 	die 'you probably forgot to update license'
 fi
