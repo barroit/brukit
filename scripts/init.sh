@@ -14,6 +14,17 @@ section()
 	perl -ne "print if /^\[$1\]$/ .. /^\[end$1\]$/ and !/^\[.*\]$/" $2
 }
 
+st_section()
+{
+	ret=$(section $1 $2)
+
+	if [[ -z $ret ]]; then
+		die "no matching section $1 found in $2"
+	fi
+
+	echo $ret
+}
+
 setting=$(jq -r '."fileHeaderComment.parameter"."*"' .vscode/settings.json)
 
 license=$(echo $setting | jq -r .license)
@@ -27,7 +38,7 @@ elif [[ $license = 'GPL-3.0-or-later or MIT' ]]; then
 	die 'you probably forgot to update license'
 fi
 
-name=$(section name .program.in)
+name=$(st_section name .program.in)
 conf=$(section conf .program.in)
 icon=$(section icon .program.in)
 
