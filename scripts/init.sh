@@ -25,20 +25,24 @@ st_section()
 	echo $ret
 }
 
-setting=$(jq -r '."fileHeaderComment.parameter"."*"' .vscode/settings.json)
-
-license=$(echo $setting | jq -r .license)
-year=$(echo $setting | jq -r .year)
-
 if [[ ! -f .program.in ]]; then
 	die 'missing .program.in'
-elif [[ $license = 'GPL-3.0-or-later or MIT' ]]; then
-	die 'you probably forgot to update license'
 fi
 
+license=$(st_section license .program.in)
 name=$(st_section name .program.in)
+
 conf=$(section conf .program.in)
 icon=$(section icon .program.in)
+
+fhc_key='"fileHeaderComment.parameter"."*"'
+fhc_license=\"$license\"
+
+jq --tab  ".$fhc_key.license = $fhc_license" .vscode/settings.json > $$.tmp
+mv $$.tmp .vscode/settings.json
+
+setting=$(jq -r ".$fhc_key" .vscode/settings.json)
+year=$(jq -r .year <<< $setting)
 
 no_arch=$(echo $conf | grep no_arch)
 
