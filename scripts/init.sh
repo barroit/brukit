@@ -13,6 +13,7 @@ if [[ ! -f .program.in ]]; then
 	die 'missing .program.in'
 fi
 
+repo=$(st_section repo .program.in)
 license=$(st_section license .program.in)
 name=$(st_section name .program.in)
 
@@ -147,3 +148,13 @@ rm .program.in*
 
 git add .
 git commit -sm 'INITIAL CONSUMER'
+
+git remote add brukit $(git remote get-url origin)
+git remote set-url origin $repo
+git branch --set-upstream-to origin/master
+
+git switch -c brukit HEAD^
+git fetch brukit
+git branch --set-upstream-to brukit/master
+
+git rebase --onto brukit $(git merge-base master brukit) master

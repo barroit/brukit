@@ -1,3 +1,7 @@
+[repo]
+https://url.to/repo
+[endrepo]
+
 [license]
 A valid SPDX license identifier
 [endlicense]
