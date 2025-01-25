@@ -9,22 +9,6 @@ fi
 
 source scripts/libutil.sh
 
-section()
-{
-	perl -ne "print if /^\[$1\]$/ .. /^\[end$1\]$/ and !/^\[.*\]$/" $2
-}
-
-st_section()
-{
-	ret=$(section $1 $2)
-
-	if [[ -z $ret ]]; then
-		die "no matching section $1 found in $2"
-	fi
-
-	echo $ret
-}
-
 if [[ ! -f .program.in ]]; then
 	die 'missing .program.in'
 fi
