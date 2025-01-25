@@ -7,7 +7,6 @@ program_name
 [endname]
 
 [conf]
-# available initialization options:
 no_arch
 [endconf]
 
