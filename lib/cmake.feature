@@ -2,7 +2,7 @@
 
 function(test_cc_builtin prog def)
   execute_process(COMMAND ${Python3_EXECUTABLE}
-		  scripts/checkfeature.py "${prog}"
+		  scripts/check-feature.py "${prog}"
 		  RESULT_VARIABLE err)
 
   if(NOT err)
