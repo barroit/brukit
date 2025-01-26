@@ -39,8 +39,8 @@ name	$name
 version	0.0
 EOF
 
-ln -s ../../.hooks/pre-commit .git/hooks/pre-commit
-ln -s ../../.hooks/prepare-commit-msg .git/hooks/prepare-commit-msg
+ln -s ../../.hooks/pre-commit.sh .git/hooks/pre-commit
+ln -s ../../.hooks/prepare-commit-msg.sh .git/hooks/prepare-commit-msg
 
 cat <<EOF > unix/main.c
 // SPDX-License-Identifier: $license
