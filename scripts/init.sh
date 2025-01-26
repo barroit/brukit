@@ -22,6 +22,7 @@ icon=$(section icon .program.in)
 
 fhc_key='"fileHeaderComment.parameter"."*"'
 fhc_license=\"$license\"
+__license=$(jq -r ".$fhc_key.license" .vscode/settings.json)
 
 jq --tab  ".$fhc_key.license = $fhc_license" .vscode/settings.json > $$.tmp
 mv $$.tmp .vscode/settings.json
@@ -145,6 +146,9 @@ sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' .gitignore
 
 rm .program.in*
 (rm $0) &
+
+git add .
+scripts/amend-license.sh "$__license" "$license"
 
 git add .
 git commit -sm 'INITIAL CONSUMER'
