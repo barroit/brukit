@@ -6,6 +6,6 @@
 #ifndef NG39_BITOPT_H
 #define NG39_BITOPT_H
 
-#define match_bit(flags, ...) (((flags) & (__VA_ARGS__)) == (__VA_ARGS__))
+#define match_bit(flags, bits) (((flags) & (bits)) == (bits))
 
 #endif /* NG39_BITOPT_H */
