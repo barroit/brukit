@@ -81,7 +81,7 @@ struct strlist {
 #define SL_STORE_SBUF (1U << 30)
 #define SL_STORE_COPY (1U << 31)
 
-#define SL_STORE__CHR  (SL_STORE_CHR | SL_DUP_ON_POP)
+#define SL__STORE_CHR  (SL_STORE_CHR | SL_DUP_ON_POP)
 #define SL_STORE__COPY (SL_STORE_COPY | SL_DUP_ON_POP)
 
 #define SL_INIT(...) ADAP_CALL(__SL_INIT_, __VA_ARGS__)

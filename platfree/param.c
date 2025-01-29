@@ -485,7 +485,7 @@ static void show_cmd_usage(const char **usage)
 	const char *pref = "usage: ";
 	size_t __len = strlen("usage: ");
 
-	STRLIST(sl, SL_STORE__CHR);
+	STRLIST(sl, SL__STORE_CHR);
 
 	while (*usage) {
 		const char *line = *usage;
@@ -533,7 +533,7 @@ static void show_opt_usage(struct option *opts)
 	int cnt = 0;
 	struct option *opt;
 
-	STRLIST(sl, SL_STORE__CHR);
+	STRLIST(sl, SL__STORE_CHR);
 
 	opt_for_each(opt, opts) {
 		switch (opt->type) {

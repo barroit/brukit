@@ -143,7 +143,7 @@ TESTDECL_ROUTINE(sl__SL_STORE_CHR)
 	char __cleanup(__free) *res;
 	struct strlist __cleanup(sl_destroy) sl;
 
-	sl_init(&sl, SL_STORE__CHR);
+	sl_init(&sl, SL__STORE_CHR);
 
 	sl_push_chr(&sl, "miku");
 	sl_push_chr(&sl, "3939");
