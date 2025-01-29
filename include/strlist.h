@@ -82,11 +82,11 @@ struct strlist {
 #define SL_STORE_COPY (1U << 31)
 
 #define SL__STORE_CHR  (SL_STORE_CHR | SL_DUP_ON_POP)
-#define SL_STORE__COPY (SL_STORE_COPY | SL_DUP_ON_POP)
+#define SL__STORE_COPY (SL_STORE_COPY | SL_DUP_ON_POP)
 
 #define SL_INIT(...) ADAP_CALL(__SL_INIT_, __VA_ARGS__)
 
-#define __SL_INIT_1(name) __SL_INIT_2(name, SL_STORE__COPY)
+#define __SL_INIT_1(name) __SL_INIT_2(name, SL__STORE_COPY)
 #define __SL_INIT_2(name, f) {			\
 	.head  = LIST_HEAD_INIT(name.head),	\
 	.idle  = LIST_HEAD_INIT(name.idle),	\
@@ -95,7 +95,7 @@ struct strlist {
 
 #define STRLIST(...) ADAP_CALL(__STRLIST_, __VA_ARGS__)
 
-#define __STRLIST_1(name)    __STRLIST_2(name, SL_STORE__COPY)
+#define __STRLIST_1(name)    __STRLIST_2(name, SL__STORE_COPY)
 #define __STRLIST_2(name, f) struct strlist name = __SL_INIT_2(name, f)
 
 void sl_init(struct strlist *sl, u32 flags);
