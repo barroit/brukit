@@ -71,6 +71,8 @@ void sb_trim(struct strbuf *sb);
 
 void sb_init_ws(struct strbuf *sb, const xchar *name);
 
+void sb_reinit_ws(struct strbuf *sb, const xchar *name);
+
 uint sb_pth_append(struct strbuf *sb, const xchar *name);
 
 uint sb_pth_append_at_ws(struct strbuf *sb, const xchar *name);

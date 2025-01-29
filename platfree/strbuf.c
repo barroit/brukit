@@ -209,6 +209,15 @@ void sb_init_ws(struct strbuf *sb, const xchar *name)
 		sanitize_pth_sep(sb);
 }
 
+void sb_reinit_ws(struct strbuf *sb, const xchar *name)
+{
+	sb_trunc(sb, sb->len);
+	sb->off.ws = sb_puts(sb, name);
+
+	if (IS_ENABLED(CONFIG_STRBUF_SANITIZE_PATH))
+		sanitize_pth_sep(sb);
+}
+
 uint sb_pth_append(struct strbuf *sb, const xchar *name)
 {
 	uint __len = xc_strlen(name);
