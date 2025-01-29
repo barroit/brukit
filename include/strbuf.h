@@ -36,6 +36,12 @@ static inline void sb_trunc(struct strbuf *sb, uint len)
 	sb->buf[sb->len] = 0;
 }
 
+static inline void sb_trunc_to_ws(struct strbuf *sb)
+{
+	sb->len = sb->off.ws;
+	sb->buf[sb->len] = 0;
+}
+
 uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s);
 
 static inline uint sb_puts(struct strbuf *sb, const xchar *s)
