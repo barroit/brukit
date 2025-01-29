@@ -9,6 +9,17 @@
 
 TESTDECL_BEGIN();
 
+TESTDECL_ROUTINE(sb_init_ws)
+{
+	struct strbuf __cleanup(sb_destroy) sb;
+
+	sb_init_ws(&sb, XC("path/to/default/ws"));
+	USSERT_STREQUAL(sb.buf, XC("path/to/default/ws"));
+
+	sb_reinit_ws(&sb, XC("path/to/new/ws"));
+	USSERT_STREQUAL(sb.buf, XC("path/to/new/ws"));
+}
+
 TESTDECL_ROUTINE(sb_puts)
 {
 	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
