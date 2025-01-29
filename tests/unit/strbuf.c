@@ -65,6 +65,13 @@ TESTDECL_ROUTINE(sb_trunc)
 	sb_trunc(&sb, sb.len);
 	USSERT_ZERO(sb.len);
 	USSERT_ZERO(sb.buf[0]);
+
+	sb_reinit_ws(&sb, XC("/path/to/dir"));
+
+	sb_puts(&sb, XC("/dummy/path"));
+	sb_trunc_to_ws(&sb);
+	USSERT_EQ(sb.len, xc_strlen(XC("/path/to/dir")));
+	USSERT_STREQUAL(sb.buf, XC("/path/to/dir"));
 }
 
 TESTDECL_ROUTINE(sb_printf)
