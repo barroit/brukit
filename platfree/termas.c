@@ -135,6 +135,7 @@ int __termas(const char *file, int line,
 {
 	static struct tm_tag tags[] = {
 		[TM_LOG]   = { NULL, NULL },
+		[TM_HINT]  = { N_("hint:"),  HN_("hint:",  BOLD, YELLOW) },
 		[TM_WARN]  = { N_("warn:"),  HN_("warn:",  BOLD, MAGENTA) },
 		[TM_ERROR] = { N_("error:"), HN_("error:", BOLD, RED) },
 		[TM_FATAL] = { N_("fatal:"), HN_("fatal:", BOLD, RED) },

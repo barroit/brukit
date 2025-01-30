@@ -17,6 +17,7 @@
 
 enum tm_level {
 	TM_LOG,
+	TM_HINT,
 	TM_WARN,
 	TM_ERROR,
 	TM_FATAL,
@@ -43,6 +44,9 @@ int __termas(const char *file, int line,
 
 #define __tm_mas(hint, flags, fmt, ...) \
 	___termas(TM_LOG, hint, flags | MAS_TO_STDOUT, fmt, ##__VA_ARGS__)
+
+#define __tm_hint(hint, flags, fmt, ...) \
+	___termas(TM_HINT, hint, flags, fmt, ##__VA_ARGS__)
 
 #define __tm_warn(hint, flags, fmt, ...) \
 	___termas(TM_WARN, hint, flags, fmt, ##__VA_ARGS__)
@@ -78,6 +82,8 @@ extern char *strerror(int errnum);
 
 #define note(fmt, ...)       __tm_note(NULL, 0, fmt, ##__VA_ARGS__)
 #define note_errno(fmt, ...) __tm_note(__strerrno, 0, fmt, ##__VA_ARGS__)
+
+#define hint(fmt, ...)       __tm_hint(NULL, 0, fmt, ##__VA_ARGS__)
 
 #define warn(fmt, ...)       __tm_warn(NULL, 0, fmt, ##__VA_ARGS__)
 #define warn_errno(fmt, ...) __tm_warn(__strerrno, 0, fmt, ##__VA_ARGS__)
