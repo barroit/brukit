@@ -75,7 +75,10 @@ int __termas(const char *file, int line,
  * '<tag>: <message>; <strerror>'
  */
 
+#ifdef __unix__
 extern char *strerror(int errnum);
+#endif
+
 #define __strerrno strerror(errno)
 
 #define mas(fmt, ...)       __tm_mas(NULL, 0, fmt, ##__VA_ARGS__)
