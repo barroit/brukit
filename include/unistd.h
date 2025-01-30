@@ -19,6 +19,11 @@
 #define STDOUT_FILENO ({ fileno(stdout); })
 #define STDERR_FILENO ({ fileno(stderr); })
 
+#define R_OK 04
+#define W_OK 02
+#define X_OK 01
+#define F_OK 00
+
 #endif /* __unix__ */
 
 #endif /* NG39_UNISTD_H */
