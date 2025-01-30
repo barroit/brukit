@@ -4,6 +4,6 @@
 
 skip = *.po
 
-ignore-words-list = delink,nam
+ignore-words-list = delink,nam,fiter,clen
 
 check-filenames = true
