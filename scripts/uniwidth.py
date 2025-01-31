@@ -3,10 +3,15 @@
 
 import re
 import sys
+import json
 
 eaw = open('EastAsianWidth.txt', 'r')
+cfg = open('.vscode/settings.json', 'r')
 res = []
 ent = [ 0, 0 ]
+
+field = json.load(cfg)
+license = field['fileHeaderComment.parameter']['*']['license']
 
 for line in eaw:
 	if not re.search(r';\s*[WF]\s', line):
@@ -32,8 +37,8 @@ eaw.close()
 
 sys.stdout = open('platfree/uniwidth.c', 'w')
 
-print('''\
-// SPDX-License-Identifier: GPL-3.0-or-later or MIT
+print(f'''\
+// SPDX-License-Identifier: {license}
 /*
  * Copyright 2024, 2025 Jiamu Sun <barroit@linux.com>
  *
@@ -44,7 +49,7 @@ print('''\
 
 #include "calc.h"
 
-static const wchar_t width[][2] = {\
+static const wchar_t width[][2] = {{\
 ''')
 
 for val in res:
