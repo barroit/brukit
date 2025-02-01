@@ -67,7 +67,6 @@ endif()
 add_compile_options(-Wall
 		    -Wbad-function-cast
 		    -Wformat-security
-		    -Wformat-y2k
 		    -Winit-self
 		    -Wmissing-declarations
 		    -Wmissing-prototypes
