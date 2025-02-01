@@ -12,6 +12,7 @@
 
 #else /* __unix__ */
 
+#include <direct.h>
 #include <io.h>
 #include <process.h>
 
