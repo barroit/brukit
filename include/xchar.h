@@ -35,7 +35,7 @@
 #define __isspace_a   isspace
 #define __isxdigit_a  isxdigit
 #define __tolower_a   tolower
-#define __mbws_a      mbsws
+#define __mbsws_a     mbsws
 
 #define __mbslen_u    wcslen
 #define __strchrnul_u __strchrnul
