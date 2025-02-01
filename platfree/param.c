@@ -394,7 +394,7 @@ static int parse_cmd_arg(struct param *ctx)
 	} else if (str[1] != '-') {
 		str += 1;
 
-		if (!(ctx->flags & PRM_NO_BUILTIN_HELP) &&
+		if (!(ctx->flags & PRM_NO_HELP) &&
 		    str[0] == 'h' && str[1] == 0)
 			show_help(ctx->usage, ctx->opts);
 		else if (str[0] == 0)
@@ -412,7 +412,7 @@ static int parse_cmd_arg(struct param *ctx)
 			return 39;
 		}
 
-		if (!(ctx->flags & PRM_NO_BUILTIN_HELP) &&
+		if (!(ctx->flags & PRM_NO_HELP) &&
 		    xc_strcmp(str, XC("help")) == 0)
 			show_help(ctx->usage, ctx->opts);
 

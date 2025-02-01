@@ -57,11 +57,14 @@ struct opt {
  *
  * PRM_PAR_CMD
  *	Stop parsing on encountering a command.
+ *
+ * PRM_NO_HELP
+ *	Disable built-in help (-h and --help).
  */
 
 #define PRM_RET_NOPT (1 << 0)
 #define PRM_PAR_CMD  (1 << 1)
-#define PRM_NO_BUILTIN_HELP (1 << 2)
+#define PRM_NO_HELP  (1 << 2)
 #define PRM_OPT_COMMAND     (1 << 3)
 
 int parse_param(int argc, const xchar **argv,
