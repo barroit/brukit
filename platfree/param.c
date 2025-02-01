@@ -24,7 +24,7 @@
 #endif
 
 #define opt_for_each(pos, opts) \
-	for (pos = opts; (pos)->type != OPTION__END; (pos)++)
+	for (pos = opts; (pos)->mode != OPTION__END; (pos)++)
 
 #define OPT_SHORT_OPT (1 << 0)
 #define OPT_LONG_OPT  (1 << 1)
@@ -71,7 +71,7 @@ static int has_command(struct opt *opts)
 	struct opt *opt;
 
 	opt_for_each(opt, opts) {
-		if (opt->type == OPTION__COMMAND)
+		if (opt->mode == OPTION__COMMAND)
 			return 1;
 	}
 
@@ -157,7 +157,7 @@ static int parse_command(struct opt *opts, const xchar *cmd)
 	struct opt *opt;
 
 	opt_for_each(opt, opts) {
-		if (opt->type != OPTION__COMMAND)
+		if (opt->mode != OPTION__COMMAND)
 			continue;
 
 		if (xc_strcmp(opt->lnam, cmd) != 0)
@@ -227,9 +227,9 @@ static void set_opt_val(struct param *ctx,
 		[OPTION_CMDMODE] = __setopt(cmdmode),
 	};
 
-	map[opt->type](opt, arg, flags);
+	map[opt->mode](opt, arg, flags);
 
-	if (opt->type == OPTION_CMDMODE)
+	if (opt->mode == OPTION_CMDMODE)
 		cmdmode_record(&ctx->mode, opt, flags);
 }
 
@@ -327,7 +327,7 @@ static void parse_long_opt(struct param *ctx, const xchar *arg)
 	}
 
 	opt_for_each(opt, ctx->opts) {
-		if (!opt->lnam || opt->type == OPTION__COMMAND)
+		if (!opt->lnam || opt->mode == OPTION__COMMAND)
 			continue;
 
 		const xchar *onam = opt->lnam;
@@ -536,7 +536,7 @@ static void show_opt_usage(struct opt *opts)
 	STRLIST(sl, SL__STORE_CHR);
 
 	opt_for_each(opt, opts) {
-		switch (opt->type) {
+		switch (opt->mode) {
 		case OPTION__GROUP:
 			putchar('\n');
 			puts(opt->__lnam);

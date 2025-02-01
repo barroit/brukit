@@ -11,7 +11,7 @@
 #include "types.h"
 #include "xchar.h"
 
-enum option_type {
+enum opt_mode {
 	OPTION_SWITCH,
 	OPTION_NUMBER,
 	OPTION_STRING,
@@ -31,7 +31,7 @@ enum option_type {
 typedef int (*command_callback_t)(int, const char **);
 
 struct opt {
-	enum option_type type;
+	enum opt_mode mode;
 
 	xchar snam;
 	const xchar *lnam;
@@ -63,12 +63,12 @@ int parse_param(int argc, const xchar **argv,
 #define __opt_lnam(l) XC(l)
 #define __opt_ptr(p, t) __st_same_type(p, t *) + p
 
-#define OPT_END()    { .type = OPTION__END }
-#define OPT_GROUP(l) { .type = OPTION__GROUP, .__lnam = l }
+#define OPT_END()    { .mode = OPTION__END }
+#define OPT_GROUP(l) { .mode = OPTION__GROUP, .__lnam = l }
 
 #define OPT_SWITCH(s, l, p, h) __OPT_SWITCH(s, l, p, h, 0)
 #define __OPT_SWITCH(s, l, p, h, f) {	\
-	.type   = OPTION_SWITCH,	\
+	.mode   = OPTION_SWITCH,	\
 	.snam   = __opt_snam(s),	\
 	.lnam   = __opt_lnam(l),	\
 	.__snam = s,			\
@@ -80,7 +80,7 @@ int parse_param(int argc, const xchar **argv,
 
 #define OPT_NUMBER(s, l, p, h) __OPT_NUMBER(s, l, p, h, 0)
 #define __OPT_NUMBER(s, l, p, h, f) {	\
-	.type   = OPTION_NUMBER,	\
+	.mode   = OPTION_NUMBER,	\
 	.snam   = __opt_snam(s),	\
 	.lnam   = __opt_lnam(l),	\
 	.__snam = s,			\
@@ -95,7 +95,7 @@ int parse_param(int argc, const xchar **argv,
 #define __OPT_STRING(s, l, p, h, f) ___OPT_STRING(s, l, p, 0, h, f)
 #define ___OPT_STRING(s, l, p, a, h, f) ____OPT_STRING(s, l, p, 0, a, h, f)
 #define ____OPT_STRING(s, l, p, v, a, h, f) {	\
-	.type   = OPTION_STRING,		\
+	.mode   = OPTION_STRING,		\
 	.snam   = __opt_snam(s),		\
 	.lnam   = __opt_lnam(l),		\
 	.__snam = s,				\
@@ -112,7 +112,7 @@ int parse_param(int argc, const xchar **argv,
 
 #define OPT_COMMAND(l, p, c) __OPT_COMMAND(l, p, c, 0)
 #define __OPT_COMMAND(l, p, c, f) {			\
-	.type   = OPTION__COMMAND,			\
+	.mode   = OPTION__COMMAND,			\
 	.lnam   = __opt_lnam(l),			\
 	.__lnam = l,					\
 	.ptr    = __opt_ptr(p, command_callback_t),	\
@@ -122,7 +122,7 @@ int parse_param(int argc, const xchar **argv,
 
 #define OPT_CMDMODE(s, l, p, v, h) __OPT_CMDMODE(s, l, p, v, h, OPT_NO_NEG)
 #define __OPT_CMDMODE(s, l, p, v, h, f) {	\
-	.type   = OPTION_CMDMODE,		\
+	.mode   = OPTION_CMDMODE,		\
 	.snam   = __opt_snam(s),		\
 	.lnam   = __opt_lnam(l),		\
 	.__snam = s,				\
