@@ -27,7 +27,7 @@ int __main(int argc, const char **argv)
 {
 	command_callback_t cmd = NULL;
 
-	struct option opt[] = {
+	struct opt opt[] = {
 		OPT_COMMAND("push", &cmd, push),
 		OPT_COMMAND("pop", &cmd, pop),
 		OPT_END(),

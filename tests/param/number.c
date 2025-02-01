@@ -16,7 +16,7 @@ int __main(int argc, const char **argv)
 {
 	uint job = 0;
 
-	struct option opt[] = {
+	struct opt opt[] = {
 		OPT_NUMBER('j', "job", &job, "allow N jobs at once"),
 		OPT_END(),
 	};

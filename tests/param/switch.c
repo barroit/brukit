@@ -17,7 +17,7 @@ int __main(int argc, const char **argv)
 	int force = 0;
 	int enable = 0;
 
-	struct option opt[] = {
+	struct opt opt[] = {
 		OPT_SWITCH('f', "force", &force, "forced to do something"),
 		OPT_SWITCH(0, "enable", &enable, "enable something"),
 		OPT_END(),

@@ -16,7 +16,7 @@ int __main(int argc, const char **argv)
 {
 	const char *name = NULL;
 
-	struct option opt[] = {
+	struct opt opt[] = {
 		OPT_STRING(0, "name", &name, "someone's name"),
 		OPT_END(),
 	};

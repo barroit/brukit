@@ -41,7 +41,7 @@ struct param {
 	int outc;
 	const xchar **outv;
 
-	struct option *opts;
+	struct opt *opts;
 	const char **usage;
 
 	u32 flags;
@@ -50,25 +50,25 @@ struct param {
 };
 
 struct abbrev {
-	struct option *opt;
+	struct opt *opt;
 	u32 flags;
 };
 
 struct cmdmode {
-	struct option *opt;
+	struct opt *opt;
 	u32 flags;
 
 	struct list_head list;
 };
 
-static void __noreturn show_help(const char **usage, struct option *opts);
+static void __noreturn show_help(const char **usage, struct opt *opts);
 
 static struct strbuf __cmdname = SB_INIT;
 static char *cmdname;
 
-static int has_command(struct option *opts)
+static int has_command(struct opt *opts)
 {
-	struct option *opt;
+	struct opt *opt;
 
 	opt_for_each(opt, opts) {
 		if (opt->type == OPTION__COMMAND)
@@ -104,7 +104,7 @@ static void cmdmode_destroy(struct list_head *mode)
 	}
 }
 
-static char *pretty_opt_name(struct option *opt, u32 flags)
+static char *pretty_opt_name(struct opt *opt, u32 flags)
 {
 	struct strbuf sb = SB_INIT;
 
@@ -131,7 +131,7 @@ static char *pretty_arg_name(const xchar *arg, const char *fb)
 }
 
 static void cmdmode_record(struct list_head *mode,
-			   struct option *opt, u32 flags)
+			   struct opt *opt, u32 flags)
 {
 	struct cmdmode *cm;
 
@@ -152,9 +152,9 @@ static void cmdmode_record(struct list_head *mode,
 	cm->flags = flags;
 }
 
-static int parse_command(struct option *opts, const xchar *cmd)
+static int parse_command(struct opt *opts, const xchar *cmd)
 {
-	struct option *opt;
+	struct opt *opt;
 
 	opt_for_each(opt, opts) {
 		if (opt->type != OPTION__COMMAND)
@@ -172,14 +172,14 @@ static int parse_command(struct option *opts, const xchar *cmd)
 	die(_("unknown command `%s', see '%s -h'"), name, cmdname);
 }
 
-static void __setopt(switch)(struct option *opt, const xchar *arg, u32 flags)
+static void __setopt(switch)(struct opt *opt, const xchar *arg, u32 flags)
 {
 	int *p = opt->ptr;
 
 	*p = flags & OPT_UNSET ? 0 : 1;
 }
 
-static void __setopt(number)(struct option *opt, const xchar *arg, u32 flags)
+static void __setopt(number)(struct opt *opt, const xchar *arg, u32 flags)
 {
 	if (flags & OPT_UNSET) {
 		*(u32 *)opt->ptr = 0;
@@ -198,7 +198,7 @@ static void __setopt(number)(struct option *opt, const xchar *arg, u32 flags)
 	die(_("option %s has an invalid integer value `%s'"), name, val);
 }
 
-static void __setopt(string)(struct option *opt, const xchar *arg, u32 flags)
+static void __setopt(string)(struct opt *opt, const xchar *arg, u32 flags)
 {
 	const xchar **p = opt->ptr;
 
@@ -210,7 +210,7 @@ static void __setopt(string)(struct option *opt, const xchar *arg, u32 flags)
 		*p = (const xchar *)opt->val;
 }
 
-static void __setopt(cmdmode)(struct option *opt, const xchar *arg, u32 flags)
+static void __setopt(cmdmode)(struct opt *opt, const xchar *arg, u32 flags)
 {
 	int *p = opt->ptr;
 
@@ -218,7 +218,7 @@ static void __setopt(cmdmode)(struct option *opt, const xchar *arg, u32 flags)
 }
 
 static void set_opt_val(struct param *ctx,
-			struct option *opt, const xchar *arg, u32 flags)
+			struct opt *opt, const xchar *arg, u32 flags)
 {
 	static typeof(__setopt(switch)) *map[__OPTION__SIZE] = {
 		[OPTION_SWITCH]  = __setopt(switch),
@@ -235,7 +235,7 @@ static void set_opt_val(struct param *ctx,
 
 static const xchar *parse_shrt_opt(struct param *ctx, const xchar *args)
 {
-	struct option *opt;
+	struct opt *opt;
 	const xchar *arg = NULL;
 
 	xchar snam = args[0];
@@ -265,7 +265,7 @@ static const xchar *parse_shrt_opt(struct param *ctx, const xchar *args)
 	die(_("unknown option -%c"), (char)snam);
 }
 
-static void opt_abbrev(struct option *opt, u32 flags,
+static void opt_abbrev(struct opt *opt, u32 flags,
 		       struct abbrev *abbrev, struct abbrev *ambig)
 {
 	if (abbrev->opt && abbrev->flags != flags) {
@@ -277,7 +277,7 @@ static void opt_abbrev(struct option *opt, u32 flags,
 	abbrev->flags = flags;
 }
 
-static int __parse_long_opt(struct param *ctx, struct option *opt,
+static int __parse_long_opt(struct param *ctx, struct opt *opt,
 			    const xchar *arg, u32 argf, u32 optf)
 {
 	int unset = argf & OPT_UNSET;
@@ -307,7 +307,7 @@ static int __parse_long_opt(struct param *ctx, struct option *opt,
 static void parse_long_opt(struct param *ctx, const xchar *arg)
 {
 	int err;
-	struct option *opt;
+	struct opt *opt;
 
 	const xchar *anam = arg;
 	const xchar *asep = xc_strchrnul(arg, '=');
@@ -423,7 +423,7 @@ static int parse_cmd_arg(struct param *ctx)
 }
 
 int parse_param(int argc, const xchar **argv,
-		const char **usage, struct option *opts, u32 flags)
+		const char **usage, struct opt *opts, u32 flags)
 {
 	int __argc = argc - 1;
 
@@ -528,10 +528,10 @@ next:
 	putchar('\n');
 }
 
-static void show_opt_usage(struct option *opts)
+static void show_opt_usage(struct opt *opts)
 {
 	int cnt = 0;
-	struct option *opt;
+	struct opt *opt;
 
 	STRLIST(sl, SL__STORE_CHR);
 
@@ -597,7 +597,7 @@ static void show_opt_usage(struct option *opts)
 		putchar('\n');
 }
 
-static void show_help(const char **usage, struct option *opts)
+static void show_help(const char **usage, struct opt *opts)
 {
 	show_cmd_usage(usage);
 

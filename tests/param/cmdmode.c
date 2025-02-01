@@ -21,7 +21,7 @@ int __main(int argc, const char **argv)
 {
 	enum op_mode mode = OP_PROC;
 
-	struct option opt[] = {
+	struct opt opt[] = {
 		OPT_CMDMODE(0, "proc", &mode, OP_PROC, "process"),
 		OPT_CMDMODE(0, "thrd", &mode, OP_THRD, "thread"),
 		OPT_END(),

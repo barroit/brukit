@@ -30,7 +30,7 @@ enum option_type {
 
 typedef int (*command_callback_t)(int, const char **);
 
-struct option {
+struct opt {
 	enum option_type type;
 
 	xchar snam;
@@ -57,7 +57,7 @@ struct option {
 #define PRM_OPT_COMMAND     (1 << 3)
 
 int parse_param(int argc, const xchar **argv,
-		const char **usage, struct option *opts, u32 flags);
+		const char **usage, struct opt *opts, u32 flags);
 
 #define __opt_snam(s) __st_isascii(s) + XC(s)
 #define __opt_lnam(l) XC(l)
