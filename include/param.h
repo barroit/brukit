@@ -54,10 +54,13 @@ struct opt {
 /*
  * PRM_RET_NOPT
  *	Stop parsing on encountering a non-option argument.
+ *
+ * PRM_PAR_CMD
+ *	Stop parsing on encountering a command.
  */
 
 #define PRM_RET_NOPT (1 << 0)
-#define __PRM_PARSE_COMMAND (1 << 1)
+#define PRM_PAR_CMD  (1 << 1)
 #define PRM_NO_BUILTIN_HELP (1 << 2)
 #define PRM_OPT_COMMAND     (1 << 3)
 

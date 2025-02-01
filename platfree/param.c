@@ -386,7 +386,7 @@ static int parse_cmd_arg(struct param *ctx)
 		if (ctx->flags & PRM_RET_NOPT)
 			return 39;
 
-		if (ctx->flags & __PRM_PARSE_COMMAND)
+		if (ctx->flags & PRM_PAR_CMD)
 			return parse_command(ctx->opts, str);
 
 		ctx->outv[ctx->outc] = str;
@@ -429,7 +429,7 @@ int parse_param(int argc, const xchar **argv,
 
 	if (has_command(opts)) {
 		BUG_ON(flags & PRM_RET_NOPT);
-		flags |= __PRM_PARSE_COMMAND;
+		flags |= PRM_PAR_CMD;
 	}
 
 	struct param ctx = {
@@ -468,7 +468,7 @@ int parse_param(int argc, const xchar **argv,
 
 	int ret = ctx.outc + ctx.argc;
 
-	if (flags & __PRM_PARSE_COMMAND && ret == 0) {
+	if (flags & PRM_PAR_CMD && ret == 0) {
 		if (!(flags & PRM_OPT_COMMAND) && __argc)
 			error(_("'%s' requires a subcommand\n"), cmdname);
 
