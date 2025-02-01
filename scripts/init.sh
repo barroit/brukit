@@ -54,7 +54,24 @@ int main(int argc, const char **argv)
 }
 EOF
 
-cp unix/main.c win32/main.tui.c
+cat <<EOF > win32/main.tui.c
+// SPDX-License-Identifier: $license
+/*
+ * Copyright $year Jiamu Sun <barroit@linux.com>
+ */
+
+#include "types.h"
+
+#ifdef CONFIG_WIDE_CHAR
+# pragma GCC diagnostic ignored "-Wmissing-prototypes" 
+# define main wmain
+#endif
+
+int main(int argc, const xchar **argv)
+{
+	return 0;
+}
+EOF
 
 cat <<EOF > win32/main.gui.c
 // SPDX-License-Identifier: $license
@@ -62,7 +79,14 @@ cat <<EOF > win32/main.gui.c
  * Copyright $year Jiamu Sun <barroit@linux.com>
  */
 
-int WinMain(HINSTANCE app, HINSTANCE _, char *cmdline, int __)
+#include "types.h"
+
+#ifdef CONFIG_WIDE_CHAR
+# pragma GCC diagnostic ignored "-Wmissing-prototypes" 
+# define WinMain wWinMain
+#endif
+
+int WinMain(HINSTANCE app, HINSTANCE prev_app, xchar *cmd, int window_cntl)
 {
 	return 0;
 }
