@@ -49,7 +49,7 @@ static int yield_file(struct __fiter *ctx, WIN32_FIND_DATA *ent)
 		} else if (ctx->flags & FI_NO_UNK && !is_dir) {
 			char *path = __sb_mb_str_fb(ctx->sb, "���");
 
-			warn(_("`%s' has unsupported file type `%d', skipped"),
+			warn(_("`%s' has unsupported file type `%lu', skipped"),
 		     	     path, ent->dwFileAttributes);
 			if (IS_ENABLED(CONFIG_WIDE_CHAR))
 				free(path);
