@@ -51,7 +51,12 @@ struct opt {
 	u32 flags;
 };
 
-#define PRM_STOP_AT_NON_OPT (1 << 0)
+/*
+ * PRM_RET_NOPT
+ *	Stop parsing on encountering a non-option argument.
+ */
+
+#define PRM_RET_NOPT (1 << 0)
 #define __PRM_PARSE_COMMAND (1 << 1)
 #define PRM_NO_BUILTIN_HELP (1 << 2)
 #define PRM_OPT_COMMAND     (1 << 3)
