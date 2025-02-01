@@ -469,7 +469,7 @@ int parse_param(int argc, const xchar **argv,
 	int ret = ctx.outc + ctx.argc;
 
 	if (flags & PRM_PAR_CMD && ret == 0) {
-		if (!(flags & PRM_OPT_COMMAND) && __argc)
+		if (!(flags & PRM_OPT_CMD) && __argc)
 			error(_("'%s' requires a subcommand\n"), cmdname);
 
 		show_help(ctx.usage, ctx.opts);
