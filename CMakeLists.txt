@@ -167,10 +167,7 @@ endif()
 add_executable(${exec_name} ${source})
 
 if(CONFIG_I18N_SUPP)
-  find_package(Intl)
-  if(Intl_FOUND)
-    include_scp(lib/cmake.gettext)
-  endif()
+  include_scp(lib/cmake.gettext)
 endif()
 
 add_compile_definitions(_GNU_SOURCE)

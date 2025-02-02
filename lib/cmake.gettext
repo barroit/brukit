@@ -1,5 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
+find_package(Intl)
+if(NOT Intl_FOUND)
+  return()
+endif()
+
 link_libraries(Intl::Intl)
 add_compile_definitions(HAVE_INTL)
 
