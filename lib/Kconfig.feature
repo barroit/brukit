@@ -5,8 +5,24 @@ config CC_HAS_TOPLEVEL_REORDER
 
 menu "Core features"
 
-config I18N_SUPP
+menuconfig I18N_SUPP
 	bool "Enable i18n support"
+
+if I18N_SUPP
+
+config TEXT_DOMAIN_NAME
+	string "Text domain name for gettext"
+	default $(pg-name)
+
+config CUSTOM_TEXT_LOCALE
+	bool "Enable custom program locale"
+
+config TEXT_LOCALE
+	string "Specify program locale"
+	default "C.UTF-8"
+	depends on CUSTOM_TEXT_LOCALE
+
+endif # I18N_SUPP
 
 menu "Formatting options"
 
