@@ -7,6 +7,7 @@
 
 #ifndef NG39_GETTEXT_H
 #define NG39_GETTEXT_H
+#ifndef INTL_PREP_MO
 
 const char *__gettext(const char *id);
 
@@ -22,4 +23,5 @@ const char *__gettext(const char *id);
 
 #define N_(masid) masid
 
+#endif /* INTL_PREP_MO */
 #endif /* NG39_GETTEXT_H */

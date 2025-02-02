@@ -29,7 +29,7 @@ build:
 	@cmake --build build --parallel
 
 configure:
-	@cmake -S . -B build
+	@cmake -S . -B build $(EXTOPT)
 
 all: configure build
 

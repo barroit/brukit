@@ -20,6 +20,7 @@ unitest_list.h
 
 locale/*~
 locale/generated.pot
+locale/messages.po
 
 .tmp
 DRAFT
@@ -33,3 +34,4 @@ EastAsianWidth.txt
 *.manifest.in
 **/main*.c
 !tests/**/main.c
+locale/**/*.mo

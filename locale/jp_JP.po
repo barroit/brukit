@@ -1,0 +1,140 @@
+# SPDX-License-Identifier: GPL-3.0-or-later or MIT
+# Copyright 2025 Jiamu Sun
+#
+#, fuzzy
+msgid   ""
+msgstr  "Report-Msgid-Bugs-To: Jiamu Sun <barroit@linux.com>\n"
+        "Language: jp_JP\n"
+        "MIME-Version: 1.0\n"
+        "Content-Type: text/plain; charset=UTF-8\n"
+        "Content-Transfer-Encoding: 8bit\n"
+        "Plural-Forms: nplurals=1; plural=0;\n"
+
+#: /home/barroit/workspace/brukit/unix/proc.c:96
+#, c-format
+msgid   "failed to execute `%s'"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/unix/fiter.c:27
+#, c-format
+msgid   "failed to get status for link `%s'"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/unix/fiter.c:42
+#, c-format
+msgid   "failed to open file `%s'"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/unix/fiter.c:60
+#, c-format
+msgid   "failed to get status for file `%s'"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/unix/fiter.c:101
+#, c-format
+msgid   "failed to determine file type for `%s'"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/unix/fiter.c:105
+#, c-format
+msgid   "`%s' has unsupported file type `%d', skipped"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/unix/fiter.c:133
+#, c-format
+msgid   "failed to open directory `%s'"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/param.c:145
+#, c-format
+msgid   "options %s and %s cannot be used together"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/param.c:172
+#, c-format
+msgid   "unknown command `%s', see '%s -h'"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/param.c:198
+#, c-format
+msgid   "option %s has an invalid integer value `%s'"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/param.c:258
+#, c-format
+msgid   "option -%c requires a value"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/param.c:265
+#, c-format
+msgid   "unknown option -%c"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/param.c:287
+#, c-format
+msgid   "option `%s%s' takes no value"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/param.c:299
+#, c-format
+msgid   "option `%s%s' requires a value"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/param.c:367
+#, c-format
+msgid   "ambiguous option --%s, could be %s or %s"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/param.c:377
+#, c-format
+msgid   "unknown option --%s"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/param.c:401
+msgid   "unknown option -"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/param.c:473
+#, c-format
+msgid   "'%s' requires a subcommand\n"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/termas.c:138
+msgid   "hint:"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/termas.c:138
+msgid   "\033[1;33mhint:\033[0m"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/termas.c:139
+msgid   "warn:"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/termas.c:139
+msgid   "\033[1;35mwarn:\033[0m"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/termas.c:140
+msgid   "error:"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/termas.c:140
+msgid   "\033[1;31merror:\033[0m"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/termas.c:141
+msgid   "fatal:"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/termas.c:141
+msgid   "\033[1;31mfatal:\033[0m"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/termas.c:142
+msgid   "BUG:"
+msgstr  ""
+
+#: /home/barroit/workspace/brukit/platfree/termas.c:142
+msgid   "\033[1;31;40mBUG:\033[0m"
+msgstr  ""

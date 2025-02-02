@@ -71,7 +71,7 @@
 
 #define H(x, ...) __fmtcol(__VA_ARGS__) x __fmtcol(RESET)
 
-#ifndef INTL_PREPARE_MASMAP
+#ifndef INTL_PREP_MO
 # define __H_  _
 # define __HN_ N_
 #endif
