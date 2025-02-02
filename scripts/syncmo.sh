@@ -19,7 +19,7 @@ domain=$(grep name .program | cut -f2)
 cd locale
 
 src=$(find ../build/CMakeFiles -type f -name '*.i')
-lang=(zh_CN jp_JP)
+lang=(zh_CN ja_JP)
 
 xgettext --omit-header \
 	 --from-code=UTF-8 -LC -Ei -k_ -kN_ -k__H_ -k__HN_ $src
