@@ -62,7 +62,7 @@ config REP_HOOK
 
 config DEBUG_INTL
 	bool "Link with the non-inline function call version of intl"
-	depends on I18N_SUPP
+	depends on I18N_SUPPORT
 
 menu "String Buffer options"
 

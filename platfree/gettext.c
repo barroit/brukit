@@ -2,7 +2,7 @@
 /*
  * Copyright 2025 Jiamu Sun <barroit@linux.com>
  *
- *This file is compiled only when CONFIG_I18N_SUPP is enabled.
+ *This file is compiled only when CONFIG_I18N_SUPPORT is enabled.
  */
 
 #include "gettext.h"
