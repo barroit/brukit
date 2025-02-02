@@ -13,128 +13,128 @@ msgstr  "Report-Msgid-Bugs-To: Jiamu Sun <barroit@linux.com>\n"
 #: /home/barroit/workspace/brukit/unix/proc.c:96
 #, c-format
 msgid   "failed to execute `%s'"
-msgstr  ""
+msgstr  "`%s'の実行に失敗しました"
 
 #: /home/barroit/workspace/brukit/unix/fiter.c:27
 #, c-format
 msgid   "failed to get status for link `%s'"
-msgstr  ""
+msgstr  "リンク`%s'のステータス取得に失敗しました"
 
 #: /home/barroit/workspace/brukit/unix/fiter.c:42
 #, c-format
 msgid   "failed to open file `%s'"
-msgstr  ""
+msgstr  "ファイル`%s'のオープンに失敗しました"
 
 #: /home/barroit/workspace/brukit/unix/fiter.c:60
 #, c-format
 msgid   "failed to get status for file `%s'"
-msgstr  ""
+msgstr  "ファイル`%s'のステータス取得に失敗しました"
 
 #: /home/barroit/workspace/brukit/unix/fiter.c:101
 #, c-format
 msgid   "failed to determine file type for `%s'"
-msgstr  ""
+msgstr  "ファイル`%s'のタイプ判別に失敗しました"
 
 #: /home/barroit/workspace/brukit/unix/fiter.c:105
 #, c-format
 msgid   "`%s' has unsupported file type `%d', skipped"
-msgstr  ""
+msgstr  "`%s'はサポートされてないファイルタイプ`%d'のため、スキップしました"
 
 #: /home/barroit/workspace/brukit/unix/fiter.c:133
 #, c-format
 msgid   "failed to open directory `%s'"
-msgstr  ""
+msgstr  "ディレクトリ`%s'のオープンに失敗しました"
 
 #: /home/barroit/workspace/brukit/platfree/param.c:145
 #, c-format
 msgid   "options %s and %s cannot be used together"
-msgstr  ""
+msgstr  "オプション`%s'と`%s'は同時に使用できません"
 
 #: /home/barroit/workspace/brukit/platfree/param.c:172
 #, c-format
 msgid   "unknown command `%s', see '%s -h'"
-msgstr  ""
+msgstr  "不明なコマンド`%s'、`%s -h'を参照してください"
 
 #: /home/barroit/workspace/brukit/platfree/param.c:198
 #, c-format
 msgid   "option %s has an invalid integer value `%s'"
-msgstr  ""
+msgstr  "オプション%sは無効な整数値`%s'を持っています"
 
 #: /home/barroit/workspace/brukit/platfree/param.c:258
 #, c-format
 msgid   "option -%c requires a value"
-msgstr  ""
+msgstr  "オプション-%cには値が必要です"
 
 #: /home/barroit/workspace/brukit/platfree/param.c:265
 #, c-format
 msgid   "unknown option -%c"
-msgstr  ""
+msgstr  "不明なオプション-%c"
 
 #: /home/barroit/workspace/brukit/platfree/param.c:287
 #, c-format
 msgid   "option `%s%s' takes no value"
-msgstr  ""
+msgstr  "オプション`%s%s'は値を取りません"
 
 #: /home/barroit/workspace/brukit/platfree/param.c:299
 #, c-format
 msgid   "option `%s%s' requires a value"
-msgstr  ""
+msgstr  "オプション`%s%s'には値が必要です"
 
 #: /home/barroit/workspace/brukit/platfree/param.c:367
 #, c-format
 msgid   "ambiguous option --%s, could be %s or %s"
-msgstr  ""
+msgstr  "曖昧なオプション--%s、%sまたは%sの可能性があります"
 
 #: /home/barroit/workspace/brukit/platfree/param.c:377
 #, c-format
 msgid   "unknown option --%s"
-msgstr  ""
+msgstr  "不明なオプション--%s"
 
 #: /home/barroit/workspace/brukit/platfree/param.c:401
 msgid   "unknown option -"
-msgstr  ""
+msgstr  "不明なオプション-"
 
 #: /home/barroit/workspace/brukit/platfree/param.c:473
 #, c-format
 msgid   "'%s' requires a subcommand\n"
-msgstr  ""
+msgstr  "`%s'にはサブコマンドが必要です\n"
 
 #: /home/barroit/workspace/brukit/platfree/termas.c:138
 msgid   "hint:"
-msgstr  ""
+msgstr  "ヒント:"
 
 #: /home/barroit/workspace/brukit/platfree/termas.c:138
 msgid   "\033[1;33mhint:\033[0m"
-msgstr  ""
+msgstr  "\033[1;33mヒント:\033[0m"
 
 #: /home/barroit/workspace/brukit/platfree/termas.c:139
 msgid   "warn:"
-msgstr  ""
+msgstr  "警告"
 
 #: /home/barroit/workspace/brukit/platfree/termas.c:139
 msgid   "\033[1;35mwarn:\033[0m"
-msgstr  ""
+msgstr  "\033[1;35m警告:\033[0m"
 
 #: /home/barroit/workspace/brukit/platfree/termas.c:140
 msgid   "error:"
-msgstr  ""
+msgstr  "エラー"
 
 #: /home/barroit/workspace/brukit/platfree/termas.c:140
 msgid   "\033[1;31merror:\033[0m"
-msgstr  ""
+msgstr  "\033[1;31mエラー:\033[0m"
 
 #: /home/barroit/workspace/brukit/platfree/termas.c:141
 msgid   "fatal:"
-msgstr  ""
+msgstr  "致命的な"
 
 #: /home/barroit/workspace/brukit/platfree/termas.c:141
 msgid   "\033[1;31mfatal:\033[0m"
-msgstr  ""
+msgstr  "\033[1;31m致命的な:\033[0m"
 
 #: /home/barroit/workspace/brukit/platfree/termas.c:142
 msgid   "BUG:"
-msgstr  ""
+msgstr  "バグ"
 
 #: /home/barroit/workspace/brukit/platfree/termas.c:142
 msgid   "\033[1;31;40mBUG:\033[0m"
-msgstr  ""
+msgstr  "\033[1;31;40mバグ:\033[0m"
