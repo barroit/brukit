@@ -96,6 +96,10 @@ if(CONFIG_DUMP_CPL_CMD)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
+if(CONFIG_I18N_SUPP)
+  include_scp(lib/cmake.gettext)
+endif()
+
 include_scp(lib/cmake.feature)
 
 configure_file(include/program.h.in ${GEN}/program.h)
@@ -131,6 +135,9 @@ list(FILTER source EXCLUDE REGEX main\.)
 add_library(platspec OBJECT ${source})
 
 file(GLOB source LIST_DIRECTORIES false platfree/*.c commands/*.c)
+if(NOT HAVE_INTL)
+  list(FILTER source EXCLUDE REGEX gettext\.c)
+endif()
 add_library(platfree OBJECT ${source})
 
 if(CONFIG_PROG_WITH_SANITIZER)
@@ -165,10 +172,6 @@ if(WIN32)
 endif()
 
 add_executable(${exec_name} ${source})
-
-if(CONFIG_I18N_SUPP)
-  include_scp(lib/cmake.gettext)
-endif()
 
 add_compile_definitions(_GNU_SOURCE)
 
