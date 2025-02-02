@@ -186,13 +186,16 @@ int __termas(const char *file, int line,
 	if (tag->name) {
 		int show_pos = flags & MAS_SHOW_FILE ||
 			       (flags & MAS_SHOW_FUNC);
-		const char *t = udef_use_tercol ? tag->colored : tag->name;
-		size_t len = strlen(t) + !show_pos;
+		const char *name = udef_use_tercol ? tag->colored : tag->name;
+		size_t len = !show_pos;
+
+		name = _(name);
+		len += strlen(name);
 
 		if (len > avail)
 			len = avail;
 
-		memcpy(&buf[size], _(t), len);
+		memcpy(&buf[size], name, len);
 		size += len;
 		if (!show_pos)
 			buf[size - 1] = ' ';
