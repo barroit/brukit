@@ -35,9 +35,7 @@ static inline int pth_is_dot(const xchar *name)
 	       (name[1] == 0 || (name[1] == '.' && name[2] == 0));
 }
 
-#ifdef __unix__
 char *delink(const char *name);
-#endif
 
 const xchar *pth_home(void);
 
