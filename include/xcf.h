@@ -23,13 +23,14 @@
 #define __39_strchr_mb    strchr
 #define __39_strchrnul_mb __strchrnul
 #define __39_strcmp_mb    strcmp
-#define __39_strdup_mb    xstrdup
+#define __39_strdup_mb    strdup
 #define __39_strlen_mb    strlen
 #define __39_stpncpy_mb   strncpy
 #define __39_strncmp_mb   strncmp
 #define __39_strrchr_mb   strrchr
 #define __39_tolower_mb   tolower
 #define __39_vsnprintf_mb vsnprintf
+#define __39_xstrdup_mb   xstrdup
 
 #define __39_freopen_wc   _wfreopen
 #define __39_getenv_wc    wgetenv
@@ -43,13 +44,14 @@
 #define __39_strchr_wc    wcschr
 #define __39_strchrnul_wc __strchrnul
 #define __39_strcmp_wc    wcscmp
-#define __39_strdup_wc    xwcsdup
+#define __39_strdup_wc    wcsdup
 #define __39_strlen_wc    wcslen
 #define __39_stpncpy_wc   wcsncpy
 #define __39_strncmp_wc   wcsncmp
 #define __39_strrchr_wc   wcsrchr
 #define __39_tolower_wc   towlower
 #define __39_vsnprintf_wc vswprintf
+#define __39_xstrdup_wc   xwcsdup
 
 #ifndef CONFIG_ENABLE_WCHAR
 # define __xchar_type _mb
@@ -80,5 +82,6 @@
 #define xc_strrchr   __XCHAR_ALIAS(__39_strrchr)
 #define xc_tolower   __XCHAR_ALIAS(__39_tolower)
 #define xc_vsnprintf __XCHAR_ALIAS(__39_vsnprintf)
+#define xc_xstrdup   __XCHAR_ALIAS(__39_xstrdup)
 
 #endif /* NG39_XCF_H */

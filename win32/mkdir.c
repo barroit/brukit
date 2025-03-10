@@ -82,7 +82,7 @@ err_not_dir:
 
 int mkdirp(const xchar *name)
 {
-	xchar *buf = xc_strdup(name);
+	xchar *buf = xc_xstrdup(name);
 	int ret = __mkdirp(buf);
 
 	free(buf);

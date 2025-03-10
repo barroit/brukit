@@ -167,7 +167,7 @@ xchar *sl_pop(struct strlist *sl)
 	if (sl->flags & SL_STORE_CHR)
 		ret = (xchar *)strdup((char *)ret);
 	else if (sl->flags & SL_DUP_ON_POP)
-		ret = xc_strdup(ret);
+		ret = xc_xstrdup(ret);
 
 	if (sl->flags & SL_STORE_SBUF)
 		list_add(&item->list, &sl->idle);

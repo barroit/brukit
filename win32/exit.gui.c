@@ -43,7 +43,7 @@ static int is_testing(void)
 	if (xc_strcmp(n1, n2) == 0)
 		return 1;
 
-	xchar *n3 = xc_strdup(n2);
+	xchar *n3 = xc_xstrdup(n2);
 	int in_test = 0;
 
 	PathRemoveExtension(n3);
