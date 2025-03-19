@@ -37,6 +37,22 @@ extern uint __ut_fail_cnt;
 #define UT_ROUTINE(name) \
 	__ut_cb(__test_ ## name, __ut_cb_ptr(__test_ ## name))
 
+#ifdef __unix__
+# define UT_ROUTINE_UNIX(name) \
+	 __ut_cb(__unix_test_ ## name, __ut_cb_ptr(__unix_test_ ## name))
+#else
+# define UT_ROUTINE_UNIX(name) \
+	 static __maybe_unused void __unix_test_ ## name(void)
+#endif
+
+#ifdef _WIN32
+# define UT_ROUTINE_WIN32(name) \
+	 __ut_cb(__win32_test_ ## name, __ut_cb_ptr(__win32_test_ ## name))
+#else
+# define UT_ROUTINE_WIN32(name) \
+	 static __maybe_unused void __win32_test_ ## name(void)
+#endif
+
 #define UT_BEGIN(...) \
 	uint __ut_fail_cnt = 0; \
 	ut_cb __ut_ld_sec __ut_begin[1] = { 0 }; \
