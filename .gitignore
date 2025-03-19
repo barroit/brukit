@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
 .gdbinit
+.lldbinit
 
 .config.unix*
 .config.win32*
