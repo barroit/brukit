@@ -16,29 +16,29 @@
 # define rmdir _rmdir
 #endif
 
-TESTDECL_BEGIN();
+UT_BEGIN();
 
-TESTDECL_ROUTINE(mkdirp)
+UT_ROUTINE(mkdirp)
 {
 	int err;
 
 	err = mkdirp(XC("aaa"));
-	USSERT_NOT(err);
+	UA_NOT(err);
 
 	err = mkdirp(XC("aaa/bbb/bbb"));
-	USSERT_NOT(err);
+	UA_NOT(err);
 
 	err = mkdirp(XC("aaa////ccc/ccc"));
-	USSERT_NOT(err);
+	UA_NOT(err);
 
 	err = mkdirp(XC("aaa////ddd///ddd////"));
-	USSERT_NOT(err);
+	UA_NOT(err);
 
 	err = mkdirp(XC("aaa////eee///eee/"));
-	USSERT_NOT(err);
+	UA_NOT(err);
 }
 
-TESTDECL_END(teardown)
+UT_END(teardown)
 {
 	rmdir(XC("aaa/bbb/bbb"));
 	rmdir(XC("aaa/bbb"));

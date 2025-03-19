@@ -32,9 +32,9 @@ static int cmd_fake(int argc, const xchar **argv)
 	return 0;
 }
 
-TESTDECL_BEGIN();
+UT_BEGIN();
 
-TESTDECL_ROUTINE(PRM_STOP_AT_ARG)
+UT_ROUTINE(PRM_STOP_AT_ARG)
 {
 	DEFINE_ARGS(
 		XC("cmd"),
@@ -55,16 +55,16 @@ TESTDECL_ROUTINE(PRM_STOP_AT_ARG)
 	};
 
 	argc = param_parse(argc, argv, usage, option, PRM_STOP_AT_ARG);
-	USSERT_EQ(argc, 3);
-	USSERT_STREQUAL(argv[0], XC("arg"));
-	USSERT_STREQUAL(argv[1], XC("--b"));
-	USSERT_STREQUAL(argv[2], XC("9"));
+	UA_EQ(argc, 3);
+	UA_STREQ(argv[0], XC("arg"));
+	UA_STREQ(argv[1], XC("--b"));
+	UA_STREQ(argv[2], XC("9"));
 
 	argc = param_parse(argc, argv, usage, option, PRM_STOP_AT_ARG);
-	USSERT_EQ(argc, 0);
+	UA_EQ(argc, 0);
 }
 
-TESTDECL_ROUTINE(PRM_PARSE_CMD)
+UT_ROUTINE(PRM_PARSE_CMD)
 {
 	DEFINE_ARGS(
 		XC("program"),
@@ -80,13 +80,13 @@ TESTDECL_ROUTINE(PRM_PARSE_CMD)
 	};
 
 	argc = param_parse(argc, argv, usage, option, PRM_PARSE_CMD);
-	USSERT_EQ(argc, 2);
-	USSERT_STREQUAL(argv[0], XC("cmd"));
-	USSERT_STREQUAL(argv[1], XC("arg"));
-	USSERT_PTREQUAL(cmd, cmd_fake);
+	UA_EQ(argc, 2);
+	UA_STREQ(argv[0], XC("cmd"));
+	UA_STREQ(argv[1], XC("arg"));
+	UA_PTREQ(cmd, cmd_fake);
 }
 
-TESTDECL_ROUTINE(PRM_OPT_CMD)
+UT_ROUTINE(PRM_OPT_CMD)
 {
 	DEFINE_ARGS(
 		XC("program"),
@@ -103,23 +103,23 @@ TESTDECL_ROUTINE(PRM_OPT_CMD)
 	__cmdpath_reset();
 
 	argc = param_parse(argc, argv, usage, option, PRM_OPT_CMD);
-	USSERT_EQ(argc, 3);
-	USSERT_STREQUAL(argv[0], XC("cmd"));
-	USSERT_STREQUAL(argv[1], XC("--test"));
-	USSERT_STREQUAL(argv[2], XC("arg"));
+	UA_EQ(argc, 3);
+	UA_STREQ(argv[0], XC("cmd"));
+	UA_STREQ(argv[1], XC("--test"));
+	UA_STREQ(argv[2], XC("arg"));
 
 	const xchar *cmdpath_old = cmdpath();
 
 	argc = param_parse(argc, argv, usage, option,
 			   PRM_KEEP_ARG0 | PRM_STOP_AT_UNKNOWN);
-	USSERT_EQ(argc, 3);
+	UA_EQ(argc, 3);
 
 	const xchar *cmdpath_new = cmdpath();
 
-	USSERT_STREQUAL(cmdpath_old, cmdpath_new);
+	UA_STREQ(cmdpath_old, cmdpath_new);
 }
 
-TESTDECL_ROUTINE(PRM_KEEP_ARG0)
+UT_ROUTINE(PRM_KEEP_ARG0)
 {
 	DEFINE_ARGS(
 		XC("program"),
@@ -136,15 +136,15 @@ TESTDECL_ROUTINE(PRM_KEEP_ARG0)
 	};
 
 	argc = param_parse(argc, argv, usage, option, PRM_KEEP_ARG0);
-	USSERT_EQ(argc, 3);
-	USSERT_EQ(test, 1);
-	USSERT_STREQUAL(argv[0], XC("program"));
-	USSERT_STREQUAL(argv[1], XC("arg1"));
-	USSERT_STREQUAL(argv[2], XC("arg2"));
-	USSERT_ZERO(argv[3]);
+	UA_EQ(argc, 3);
+	UA_EQ(test, 1);
+	UA_STREQ(argv[0], XC("program"));
+	UA_STREQ(argv[1], XC("arg1"));
+	UA_STREQ(argv[2], XC("arg2"));
+	UA_ZERO(argv[3]);
 }
 
-TESTDECL_ROUTINE(PRM_STOP_AT_UNKNOWN)
+UT_ROUTINE(PRM_STOP_AT_UNKNOWN)
 {
 	DEFINE_ARGS(
 		XC("program"),
@@ -158,11 +158,11 @@ TESTDECL_ROUTINE(PRM_STOP_AT_UNKNOWN)
 	};
 
 	argc = param_parse(argc, argv, usage, option, PRM_STOP_AT_UNKNOWN);
-	USSERT_EQ(argc, 3);
-	USSERT_STREQUAL(argv[0], XC("--test"));
-	USSERT_STREQUAL(argv[1], XC("1"));
-	USSERT_STREQUAL(argv[2], XC("arg"));
-	USSERT_ZERO(argv[3]);
+	UA_EQ(argc, 3);
+	UA_STREQ(argv[0], XC("--test"));
+	UA_STREQ(argv[1], XC("1"));
+	UA_STREQ(argv[2], XC("arg"));
+	UA_ZERO(argv[3]);
 }
 
-TESTDECL_END();
+UT_END();

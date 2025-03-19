@@ -4,8 +4,8 @@ if(HAVE_TOPLEVEL_REORDER)
   add_compile_options(-fno-toplevel-reorder)
 endif()
 
-set(pth_test_tmp ${CMAKE_CURRENT_BINARY_DIR}/.tmp)
-file(MAKE_DIRECTORY ${pth_test_tmp})
+set(TEST_TMP ${CMAKE_CURRENT_BINARY_DIR}/.tmp)
+file(MAKE_DIRECTORY ${TEST_TMP})
 configure_file(unitest.h.in ${CMAKE_CURRENT_SOURCE_DIR}/unitest.h)
 
 file(GLOB unit_tests *.c)

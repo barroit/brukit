@@ -19,8 +19,8 @@
 int main(void)
 {
 	uint i;
-	uint n = __testdecl_end - __testdecl_begin - 1;
-	unitest_routine_t *func = (typeof(func))__testdecl_begin + 1;
+	uint n = __ut_end - __ut_begin - 1;
+	ut_cb *func = (typeof(func))__ut_begin + 1;
 
 #ifdef CONFIG_ENABLE_WCHAR
 	/*
@@ -29,23 +29,23 @@ int main(void)
 	_setmode(STDOUT_FILENO, _O_U16TEXT);
 #endif
 
-	if (__testdecl_teardown)
-		atexit_push(__testdecl_teardown);
+	if (__ut_teardown)
+		atexit_push(__ut_teardown);
 
-	if (__testdecl_setup)
-		__testdecl_setup();
+	if (__ut_setup)
+		__ut_setup();
 
 	idx_for_each(i, n)
 		func[i]();
 
-	if (!__test_failure_count)
+	if (!__ut_fail_cnt)
 		exit(0);
 
-	uint percent = (n - __test_failure_count) * 100 / n;
+	uint percent = (n - __ut_fail_cnt) * 100 / n;
 	const char *color = percent < 40 ? __fmtcol(RED) : __fmtcol(YELLOW);
 
 	fprintf(stderr, "%s%u%% tests passed%s (%u tests failed out of %u)\n",
-		color, percent, __fmtcol(RESET), __test_failure_count, n);
+		color, percent, __fmtcol(RESET), __ut_fail_cnt, n);
 	exit(128);
 }
 

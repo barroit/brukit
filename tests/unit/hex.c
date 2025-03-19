@@ -9,9 +9,9 @@
 #include "hex.h"
 #include "iter.h"
 
-TESTDECL_BEGIN();
+UT_BEGIN();
 
-TESTDECL_ROUTINE(hex_to_bin)
+UT_ROUTINE(hex_to_bin)
 {
 	int val;
 	uint i;
@@ -24,50 +24,50 @@ TESTDECL_ROUTINE(hex_to_bin)
 
 	idx_for_each(i, sizeof_array(str1)) {
 		val = hex_to_bin(str1[i]);
-		USSERT_EQ(val, res[i]);
+		UA_EQ(val, res[i]);
 
 		val = hex_to_bin(str2[i]);
-		USSERT_EQ(val, res[i]);
+		UA_EQ(val, res[i]);
 	}
 }
 
-TESTDECL_ROUTINE(hex2bin)
+UT_ROUTINE(hex2bin)
 {
 	int err;
 	u8 dst[4];
 
 	err = hex2bin(dst, XC("ab"), 1);
-	USSERT_NOT(err);
-	USSERT_EQ(dst[0], 0xab);
+	UA_NOT(err);
+	UA_EQ(dst[0], 0xab);
 
 	err = hex2bin(dst, XC("1234"), 2);
-	USSERT_NOT(err);
-	USSERT_EQ(dst[0], 0x12);
-	USSERT_EQ(dst[1], 0x34);
+	UA_NOT(err);
+	UA_EQ(dst[0], 0x12);
+	UA_EQ(dst[1], 0x34);
 
 	err = hex2bin(dst, XC("deadbeef"), 4);
-	USSERT_NOT(err);
-	USSERT_EQ(dst[0], 0xde);
-	USSERT_EQ(dst[1], 0xad);
-	USSERT_EQ(dst[2], 0xbe);
-	USSERT_EQ(dst[3], 0xef);
+	UA_NOT(err);
+	UA_EQ(dst[0], 0xde);
+	UA_EQ(dst[1], 0xad);
+	UA_EQ(dst[2], 0xbe);
+	UA_EQ(dst[3], 0xef);
 
 	err = hex2bin(dst, XC("1234miku"), 4);
-	USSERT_IS(err);
+	UA_IS(err);
 }
 
-TESTDECL_ROUTINE(bin2hex)
+UT_ROUTINE(bin2hex)
 {
 	xchar dst[9] = { 0 };
 
 	bin2hex(dst, (u8 []){ 0xab }, 1);
-	USSERT_STREQUAL(dst, XC("ab"));
+	UA_STREQ(dst, XC("ab"));
 
 	bin2hex(dst, (u8 []){ 0x12, 0x34 }, 2);
-	USSERT_STREQUAL(dst, XC("1234"));
+	UA_STREQ(dst, XC("1234"));
 
 	bin2hex(dst, (u8 []){ 0xde, 0xad, 0xbe, 0xef }, 4);
-	USSERT_STREQUAL(dst, XC("deadbeef"));
+	UA_STREQ(dst, XC("deadbeef"));
 }
 
-TESTDECL_END();
+UT_END();

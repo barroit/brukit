@@ -12,50 +12,50 @@
 #include "compiler.h"
 #include "ussert.h"
 
-#define __tmpnam(x)      ___tmpnam(x, __COUNTER__)
-#define ___tmpnam(...)   ____tmpnam(__VA_ARGS__)
-#define ____tmpnam(x, i) "@pth_test_tmp@" "/" x "_" #i
+#define ut_tmp_name(x)        __ut_tmp_name(x, __COUNTER__)
+#define __ut_tmp_name(x)      ___ut_tmp_name(x, __COUNTER__)
+#define ___ut_tmp_name(...)   ____ut_tmp_name(__VA_ARGS__)
+#define ____ut_tmp_name(x, i) XC("@TEST_TMP@" "/" x "_" #i)
 
 void __free(void *ptr);
 
-typedef void (*unitest_routine_t)(void);
+typedef void (*ut_cb)(void);
 
-extern unitest_routine_t __testdecl_begin[];
-extern unitest_routine_t __testdecl_end[];
+extern ut_cb __ut_begin[];
+extern ut_cb __ut_end[];
 
-extern unitest_routine_t __testdecl_setup;
-extern unitest_routine_t __testdecl_teardown;
+extern ut_cb __ut_setup;
+extern ut_cb __ut_teardown;
 
-extern uint __test_failure_count;
+extern uint __ut_fail_cnt;
 
-#define __test_section    __section(".miku_test") __used
-#define __test_decl(name) static __test_section void (*name ## _decl)(void)
-#define __test_def(name)  static void name(void)
-#define __testdecl(name, lvalue) \
-	__test_def(name); lvalue = &name; __test_def(name)
+#define __ut_ld_sec       __section(".miku_test") __used
+#define __ut_cb_ptr(name) static __ut_ld_sec void (*name ## _ptr)(void)
+#define __ut_cb_def(name) static void name(void)
+#define __ut_cb(name, lv) __ut_cb_def(name); lv = &name; __ut_cb_def(name)
 
-#define TESTDECL_ROUTINE(name) \
-	__testdecl(__test_ ## name, __test_decl(__test_ ## name))
+#define UT_ROUTINE(name) \
+	__ut_cb(__test_ ## name, __ut_cb_ptr(__test_ ## name))
 
-#define TESTDECL_BEGIN(...) \
-	uint __test_failure_count = 0; \
-	unitest_routine_t __test_section __testdecl_begin[1] = { 0 }; \
-	ADAP_CALL(__testdecl_begin_, ##__VA_ARGS__)
+#define UT_BEGIN(...) \
+	uint __ut_fail_cnt = 0; \
+	ut_cb __ut_ld_sec __ut_begin[1] = { 0 }; \
+	ADAP_CALL(__ut_begin_, ##__VA_ARGS__)
 
-#define __testdecl_begin_0() \
-	unitest_routine_t __testdecl_setup = NULL
+#define __ut_begin_0() \
+	ut_cb __ut_setup = NULL
 
-#define __testdecl_begin_1(name) \
-	__testdecl(name, unitest_routine_t __testdecl_setup)
+#define __ut_begin_1(name) \
+	__ut_cb(name, ut_cb __ut_setup)
 
-#define TESTDECL_END(...) \
-	unitest_routine_t __test_section __testdecl_end[1] = { 0 }; \
-	ADAP_CALL(__testdecl_end_, ##__VA_ARGS__)
+#define UT_END(...) \
+	ut_cb __ut_ld_sec __ut_end[1] = { 0 }; \
+	ADAP_CALL(__ut_end_, ##__VA_ARGS__)
 
-#define __testdecl_end_0() \
-	unitest_routine_t __testdecl_teardown = NULL
+#define __ut_end_0() \
+	ut_cb __ut_teardown = NULL
 
-#define __testdecl_end_1(name) \
-	__testdecl(name, unitest_routine_t __testdecl_teardown)
+#define __ut_end_1(name) \
+	__ut_cb(name, ut_cb __ut_teardown)
 
 #endif /* NG39_UNITEST_H */

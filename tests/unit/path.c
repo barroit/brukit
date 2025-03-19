@@ -7,86 +7,86 @@
 
 #include "path.h"
 
-TESTDECL_BEGIN();
+UT_BEGIN();
 
-TESTDECL_ROUTINE(pth_is_abs)
+UT_ROUTINE(pth_is_abs)
 {
-	USSERT_FAIL(pth_is_abs(XC(".")));
+	UA_FAIL(pth_is_abs(XC(".")));
 #if defined(_WIN32)
-	USSERT_PASS(pth_is_abs(XC("C:\\dir")));
+	UA_PASS(pth_is_abs(XC("C:\\dir")));
 #elif defined(__unix__)
-	USSERT_PASS(pth_is_abs("/dir"));
+	UA_PASS(pth_is_abs("/dir"));
 #endif
 }
 
-TESTDECL_ROUTINE(pth_next_sep)
+UT_ROUTINE(pth_next_sep)
 {
 	xchar *sep = pth_next_sep(XC("path/to/dir/exe"));
-	USSERT_STREQUAL(sep, XC("/to/dir/exe"));
+	UA_STREQ(sep, XC("/to/dir/exe"));
 
 #if defined(_WIN32)
 	sep = pth_next_sep(XC("path\\to\\dir\\exe"));
-	USSERT_STREQUAL(sep, XC("\\to\\dir\\exe"));
+	UA_STREQ(sep, XC("\\to\\dir\\exe"));
 
 	sep = pth_next_sep(XC("path\\to\\dir/exe"));
-	USSERT_STREQUAL(sep, XC("\\to\\dir/exe"));
+	UA_STREQ(sep, XC("\\to\\dir/exe"));
 #endif
 }
 
-TESTDECL_ROUTINE(pth_last_sep)
+UT_ROUTINE(pth_last_sep)
 {
 	xchar *sep = pth_last_sep(XC("path/to/dir/exe"));
-	USSERT_STREQUAL(sep, XC("/exe"));
+	UA_STREQ(sep, XC("/exe"));
 
 #if defined(_WIN32)
 	sep = pth_last_sep(XC("path\\to\\dir\\exe"));
-	USSERT_STREQUAL(sep, XC("\\exe"));
+	UA_STREQ(sep, XC("\\exe"));
 
 	sep = pth_last_sep(XC("path\\to\\dir/exe"));
-	USSERT_STREQUAL(sep, XC("/exe"));
+	UA_STREQ(sep, XC("/exe"));
 #endif
 }
 
-TESTDECL_ROUTINE(pth_is_dot)
+UT_ROUTINE(pth_is_dot)
 {
-	USSERT_PASS(pth_is_dot(XC(".")));
-	USSERT_PASS(pth_is_dot(XC("..")));
-	USSERT_FAIL(pth_is_dot(XC("...")));
+	UA_PASS(pth_is_dot(XC(".")));
+	UA_PASS(pth_is_dot(XC("..")));
+	UA_FAIL(pth_is_dot(XC("...")));
 }
 
-TESTDECL_ROUTINE(pth_home)
+UT_ROUTINE(pth_home)
 {
 	const xchar *name = pth_home();
 
-	USSERT_NONNULL(name);
+	UA_NONNULL(name);
 }
 
-TESTDECL_ROUTINE(pth_executable)
+UT_ROUTINE(pth_executable)
 {
 	const xchar *name = pth_executable();
 
-	USSERT_NONNULL(name);
+	UA_NONNULL(name);
 }
 
-TESTDECL_ROUTINE(pth_prefix)
+UT_ROUTINE(pth_prefix)
 {
 	const xchar *name = pth_prefix();
 
-	USSERT_NONNULL(name);
+	UA_NONNULL(name);
 }
 
-TESTDECL_ROUTINE(pth_locale)
+UT_ROUTINE(pth_locale)
 {
 	const xchar *name = pth_locale();
 
-	USSERT_NONNULL(name);
+	UA_NONNULL(name);
 }
 
-TESTDECL_ROUTINE(pth_cwd)
+UT_ROUTINE(pth_cwd)
 {
 	const xchar *name = pth_cwd();
 
-	USSERT_NONNULL(name);
+	UA_NONNULL(name);
 }
 
-TESTDECL_END();
+UT_END();

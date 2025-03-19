@@ -16,27 +16,27 @@
 # define access _waccess
 #endif
 
-TESTDECL_BEGIN();
+UT_BEGIN();
 
 static void __cb(struct file *f, void *data)
 {
 	int err = access(f->path, F_OK);
 
-	USSERT_NOT(err);
+	UA_NOT(err);
 }
 
 static int cb(struct file *f, void *data)
 {
-	uint cnt = __test_failure_count;
+	uint cnt = __ut_fail_cnt;
 
 	__cb(f, data);
-	if (__test_failure_count != cnt)
+	if (__ut_fail_cnt != cnt)
 		return -1;
 
 	return 0;
 }
 
-TESTDECL_ROUTINE(fiter)
+UT_ROUTINE(fiter)
 {
 	const xchar *ws = pth_prefix();
 	u32 flags[] = {
@@ -54,8 +54,8 @@ TESTDECL_ROUTINE(fiter)
 	idx_for_each(i, sizeof_array(flags)) {
 		int err = fiter(ws, cb, NULL, FI_RECUR_DIR);
 
-		USSERT_NOT(err);
+		UA_NOT(err);
 	}
 }
 
-TESTDECL_END();
+UT_END();

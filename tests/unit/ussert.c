@@ -11,7 +11,7 @@
 #include "calc.h"
 #include "strconv.h"
 
-int __cold __ussert_strequal(const char *file, int line,
+int __cold __ua_streq(const char *file, int line,
 			     const char *func, const char *expr,
 			     const void *__s1, const void *__s2, int is_ansi)
 {

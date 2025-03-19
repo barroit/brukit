@@ -18,13 +18,13 @@ INIT_ROUTINE(init39)
 	str39 = XC("mikumiku");
 }
 
-TESTDECL_BEGIN();
+UT_BEGIN();
 
-TESTDECL_ROUTINE(39check)
+UT_ROUTINE(39check)
 {
-	USSERT_EQ(int39, 3939);
-	USSERT_EQ(hex39, 0x3939);
-	USSERT_STREQUAL(str39, XC("mikumiku"));
+	UA_EQ(int39, 3939);
+	UA_EQ(hex39, 0x3939);
+	UA_STREQ(str39, XC("mikumiku"));
 }
 
-TESTDECL_END();
+UT_END();

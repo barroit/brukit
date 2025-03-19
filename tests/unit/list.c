@@ -22,7 +22,7 @@ LIST_HEAD(dr);
 struct data *rl[DLSIZE];
 struct data *rr[DLSIZE];
 
-TESTDECL_BEGIN(setup)
+UT_BEGIN(setup)
 {
 	uint i;
 	struct data *ld, *rd;
@@ -42,39 +42,39 @@ TESTDECL_BEGIN(setup)
 	}
 }
 
-TESTDECL_ROUTINE(for_each)
+UT_ROUTINE(for_each)
 {
 	uint i = DLSIZE - 1;
 	struct list_head *p;
 
 	list_for_each(p, &dl) {
-		USSERT_PTREQUAL(&rl[i]->list, p);
+		UA_PTREQ(&rl[i]->list, p);
 		i -= 1;
 	}
 
 	list_for_each(p, &dr) {
 		i += 1;
-		USSERT_PTREQUAL(&rr[i]->list, p);
+		UA_PTREQ(&rr[i]->list, p);
 	}
 }
 
-TESTDECL_ROUTINE(for_each_entry)
+UT_ROUTINE(for_each_entry)
 {
 	uint i = DLSIZE - 1;
 	struct data *d;
 
 	list_for_each_entry(d, &dl, list) {
-		USSERT_EQ(d->val, i);
+		UA_EQ(d->val, i);
 		i -= 1;
 	}
 
 	list_for_each_entry(d, &dr, list) {
 		i += 1;
-		USSERT_EQ(d->val, i);
+		UA_EQ(d->val, i);
 	}
 }
 
-TESTDECL_ROUTINE(for_each_entry_safe)
+UT_ROUTINE(for_each_entry_safe)
 {
 	struct data *d, *tmp;
 
@@ -82,13 +82,13 @@ TESTDECL_ROUTINE(for_each_entry_safe)
 		list_del(&d->list);
 		free(d);
 	}
-	USSERT_PASS(list_is_empty(&dl));
+	UA_PASS(list_is_empty(&dl));
 
 	list_for_each_entry_safe(d, tmp, &dr, list) {
 		list_del(&d->list);
 		free(d);
 	}
-	USSERT_PASS(list_is_empty(&dr));
+	UA_PASS(list_is_empty(&dr));
 }
 
-TESTDECL_END();
+UT_END();

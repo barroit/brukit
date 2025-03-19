@@ -34,9 +34,9 @@ static struct strpair str[] = {
 
 #include <stdio.h>
 
-TESTDECL_BEGIN();
+UT_BEGIN();
 
-TESTDECL_ROUTINE(levenshtein1)
+UT_ROUTINE(levenshtein1)
 {
 	uint i;
 	uint dist;
@@ -45,11 +45,11 @@ TESTDECL_ROUTINE(levenshtein1)
 
 	idx_for_each(i, sizeof_array(str)) {
 		dist = levenshtein(str[i].s1, str[i].s2, &wt);
-		USSERT_EQ(dist, sample[i]);
+		UA_EQ(dist, sample[i]);
 	}
 }
 
-TESTDECL_ROUTINE(levenshtein2)
+UT_ROUTINE(levenshtein2)
 {
 	uint i;
 	uint dist;
@@ -63,8 +63,8 @@ TESTDECL_ROUTINE(levenshtein2)
 
 	idx_for_each(i, sizeof_array(str)) {
 		dist = levenshtein(str[i].s1, str[i].s2, &wt);
-		USSERT_EQ(dist, sample[i]);
+		UA_EQ(dist, sample[i]);
 	}
 }
 
-TESTDECL_END();
+UT_END();

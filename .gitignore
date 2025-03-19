@@ -16,7 +16,6 @@ include/generated
 include/arch
 
 unitest.h
-unitest_list.h
 
 locale/*~
 locale/generated.pot
