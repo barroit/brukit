@@ -5,9 +5,9 @@
 
 #include "unitest.h"
 
-#include "string.h"
-
 #include <locale.h>
+
+#include "string.h"
 
 UT_BEGIN(setup)
 {

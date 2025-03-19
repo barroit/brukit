@@ -5,9 +5,8 @@
 
 #include "unitest.h"
 
-#include "proc.h"
-
 #include "iter.h"
+#include "proc.h"
 
 #if defined(__unix__)
 # define PROG_PATH "tests/masarg"

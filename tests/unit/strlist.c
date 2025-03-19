@@ -7,9 +7,8 @@
 
 #include <locale.h>
 
-#include "strlist.h"
-
 #include "iter.h"
+#include "strlist.h"
 
 #ifdef _WIN32
 # undef __argv

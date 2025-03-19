@@ -4,9 +4,9 @@
  */
 
 #include "unitest.h"
-#include "param.h"
 
 #include "calc.h"
+#include "param.h"
 
 #ifdef __argc
 # undef __argc

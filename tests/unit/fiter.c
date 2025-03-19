@@ -5,10 +5,9 @@
 
 #include "unitest.h"
 
-#include "fiter.h"
-
 #include <unistd.h>
 
+#include "fiter.h"
 #include "iter.h"
 #include "path.h"
 

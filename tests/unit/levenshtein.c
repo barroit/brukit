@@ -5,11 +5,10 @@
 
 #include "unitest.h"
 
-#include "levenshtein.h"
-
 #include <string.h>
 
 #include "iter.h"
+#include "levenshtein.h"
 
 struct strpair {
 	const xchar *s1;

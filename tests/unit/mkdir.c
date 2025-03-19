@@ -4,10 +4,10 @@
  */
 
 #include "unitest.h"
-#include "mkdir.h"
 
 #include <unistd.h>
 
+#include "mkdir.h"
 #include "path.h"
 
 #if defined(CONFIG_ENABLE_WCHAR)
