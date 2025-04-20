@@ -43,3 +43,9 @@ ssize_t a = 0;
 """
 
 HAVE_TOPLEVEL_REORDER = '-ftoplevel-reorder'
+
+__unix__ = """
+#ifndef __APPLE__
+#error not on macos
+#endif
+"""
