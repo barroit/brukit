@@ -29,6 +29,7 @@ EastAsianWidth.txt
 
 # みくみくにしてあげる♪
 .program
+.remote
 *.ico
 *.rc
 *.manifest.in
