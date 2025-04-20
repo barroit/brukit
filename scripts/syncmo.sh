@@ -1,40 +1,53 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
 set -e
 
-echo 'preparing...'
+. scripts/use-posix-libkit.sh
+
+note 'preparing source files'
 make configure EXTOPT='-DCMAKE_C_FLAGS="-C -DINTL_PREP_MO"' >/dev/null
 
 cd build.unix
 
 i=$(make help | grep '\.i$' | cut -d' ' -f2)
 
-xargs -n1 -P$(nproc) make <<< $i >/dev/null
+printf '%s\n' "$i" | xargs -P$(nproc) -n1 make >/dev/null
 
 cd ..
 
-domain=$(grep name .program | cut -f2)
+domain=$(v2 .program name)
 
 cd locale
 
 src=$(find ../build.unix/CMakeFiles -type f -name '*.i')
-lang=(zh_CN ja_JP)
+
+cat <<EOF >.lang.$$
+zh_CN
+ja_JP
+EOF
+trap 'rm .lang.$$' EXIT
 
 xgettext --add-comments=TRANSLATORS --omit-header --no-location \
 	 --from-code=UTF-8 -LC -i -k_ -kN_ -k__H_ -k__HN_ $src
 
-if [[ $1 && $(grep $1 <<< ${lang[@]}) ]]; then
-	lang=($1)
+if [ -n "$1" ]; then
+	if grep -q $1 .lang.$$; then
+		langs=$(grep $1 .lang.$$)
+	else
+		die "unknown language \`$1'"
+	fi
+else
+	langs=$(cat .lang.$$)
 fi
 
-for l in ${lang[@]}; do
-	msgmerge -i --no-location -U $l.po messages.po
-	mkdir -p $l/LC_MESSAGES
-	msgfmt -o $l/LC_MESSAGES/$domain.mo $l.po
+for lang in $langs; do
+	msgmerge -i --no-location -U $lang.po messages.po
+	mkdir -p $lang/LC_MESSAGES
+	msgfmt -o $lang/LC_MESSAGES/$domain.mo $lang.po
 done
 
 cd ..
 
-echo 'cleaning...'
+note 'cleaning up source files ...'
 make configure EXTOPT='-DCMAKE_C_FLAGS=""' >/dev/null
