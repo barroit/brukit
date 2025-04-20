@@ -14,16 +14,8 @@
 
 #define __pure __attr((__pure__))
 
-/*
- * Due to compatibility, the usage of __nonnull() is different than other
- * attributes.
- */
-#ifndef __nonnull
-# define __nonnull(...) __attr((__nonnull__ __VA_ARGS__))
-#endif
-
 #ifndef CONFIG_ENABLE_WCHAR
-# define __printf(m, n) __attr((__format__(__printf__, m, n))) __nonnull((m))
+# define __printf(m, n) __attr((__format__(__printf__, m, n)))
 #else
 # define __printf(m, n)
 #endif

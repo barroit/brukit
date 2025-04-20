@@ -102,7 +102,7 @@ uint sb_putc_at(struct strbuf *sb, uint off, const xchar c)
  * Tell the compiler this fmt cannot be NULL.
  */
 static uint __sb_printf_at(struct strbuf *sb, uint off,
-			   const xchar *fmt, va_list *ap) __nonnull((3));
+			   const xchar *fmt, va_list *ap);
 
 static uint __sb_printf_at(struct strbuf *sb, uint off,
 			   const xchar *fmt, va_list *ap)
