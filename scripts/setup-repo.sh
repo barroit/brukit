@@ -3,15 +3,27 @@
 
 set -e
 
-ln -sf ../../.hooks/pre-commit.sh .git/hooks/pre-commit
-ln -sf ../../.hooks/prepare-commit-msg.sh .git/hooks/prepare-commit-msg
+ln -sf ../../../barroit/hooks/pre-commit.sh \
+       .git/hooks/pre-commit
 
-git remote add brukit $(grep ^brukit .remote | cut -f2)
+ln -sf ../../../barroit/hooks/prepare-commit-msg.sh \
+       .git/hooks/prepare-commit-msg
+
+if ! git remote | grep -q brukit; then
+	cmd=add
+else
+	cmd=set-url
+fi
+git remote $cmd brukit $(grep ^brukit .remote | cut -f2)
+
 git remote set-url origin $(grep ^this .remote | cut -f2)
 
 git branch --set-upstream-to origin/master
 
 git fetch brukit master
-git switch --track brukit/master -c brukit
 
-git switch master
+if ! git for-each-ref --format='%(refname)' refs/heads | grep -q brukit; then
+	git branch --track brukit brukit/master
+else
+	git branch --force brukit brukit/master
+fi
