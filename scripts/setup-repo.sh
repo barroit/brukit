@@ -14,11 +14,7 @@ if ! git remote | grep -q brukit; then
 else
 	cmd=set-url
 fi
-git remote $cmd brukit $(grep ^brukit .remote | cut -f2)
-
-git remote set-url origin $(grep ^this .remote | cut -f2)
-
-git branch --set-upstream-to origin/master
+git remote $cmd brukit $(cat .brukit)
 
 git fetch brukit master
 
