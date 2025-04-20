@@ -6,6 +6,16 @@
 #ifndef	NG39_ATTR_H
 #define NG39_ATTR_H
 
+#ifdef __pure
+# undef __pure
+#endif
+#ifdef __cold
+# undef __cold
+#endif
+#ifdef __used
+# undef __used
+#endif
+
 #define __attr __attribute__
 
 #define __maybe_unused __attr((__unused__))
