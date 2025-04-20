@@ -288,7 +288,7 @@ done:
 
 	return 0;
 }
-#include "stdio.h"
+
 const xchar *pa_to_parent(struct pathalt *pa)
 {
 	uint len = pa->root_len;

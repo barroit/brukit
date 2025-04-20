@@ -20,6 +20,13 @@ enum pathalt_state {
 #define PA_IS_ABS  (1U << 0)
 #define PA_SHR_RTB (1U << 1)
 
+/*
+ * Null terminate buffer on both side, otherwise overflow.
+ * Some optimizations apply if pathalt->buf and pathalt->rtb point to same
+ * address. In that case, pathalt->st becomes unreliable, and don't use:
+ *
+ *	pa_dirname
+ */
 struct pathalt {
 	xchar *buf;
 	uint len;
@@ -36,43 +43,30 @@ struct pathalt {
 	u32 flags;
 };
 
-/*
- * The buffer should be terminated by a null terminator on both sides.
- *
- * Buffers buf and rtb may point to the same address. In this case, some
- * optimizations may be performed. Functions such as pa_dirname must be
- * avoided. Moreover, st is not reliable.
- */
 void __pa_init(struct pathalt *pa, xchar *buf, uint len, xchar *rtb);
 
 void pa_init(struct pathalt *pa, const xchar *path);
 
 void pa_destroy(struct pathalt *pa);
 
-const xchar *pa_skip_root(const xchar *name);
-
-const xchar *pa_skip_sep(const xchar *name);
-
-const xchar *pa_skip_nsep(const xchar *name, uint n);
-
-const xchar *pa_skip_name(const xchar *name);
-
-const xchar *pa_skip_root_back(const xchar *name);
-
-const xchar *pa_skip_sep_back(const xchar *name);
-
-const xchar *pa_skip_nsep_back(const xchar *name, uint n);
-
-const xchar *pa_skip_name_back(const xchar *name);
-
-int pa_step(struct pathalt *pa);
-
-int pa_step_back(struct pathalt *pa);
-
 const xchar *pa_to_parent(struct pathalt *pa);
 
 const xchar *pa_basename(struct pathalt *pa);
 
 const xchar *pa_dirname(struct pathalt *pa);
+
+int pa_step(struct pathalt *pa);
+
+int pa_step_back(struct pathalt *pa);
+
+const xchar *pa_skip_root(const xchar *name);
+const xchar *pa_skip_sep(const xchar *name);
+const xchar *pa_skip_nsep(const xchar *name, uint n);
+const xchar *pa_skip_name(const xchar *name);
+
+const xchar *pa_skip_root_back(const xchar *name);
+const xchar *pa_skip_sep_back(const xchar *name);
+const xchar *pa_skip_nsep_back(const xchar *name, uint n);
+const xchar *pa_skip_name_back(const xchar *name);
 
 #endif /* NG39_PATHALT_H */
