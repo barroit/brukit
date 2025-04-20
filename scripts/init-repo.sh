@@ -1,48 +1,44 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
-TREE=$(dirname $(dirname $(readlink -f $BASH_SOURCE)))
-if [[ $TREE != $PWD ]]; then
-	>&2 echo you need to be inside the source tree
-	exit 1
-fi
+. scripts/use-posix-libkit.sh
 
-source scripts/libutil.sh
-
-if [[ ! -f .program.in ]]; then
+if [ ! -f .program.in ]; then
 	die 'missing .program.in'
 fi
 
-repo=$(st_section repo .program.in)
-license=$(st_section license .program.in)
-name=$(st_section name .program.in)
+repo=$(ini_section_st repo .program.in)
+license_new=$(ini_section_st license .program.in)
+name=$(ini_section_st name .program.in)
 
-conf=$(section conf .program.in)
-icon=$(section icon .program.in)
+conf=$(ini_section conf .program.in)
+icon=$(ini_section icon .program.in)
 
 fhc_key='"fileHeaderComment.parameter"."*"'
-fhc_license=\"$license\"
-__license=$(jq -r ".$fhc_key.license" .vscode/settings.json)
+license_old=$(jq -r ".$fhc_key.license" .vscode/settings.json)
 
-jq --tab  ".$fhc_key.license = $fhc_license" .vscode/settings.json > $$.tmp
+jq --tab  ".$fhc_key.license = \"$license_new\"" .vscode/settings.json >$$.tmp
 mv $$.tmp .vscode/settings.json
 
 setting=$(jq -r ".$fhc_key" .vscode/settings.json)
-year=$(jq -r .year <<< $setting)
+year=$(printf '%s\n' "$setting" | jq -r .year)
 
-no_arch=$(grep no_arch <<< $conf)
+no_arch=$(printf '%s\n' "$conf" | grep no_arch)
 
-section readme .program.in > README
+perl -i -ne 'last if /^# みくみくにしてあげる♪$/; print' .gitignore
 
-cat <<EOF > .program
+content=$(cat .gitignore)
+
+printf '%s\n' "$content" >.gitignore
+
+ini_section readme .program.in >README
+
+cat <<EOF >.program
 name	$name
 version	0.0
-license	$license
-
-license_old	$__license
 EOF
 
-cat <<EOF > $name.manifest.in
+cat <<EOF >$name.manifest.in
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- SPDX-License-Identifier: $license -->
 <assembly
@@ -99,42 +95,45 @@ cat <<EOF > $name.manifest.in
 EOF
 
 cat <<EOF > $name.rc
-// SPDX-License-Identifier: $license
+// SPDX-License-Identifier: $license_new
 #include "resdecl.h"
 
 RES_PROG_ICON	ICON	"$icon"
 EOF
 
-if [[ ! $no_arch ]]; then
+if [ ! $no_arch ]; then
 	mkdir arch arch/x86 arch/arm64 arch/riscv
 
-	cat <<EOF > arch/.map
-riscv	riscv	riscv64
-arm64	arm64	aarch64
-x86	x86_64	amd64	x64
-EOF
+	cat <<-EOF >arch/.map
+	riscv	riscv	riscv64
+	arm64	arm64	aarch64
+	x86	x86_64	amd64	x64
+	EOF
 fi
 
-perl -i -ne 'last if /^# みくみくにしてあげる♪$/; print' .gitignore
-sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' .gitignore
-
-cat <<EOF > .pickignore
+cat <<EOF >.pickignore
 .program.in.example
 scripts/init.sh
 EOF
 
+if [ "$license_new" != "$license_old" ]; then
+	cat <<-EOF >FIXLICENSE
+	new	$license_new
+	old	$license_old
+	EOF
+
+	git add .
+	scripts/fix-license.sh "$license_old" "$license_new"
+fi
+
 rm .program.in*
 (rm $0) &
 
-printf 'brukit\t%s\n' $repo > .remote
-printf 'this\t%s\n' $(git remote get-url origin) >> .remote
+printf '%s\n' $(git remote get-url origin) >.brukit
 
-scripts/initloc.sh
-
-git add .
-scripts/fix-license.sh "$__license" "$license"
-
+scripts/setup-repo.sh
 scripts/syncmo.sh
+
 make distclean
 
 git add .

@@ -1,5 +1,5 @@
 [repo]
-https://url.to/repo
+git@github.com:example/repo.git
 [endrepo]
 
 [license]
