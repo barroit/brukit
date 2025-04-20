@@ -1,12 +1,10 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later or MIT */
 /*
- * Copyright 2024 Jiamu Sun <barroit@linux.com>
+ * Copyright 2024, 2025 Jiamu Sun <barroit@linux.com>
  */
 
 #ifndef NG39_CTYPE_H
 #define NG39_CTYPE_H
-
-#define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
 
 #define _3C  0x01  /* Control character */
 #define _3S  0x02  /* Space character */
@@ -16,6 +14,15 @@
 #define _3L  0x20  /* Lowercase letter */
 #define _3X  0x40  /* Hex digit */
 #define _3SP 0x80  /* Space (' ') */
+
+/*
+ * Don't play ctype.h on macos.
+ */
+#ifdef __APPLE__
+# include_next <ctype.h>
+#else
+
+#define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
 
 extern const unsigned char _ctype[];
 
@@ -56,4 +63,5 @@ static inline unsigned char __toupper(unsigned char c)
 #define tolower(c) __tolower(c)
 #define toupper(c) __toupper(c)
 
+#endif /* bad __APPLE__ */
 #endif /* NG39_CTYPE_H */
