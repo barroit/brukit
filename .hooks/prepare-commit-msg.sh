@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
-sed -i.bak '/^. Please enter the commit message/,/^#$/d' $1
+sed -i '' '/^. Please enter the commit message/,/^#$/d' $1

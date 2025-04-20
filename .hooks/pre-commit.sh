@@ -1,24 +1,24 @@
-#!/usr/bin/bash
+#!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
-RED='\033[0;31m'
-RESET='\033[0m'
+invalid=$(git diff-index --cached --name-only \
+	  --diff-filter=A -z HEAD | LC_ALL=C tr '[ -~]\0' '\0\n')
 
-inv=$(git diff-index --cached --name-only \
-      --diff-filter=A -z HEAD | LC_ALL=C tr '[ -~]\0' '\0\n')
+if [ -n "$invalid" ]; then
+	lines=$(printf '\n  %s' $invalid)
 
-if [[ -n $inv ]]; then
-	>&2 printf "non-ascii name: ${RED}%s${RESET}\n" $inv
+	printf "error: non-ascii file name%s\n" "$lines" >&2
 	exit 1
 fi
 
-mod=$(git diff-index --cached --name-only HEAD)
+files=$(git diff-index --cached --name-only HEAD)
 
-if [[ -z $mod ]]; then
+if [ -z "$files" ]; then
 	exit 0
 fi
 
-echo $mod | xargs -P$(nproc) -n1 codespell
-if [[ $? -ne 0 ]]; then
+printf '%s\n' "$files" | xargs -P$(nproc) -n1 codespell
+
+if [ $? -ne 0 ]; then
 	exit 1
 fi
