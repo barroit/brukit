@@ -29,7 +29,13 @@ extern ut_cb __ut_teardown;
 
 extern uint __ut_fail_cnt;
 
-#define __ut_ld_sec       __section(".miku_test") __used
+#ifdef __APPLE__
+# define __ut_sec_name "__DATA,__miku_test"
+#else
+# define __ut_sec_name ".miku_test"
+#endif
+
+#define __ut_ld_sec       __section(__ut_sec_name) __used
 #define __ut_cb_ptr(name) static __ut_ld_sec void (*name ## _ptr)(void)
 #define __ut_cb_def(name) static void name(void)
 #define __ut_cb(name, lv) __ut_cb_def(name); lv = &name; __ut_cb_def(name)
