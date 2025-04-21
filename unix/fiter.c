@@ -142,7 +142,7 @@ int __fiter_loop_dir(struct __fiter *ctx)
 		if (ret)
 			break;
 
-		sb_trunc_to_ws(ctx->sb);
+		sb_trunc_to_cwd(ctx->sb);
 	}
 
 	closedir(dir);

@@ -10,7 +10,7 @@
 #include "types.h"
 
 struct strbuf_offset {
-	uint ws;	/* a 'working space' for path operations */
+	uint cwd;	/* 'working space' for path operations */
 };
 
 struct strbuf {
@@ -36,9 +36,9 @@ static inline void sb_trunc(struct strbuf *sb, uint len)
 	sb->buf[sb->len] = 0;
 }
 
-static inline void sb_trunc_to_ws(struct strbuf *sb)
+static inline void sb_trunc_to_cwd(struct strbuf *sb)
 {
-	sb->len = sb->off.ws;
+	sb->len = sb->off.cwd;
 	sb->buf[sb->len] = 0;
 }
 
@@ -49,9 +49,9 @@ static inline uint sb_puts(struct strbuf *sb, const xchar *s)
 	return sb_puts_at(sb, sb->len, s);
 }
 
-static inline uint sb_puts_at_ws(struct strbuf *sb, const xchar *s)
+static inline uint sb_puts_at_cwd(struct strbuf *sb, const xchar *s)
 {
-	return sb_puts_at(sb, sb->off.ws, s);
+	return sb_puts_at(sb, sb->off.cwd, s);
 }
 
 uint sb_putc_at(struct strbuf *sb, uint off, xchar c);
@@ -61,9 +61,9 @@ static inline uint sb_putc(struct strbuf *sb, xchar c)
 	return sb_putc_at(sb, sb->len, c);
 }
 
-static inline uint sb_putc_at_ws(struct strbuf *sb, xchar c)
+static inline uint sb_putc_at_cwd(struct strbuf *sb, xchar c)
 {
-	return sb_putc_at(sb, sb->off.ws, c);
+	return sb_putc_at(sb, sb->off.cwd, c);
 }
 
 uint sb_printf_at(struct strbuf *sb,
@@ -71,17 +71,17 @@ uint sb_printf_at(struct strbuf *sb,
 
 uint sb_printf(struct strbuf *sb, const xchar *fmt, ...) __printf(2, 3);
 
-uint sb_printf_at_ws(struct strbuf *sb, const xchar *fmt, ...) __printf(2, 3);
+uint sb_printf_at_cwd(struct strbuf *sb, const xchar *fmt, ...) __printf(2, 3);
 
 void sb_trim(struct strbuf *sb);
 
-void sb_init_ws(struct strbuf *sb, const xchar *name);
+void sb_init_cwd(struct strbuf *sb, const xchar *name);
 
-void sb_reinit_ws(struct strbuf *sb, const xchar *name);
+void sb_reinit_cwd(struct strbuf *sb, const xchar *name);
 
 uint sb_pth_append(struct strbuf *sb, const xchar *name);
 
-uint sb_pth_append_at_ws(struct strbuf *sb, const xchar *name);
+uint sb_pth_append_at_cwd(struct strbuf *sb, const xchar *name);
 
 void sb_pth_to_dirname(struct strbuf *sb);
 

@@ -127,7 +127,7 @@ int __fiter_loop_dir(struct __fiter *ctx)
 	}
 
 	do {
-		sb_trunc_to_ws(ctx->sb);
+		sb_trunc_to_cwd(ctx->sb);
 
 		ret = yield_file(ctx, &ent);
 		if (ret)

@@ -139,9 +139,9 @@ uint sb_printf(struct strbuf *sb, const xchar *fmt, ...)
 	return __DO_SB_PRINTF(sb, sb->len, fmt);
 }
 
-uint sb_printf_at_ws(struct strbuf *sb, const xchar *fmt, ...)
+uint sb_printf_at_cwd(struct strbuf *sb, const xchar *fmt, ...)
 {
-	return __DO_SB_PRINTF(sb, sb->off.ws, fmt);
+	return __DO_SB_PRINTF(sb, sb->off.cwd, fmt);
 }
 
 void sb_trim(struct strbuf *sb)
@@ -171,16 +171,16 @@ void sb_trim(struct strbuf *sb)
 	sb->buf[sb->len] = 0;
 }
 
-void sb_init_ws(struct strbuf *sb, const xchar *name)
+void sb_init_cwd(struct strbuf *sb, const xchar *name)
 {
 	memset(sb, 0, sizeof(*sb));
-	sb->off.ws = sb_puts(sb, name);
+	sb->off.cwd = sb_puts(sb, name);
 }
 
-void sb_reinit_ws(struct strbuf *sb, const xchar *name)
+void sb_reinit_cwd(struct strbuf *sb, const xchar *name)
 {
 	sb_trunc(sb, sb->len);
-	sb->off.ws = sb_puts(sb, name);]
+	sb->off.cwd = sb_puts(sb, name);
 }
 
 uint sb_pth_append(struct strbuf *sb, const xchar *name)
@@ -199,18 +199,18 @@ uint sb_pth_append(struct strbuf *sb, const xchar *name)
 	return len;
 }
 
-uint sb_pth_append_at_ws(struct strbuf *sb, const xchar *name)
+uint sb_pth_append_at_cwd(struct strbuf *sb, const xchar *name)
 {
 	uint __len = xc_strlen(name);
 	uint len = __len + 1;
-	uint overlap = sb->len - sb->off.ws;
+	uint overlap = sb->len - sb->off.cwd;
 
 	if (len > overlap)
 		sb_grow(sb, len - overlap);
 
-	sb->buf[sb->off.ws] = PTH_SEP;
+	sb->buf[sb->off.cwd] = PTH_SEP;
 
-	memcpy(&sb->buf[sb->off.ws + 1], name, (__len + 1) * sizeof(*name));
+	memcpy(&sb->buf[sb->off.cwd + 1], name, (__len + 1) * sizeof(*name));
 	if (len > overlap)
 		sb->len += len - overlap;
 	else

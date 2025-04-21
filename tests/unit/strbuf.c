@@ -12,15 +12,15 @@
 
 UT_BEGIN();
 
-UT_ROUTINE(sb_init_ws)
+UT_ROUTINE(sb_init_cwd)
 {
 	struct strbuf __cleanup(sb_destroy) sb;
 
-	sb_init_ws(&sb, XC("path/to/default/ws"));
-	UA_STREQ(sb.buf, XC("path/to/default/ws"));
+	sb_init_cwd(&sb, XC("path/to/default/cwd"));
+	UA_STREQ(sb.buf, XC("path/to/default/cwd"));
 
-	sb_reinit_ws(&sb, XC("path/to/new/ws"));
-	UA_STREQ(sb.buf, XC("path/to/new/ws"));
+	sb_reinit_cwd(&sb, XC("path/to/new/cwd"));
+	UA_STREQ(sb.buf, XC("path/to/new/cwd"));
 }
 
 UT_ROUTINE(sb_puts)
@@ -32,7 +32,7 @@ UT_ROUTINE(sb_puts)
 	UA_EQ(xc_strlen(sb.buf), 4);
 	__cap = sb.cap;
 
-	sb_puts_at_ws(&sb, XC("miku39"));
+	sb_puts_at_cwd(&sb, XC("miku39"));
 	UA_EQ(xc_strlen(sb.buf), 6);
 	UA_EQ(sb.cap, __cap);
 
@@ -49,7 +49,7 @@ UT_ROUTINE(sb_putc)
 	UA_EQ(xc_strlen(sb.buf), 1);
 	__cap = sb.cap;
 
-	sb_putc_at_ws(&sb, XC('b'));
+	sb_putc_at_cwd(&sb, XC('b'));
 	UA_EQ(xc_strlen(sb.buf), 1);
 	UA_STREQ(sb.buf, XC("b"));
 	UA_EQ(sb.cap, __cap);
@@ -69,10 +69,10 @@ UT_ROUTINE(sb_trunc)
 	UA_ZERO(sb.len);
 	UA_ZERO(sb.buf[0]);
 
-	sb_reinit_ws(&sb, XC("/path/to/dir"));
+	sb_reinit_cwd(&sb, XC("/path/to/dir"));
 
 	sb_puts(&sb, XC("/dummy/path"));
-	sb_trunc_to_ws(&sb);
+	sb_trunc_to_cwd(&sb);
 	UA_EQ(sb.len, xc_strlen(XC("/path/to/dir")));
 	UA_STREQ(sb.buf, XC("/path/to/dir"));
 }
@@ -92,7 +92,7 @@ UT_ROUTINE(sb_printf)
 	UA_STREQ(sb.buf, XC("39\t39.39\t3939\tmiku"));
 	__cap = sb.cap;
 
-	sb_printf_at_ws(&sb,
+	sb_printf_at_cwd(&sb,
 			XC("%d\t%.2f\t%x\t%s"), int39, fp39, hex39, str39);
 	UA_STREQ(sb.buf, XC("39\t39.39\t3939\tmiku"));
 	UA_EQ(sb.cap, __cap);
@@ -128,20 +128,20 @@ UT_ROUTINE(sb_off_ws)
 	/*
 	 * This is just a test. Do not initialize a strbuf with a trailing
 	 * slash and use path-related APIs if the strbuf is working with
-	 * off.ws (ws stands for working space).
+	 * off.cwd (cwd stands for working space).
 	 */
-	sb_init_ws(&sb, XC("path/to/root/dir/"));
+	sb_init_cwd(&sb, XC("path/to/root/dir/"));
 
 	UA_STREQ(sb.buf, XC("path/to/root/dir/"));
-	UA_EQ(sb.off.ws, xc_strlen(XC("path/to/root/dir/")));
+	UA_EQ(sb.off.cwd, xc_strlen(XC("path/to/root/dir/")));
 
 	sb_puts(&sb, XC("executable"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir/executable"));
 
-	sb_puts_at_ws(&sb, XC("file"));
+	sb_puts_at_cwd(&sb, XC("file"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir/file"));
 
-	sb_printf_at_ws(&sb, XC(".%s%u"), XC("miku"), 39);
+	sb_printf_at_cwd(&sb, XC(".%s%u"), XC("miku"), 39);
 	UA_STREQ(sb.buf, XC("path/to/root/dir/.miku39"));
 }
 
@@ -150,21 +150,21 @@ UT_ROUTINE(sb_pth_api)
 	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
 
 #if defined(__unix__)
-	sb_init_ws(&sb, XC("path/to/root/dir"));
+	sb_init_cwd(&sb, XC("path/to/root/dir"));
 
 	sb_pth_append(&sb, XC("executable"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir/executable"));
 
-	sb_pth_append_at_ws(&sb, XC("file"));
+	sb_pth_append_at_cwd(&sb, XC("file"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir/file"));
 
 #elif defined(_WIN32)
-	sb_init_ws(&sb, XC("path\\to\\root\\dir"));
+	sb_init_cwd(&sb, XC("path\\to\\root\\dir"));
 
 	sb_pth_append(&sb, XC("executable"));
 	UA_STREQ(sb.buf, XC("path\\to\\root\\dir\\executable"));
 
-	sb_pth_append_at_ws(&sb, XC("file"));
+	sb_pth_append_at_cwd(&sb, XC("file"));
 	UA_STREQ(sb.buf, XC("path\\to\\root\\dir\\file"));
 #endif
 }
