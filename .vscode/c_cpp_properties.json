@@ -15,6 +15,11 @@
 			],
 			"intelliSenseMode": "windows-gcc-x64",
 			"compilerPath": "/usr/bin/x86_64-w64-mingw32-gcc"
+		},
+		{
+			"name": "clang",
+			"intelliSenseMode": "macos-clang-arm64",
+			"compilerPath": "/opt/homebrew/opt/llvm/bin/clang"
 		}
 	],
 	"version": 4
