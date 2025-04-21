@@ -6,12 +6,9 @@
 		}
 	},
 	"files.associations": {
-		"DRAFT": "plaintext",
-		"TAGGING": "plaintext",
-		"**/lib/cmake.*": "cmake",
-		"NOTE": "plaintext",
 		"*.h": "c",
-		"TAGS": "plaintext"
+		"**/lib/cmake.*": "cmake",
+		"**/LICENSES/**": "plaintext"
 	},
 	"search.exclude": {
 		"**/locale/**": true
