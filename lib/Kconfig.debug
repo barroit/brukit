@@ -60,14 +60,6 @@ config DEBUG_INTL
 	bool "Link with the non-inline function call version of intl"
 	depends on ENABLE_I18N
 
-menu "String Buffer options"
-
-config STRBUF_SANITIZE_PATH
-	bool "Add path format checks"
-	default ENABLE_DEBUG
-
-endmenu # String Buffer options
-
 menu "List options"
 
 config LIST_SANITIZE_MODIFICATION

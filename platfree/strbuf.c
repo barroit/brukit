@@ -171,60 +171,16 @@ void sb_trim(struct strbuf *sb)
 	sb->buf[sb->len] = 0;
 }
 
-static inline int is_tail_sep(const xchar *sep, const xchar *base)
-{
-	return sep && sep != base && sep[1] == 0;
-}
-
-static void sanitize_pth_sep(struct strbuf *sb)
-{
-	const xchar *base = sb->buf;
-	const xchar *usep = xc_strrchr(base, PTH_SEP_UNI);
-	const xchar *wsep = xc_strrchr(sb->buf, PTH_SEP_WIN);
-
-	int mixed = usep && wsep;
-	int suffixed = is_tail_sep(usep, base) && is_tail_sep(wsep, base);
-
-	if (likely(!mixed && !suffixed))
-		return;
-
-	char *path = (char *)base;
-
-	if (IS_ENABLED(CONFIG_ENABLE_WCHAR)) {
-		size_t len = mb_wcstombs(&path, (wchar_t *)base);
-
-		if (len == maxof(len)) {
-			__tm_warn(NULL, MAS_SHOW_FUNC,
-				  "mixed: %d, suffixed: %d", mixed, suffixed);
-			return;
-		}
-	}
-
-	if (mixed)
-		warn("path '%s' is mixing separators", path);
-	if (suffixed)
-		warn("path '%s' has trailing separator", path);
-
-	if (IS_ENABLED(CONFIG_ENABLE_WCHAR))
-		free(path);
-}
-
 void sb_init_ws(struct strbuf *sb, const xchar *name)
 {
 	memset(sb, 0, sizeof(*sb));
 	sb->off.ws = sb_puts(sb, name);
-
-	if (IS_ENABLED(CONFIG_STRBUF_SANITIZE_PATH))
-		sanitize_pth_sep(sb);
 }
 
 void sb_reinit_ws(struct strbuf *sb, const xchar *name)
 {
 	sb_trunc(sb, sb->len);
-	sb->off.ws = sb_puts(sb, name);
-
-	if (IS_ENABLED(CONFIG_STRBUF_SANITIZE_PATH))
-		sanitize_pth_sep(sb);
+	sb->off.ws = sb_puts(sb, name);]
 }
 
 uint sb_pth_append(struct strbuf *sb, const xchar *name)
@@ -240,9 +196,6 @@ uint sb_pth_append(struct strbuf *sb, const xchar *name)
 	memcpy(&sb->buf[sb->len], name, (__len + 1) * sizeof(*name));
 	sb->len += __len;
 
-	/* sanitize this fucking path */
-	if (IS_ENABLED(CONFIG_STRBUF_SANITIZE_PATH))
-		sanitize_pth_sep(sb);
 	return len;
 }
 
