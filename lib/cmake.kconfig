@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
-add_custom_command(OUTPUT ${GEN}/autoconf.h
+add_custom_command(OUTPUT ${gendir}/autoconf.h
 		   COMMAND ${python3} scripts/kconfig.py
-		   genconfig --header-path ${GEN}/autoconf.h
-		   COMMAND ${CMAKE_COMMAND} -E touch ${GEN}/autoconf.h
+		   genconfig --header-path ${gendir}/autoconf.h
+		   COMMAND ${CMAKE_COMMAND} -E touch ${gendir}/autoconf.h
 		   DEPENDS $ENV{LASTPLAT} $ENV{RELCONFIG}
-		   WORKING_DIRECTORY ${TOP})
+		   WORKING_DIRECTORY ${srctree})
 
-add_custom_target(genconfig DEPENDS ${GEN}/autoconf.h)
+add_custom_target(genconfig DEPENDS ${gendir}/autoconf.h)
 
 file(STRINGS $ENV{RELCONFIG} lines ENCODING UTF-8)
 

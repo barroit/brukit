@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
-set(PARAM ${TOP}/tests/param)
+set(PARAM ${srctree}/tests/param)
 
 file(GLOB param_src *.c)
 list(FILTER param_src EXCLUDE REGEX "(main)\\.c")

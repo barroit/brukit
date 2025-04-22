@@ -2,26 +2,20 @@
 
 cmake_minimum_required(VERSION 3.21)
 
-set(TOP   $ENV{TOP})
-set(GEN   $ENV{GEN})
-set(BUILD $ENV{BUILD})
-
-if(UNIX)
-  set(PLAT unix)
-elseif(WIN32)
-  set(PLAT win32)
-endif()
+set(srctree $ENV{TOP})
+set(objtree $ENV{BUILD})
+set(gendir  $ENV{GEN})
 
 set(SANFLAGS -fsanitize=address,undefined)
 
-file(MAKE_DIRECTORY ${GEN})
+file(MAKE_DIRECTORY ${gendir})
 
 include(lib/cmake.include)
 
 include_scp(lib/cmake.kconfig)
 
 include_scp(lib/cmake.features)
-include(${BUILD}/features.cmake)
+include(${objtree}/features.cmake)
 
 set(ENV{CC} ${CONFIG_CC_COMMAND})
 set(ENV{LD} ${CONFIG_LD_COMMAND})
@@ -90,8 +84,9 @@ if(WIN32 AND CONFIG_ENABLE_SANITIZER)
   add_compile_options(-U_DLL)
 endif()
 
-get_directory_property(cflags COMPILE_OPTIONS)
-set(COMPILE_FLAGS ${cflags})
+# Do this or compiler ignores flags
+get_directory_property(CLFAGS COMPILE_OPTIONS)
+set(COMPILE_FLAGS ${CLFAGS})
 
 string(REPLACE -rc . prog_version_cmake ${prog_version})
 project(${prog_name} VERSION ${prog_version_cmake} LANGUAGES C)
@@ -104,11 +99,11 @@ if(CONFIG_ENABLE_I18N)
   include_scp(lib/cmake.gettext)
 endif()
 
-configure_file(include/program.h.in ${GEN}/program.h)
+configure_file(include/program.h.in ${gendir}/program.h)
 
-cc_include(${GEN}/autoconf.h)
-cc_include(${GEN}/features.h)
-cc_include(${GEN}/program.h)
+cc_include(${gendir}/autoconf.h)
+cc_include(${gendir}/features.h)
+cc_include(${gendir}/program.h)
 
 include_directories(include)
 

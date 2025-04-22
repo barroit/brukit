@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
-file(STRINGS ${TOP}/arch/.map lines ENCODING UTF-8)
+file(STRINGS ${srctree}/arch/.map lines ENCODING UTF-8)
 
 foreach(line ${lines})
   if(${line} MATCHES "[ \t]*#")
