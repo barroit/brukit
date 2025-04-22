@@ -1,13 +1,14 @@
+#!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
 run --name barroit
-PSSERT_OPTEQUAL name barroit
+UA_OPTEQ name barroit
 
 run --name=初音ミク
-PSSERT_OPTEQUAL name 初音ミク
+UA_OPTEQ name 初音ミク
 
 run --name 'Hatsune Miku'
-PSSERT_OPTEQUAL name Hatsune Miku
+UA_OPTEQ name 'Hatsune Miku'
 
 run --name
-PSSERT_ERRLIKE requires a value
+UA_ERRLIKE 'requires a value'

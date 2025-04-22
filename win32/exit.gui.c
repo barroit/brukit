@@ -29,10 +29,7 @@
 
 static int is_testing(void)
 {
-	if (!IS_ENABLED(CONFIG_ENABLE_TEST))
-		return 0;
-
-	const xchar *exe = getenv(XC("TEST3939"));
+	const xchar *exe = getenv(XC("CTEST_NAME"));
 
 	if (!exe)
 		return 0;
@@ -56,7 +53,7 @@ static int is_testing(void)
 
 void __exit_show_confirm(void)
 {
-	if (is_testing())
+	if (IS_ENABLED(CONFIG_ENABLE_TEST) && is_testing())
 		return;
 
 	puts(_("\nPress any key to continue..."));

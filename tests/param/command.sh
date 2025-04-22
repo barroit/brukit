@@ -1,13 +1,14 @@
+#!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
 run push
-PSSERT_OPTEQUAL cmd push
+UA_OPTEQ cmd push
 
 run pop
-PSSERT_OPTEQUAL cmd pop
+UA_OPTEQ cmd pop
 
 run test
-PSSERT_ERRLIKE unknown command
+UA_ERRLIKE 'unknown command'
 
 run
-PSSERT_OUTLIKE usage: run
+UA_OUTLIKE 'usage: run'
