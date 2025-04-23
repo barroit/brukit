@@ -7,7 +7,7 @@
 
 #include <string.h>
 
-#include "pathalt.h"
+#include "pathwalk.h"
 #include "xalloc.h"
 #include "xcf.h"
 
@@ -15,79 +15,79 @@ UT_BEGIN();
 
 UT_ROUTINE(pa_dirname_rel_path)
 {
-	struct pathalt __cleanup(pa_destroy) pa;
+	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
 
-	pa_init(&pa, XC("relative/directory/file"));
+	pw_init(&pw, XC("relative/directory/file"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("relative/directory"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("relative/directory"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("relative/directory"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("relative"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("relative"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("relative"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("."));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("."));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("."));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("."));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("."));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("."));
 }
 
 UT_ROUTINE(pa_dirname_abs_path)
 {
-	struct pathalt __cleanup(pa_destroy) pa;
+	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
 
-	pa_init(&pa, XC("////absolute//directory/file///"));
+	pw_init(&pw, XC("////absolute//directory/file///"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("////absolute//directory"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("////absolute//directory"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("////absolute//directory"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("////absolute"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("////absolute"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("////absolute"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("/"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("/"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("/"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("/"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("/"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("/"));
 }
 
 UT_ROUTINE(pa_dirname_shr_rtb_rel_path)
 {
-	struct pathalt __cleanup(pa_destroy) pa;
+	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
 
 	const xchar *path = XC("relative/directory/file///");
@@ -99,24 +99,24 @@ UT_ROUTINE(pa_dirname_shr_rtb_rel_path)
 
 	buf[0] = 0;
 	memcpy(&buf[1], path, rsz);
-	__pa_init(&pa, &buf[1], len, &buf[1]);
+	__pw_init(&pw, &buf[1], len, &buf[1]);
 
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("relative/directory"));
 
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("relative"));
 
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("."));
 
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("."));
 }
 
 UT_ROUTINE(pa_dirname_shr_rtb_abs_path)
 {
-	struct pathalt __cleanup(pa_destroy) pa;
+	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
 
 	const xchar *path = XC("////absolute//directory/file///");
@@ -128,155 +128,155 @@ UT_ROUTINE(pa_dirname_shr_rtb_abs_path)
 
 	buf[0] = 0;
 	memcpy(&buf[1], path, rsz);
-	__pa_init(&pa, &buf[1], len, &buf[1]);
+	__pw_init(&pw, &buf[1], len, &buf[1]);
 
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("////absolute//directory"));
 
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("////absolute"));
 
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("/"));
 
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("/"));
 }
 
 UT_ROUTINE_WIN32(pa_dirname_rel_path)
 {
-	struct pathalt __cleanup(pa_destroy) pa;
+	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
 
-	pa_init(&pa, XC("C:relative\\directory\\\\file\\\\"));
+	pw_init(&pw, XC("C:relative\\directory\\\\file\\\\"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:relative\\directory"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:relative\\directory"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("C:relative\\directory"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:relative"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:relative"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("C:relative"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("C:"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("."));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("."));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("."));
 }
 
 UT_ROUTINE_WIN32(pa_dirname_abs_path)
 {
-	struct pathalt __cleanup(pa_destroy) pa;
+	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
 
-	pa_init(&pa, XC("C:\\\\\\\\absolute\\\\\\directory\\\\file\\\\"));
+	pw_init(&pw, XC("C:\\\\\\\\absolute\\\\\\directory\\\\file\\\\"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\\\\\\\absolute\\\\\\directory"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\\\\\\\absolute\\\\\\directory"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("C:\\\\\\\\absolute\\\\\\directory"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\\\\\\\absolute"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\\\\\\\absolute"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("C:\\\\\\\\absolute"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
-	dir = pa_to_parent(&pa);
-	UA_STREQ(dir, XC("C:\\"));
-
-	dir = pa_dirname(&pa);
-	UA_STREQ(dir, XC("C:\\"));
-	dir = pa_dirname(&pa);
-	UA_STREQ(dir, XC("C:\\"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("C:\\"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
+	UA_STREQ(dir, XC("C:\\"));
+
+	dir = pw_dirname(&pw);
+	UA_STREQ(dir, XC("C:\\"));
+	dir = pw_dirname(&pw);
+	UA_STREQ(dir, XC("C:\\"));
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("C:\\"));
 }
 
 UT_ROUTINE_WIN32(pa_dirname_net_path)
 {
-	struct pathalt __cleanup(pa_destroy) pa;
+	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
 
-	pa_init(&pa, XC("\\\\127.0.0.1\\c$\\path\\file\\\\"));
+	pw_init(&pw, XC("\\\\127.0.0.1\\c$\\path\\file\\\\"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\c$\\path"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\c$\\path"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\c$\\path"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\c$"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\c$"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\c$"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
 }
 
 UT_ROUTINE_WIN32(pa_dirname_drive_path)
 {
-	struct pathalt __cleanup(pa_destroy) pa;
+	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
 
-	pa_init(&pa, XC("c:\\file"));
+	pw_init(&pw, XC("c:\\file"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("c:\\"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("c:\\"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("c:\\"));
 
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("c:\\"));
-	dir = pa_dirname(&pa);
+	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("c:\\"));
-	dir = pa_to_parent(&pa);
+	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("c:\\"));
 }
 

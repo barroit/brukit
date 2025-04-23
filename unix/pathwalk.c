@@ -3,14 +3,14 @@
  * Copyright 2025 Jiamu Sun <barroit@linux.com>
  */
 
-#include "pathalt.h"
+#include "pathwalk.h"
 
-const xchar *pa_skip_root(const xchar *name)
+const xchar *pw_skip_root(const xchar *name)
 {
 	return name;
 }
 
-const xchar *pa_skip_root_back(const xchar *name)
+const xchar *pw_skip_root_back(const xchar *name)
 {
 	return name;
 }
