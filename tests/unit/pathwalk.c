@@ -89,17 +89,18 @@ UT_ROUTINE(pa_dirname_shr_rtb_rel_path)
 {
 	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
-
 	const xchar *path = XC("relative/directory/file///");
+
 	size_t len = xc_strlen(path);
+	size_t size = ((len + 1) * sizeof(path)) * 2;
 
-	size_t rsz = (len + 1) * sizeof(path);
-	size_t bsz = (len + 2) * sizeof(path);
-	xchar *buf = xmalloc(bsz);
+	xchar *ptb = xmalloc(size);
+	xchar *rtb = &ptb[len + 1];
 
-	buf[0] = 0;
-	memcpy(&buf[1], path, rsz);
-	__pw_init(&pw, &buf[1], len, &buf[1]);
+	memcpy(ptb, path, len + 1);
+	memcpy(rtb, path, len + 1);
+
+	__pw_init(&pw, ptb, len, rtb, PW_RTB_SHARE);
 
 	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("relative/directory"));
@@ -118,17 +119,18 @@ UT_ROUTINE(pa_dirname_shr_rtb_abs_path)
 {
 	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
-
 	const xchar *path = XC("////absolute//directory/file///");
+
 	size_t len = xc_strlen(path);
+	size_t size = ((len + 1) * sizeof(path)) * 2;
 
-	size_t rsz = (len + 1) * sizeof(path);
-	size_t bsz = (len + 2) * sizeof(path);
-	xchar *buf = xmalloc(bsz);
+	xchar *ptb = xmalloc(size);
+	xchar *rtb = &ptb[len + 1];
 
-	buf[0] = 0;
-	memcpy(&buf[1], path, rsz);
-	__pw_init(&pw, &buf[1], len, &buf[1]);
+	memcpy(ptb, path, len + 1);
+	memcpy(rtb, path, len + 1);
+
+	__pw_init(&pw, ptb, len, rtb, PW_RTB_SHARE);
 
 	dir = pw_to_parent(&pw);
 	UA_STREQ(dir, XC("////absolute//directory"));

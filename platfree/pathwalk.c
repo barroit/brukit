@@ -10,69 +10,64 @@
 #include "xc.h"
 #include "xcf.h"
 
-void __pw_init(struct pathwalk *pa, xchar *buf, uint len, xchar *rtb)
+void __pw_init(struct pathwalk *pw, xchar *ptb,
+	       uint len, xchar *rtb, u32 flags)
 {
-	BUG_ON(buf[-1] != 0);
-	BUG_ON(!len);
+	memset(pw, 0, sizeof(*pw));
 
-	memset(pa, 0, sizeof(*pa));
+	pw->ptb = ptb;
+	pw->len = len;
+	pw->rtb = rtb;
+	pw->flags = flags;
 
-	pa->buf = buf;
-	pa->len = len;
-	pa->rtb = rtb;
+	pw_step(pw);
 
-	if (pa->rtb == pa->buf)
-		pa->flags |= PW_SHR_RTB;
-
-	pw_step(pa);
-
-	switch (pa->st) {
+	switch (pw->st) {
 	case PW_ROOT_NAME:
-		pa->root_len = pa->se_len;
-		pw_step(pa);
+		pw->root_len = pw->comp_len;
+		pw_step(pw);
 
-		if (pa->st != PW_ROOT_DIR)
+		if (pw->st != PW_ROOT_DIR)
 			break;
 
 	case PW_ROOT_DIR:
-		pa->root_len += 1;
-		pa->flags |= PW_IS_ABS;
+		pw->root_len += 1;
+		pw->flags |= PW_IS_ABS;
 	}
 
-	pa->st = PW_END;
+	pw->st = PW_END;
 }
 
-void pw_init(struct pathwalk *pa, const xchar *path)
+void pw_init(struct pathwalk *pw, const xchar *path)
 {
 	uint len = xc_strlen(path);
-	uint rsz = (len + 1) * sizeof(*path);
-	uint bsz = (len + 2) * sizeof(*path);
+	uint size = ((len + 1) * sizeof(*path)) * 2;
 
-	xchar *buf = xmalloc(bsz);
-	xchar *rtb = xmalloc(rsz);
+	xchar *ptb = xmalloc(size);
+	xchar *rtb = &ptb[len + 1];
 
-	buf[0] = 0;
-	memcpy(&buf[1], path, rsz);
+	memcpy(ptb, path, len + 1);
+	memcpy(rtb, path, len + 1);
 
-	__pw_init(pa, &buf[1], len, rtb);
+	__pw_init(pw, ptb, len, rtb, PW_RTB_SHARE);
 }
 
-void pw_destroy(struct pathwalk *pa)
+void pw_destroy(struct pathwalk *pw)
 {
-	if (pa->rtb != pa->buf)
-		free(pa->rtb);
+	if (!(pw->flags & PW_RTB_EQPTB) && !(pw->flags & PW_RTB_SHARE))
+		free(pw->rtb);
 
-	free(&pa->buf[-1]);
+	free(pw->ptb);
 }
 
-static inline void next_state(struct pathwalk *pa,
+static inline void next_state(struct pathwalk *pw,
 			      enum pathwalk_state st,
-			      const xchar *se, uint len)
+			      const xchar *comp, uint len)
 {
-	pa->st = st;
+	pw->st = st;
 
-	pa->se = se;
-	pa->se_len = len;
+	pw->comp = comp;
+	pw->comp_len = len;
 }
 
 const xchar *pw_skip_sep(const xchar *name)
@@ -101,89 +96,89 @@ const xchar *pw_skip_name(const xchar *name)
 	return name;
 }
 
-const xchar *pw_skip_sep_back(const xchar *name)
+const xchar *pw_skip_sep_back(const xchar *ptr, const xchar *end)
 {
-	while (chr_is_sep(*name))
-		name--;
+	while (ptr >= end && chr_is_sep(*ptr))
+		ptr--;
 
-	return name;
+	return ptr;
 }
 
-const xchar *pw_skip_nsep_back(const xchar *name, uint n)
+const xchar *pw_skip_nsep_back(const xchar *ptr, const xchar *end, uint n)
 {
-	const xchar *p = pw_skip_sep_back(name);
+	const xchar *next = pw_skip_sep_back(ptr, end);
 
-	if (name - n == p)
-		return p;
+	if (ptr - n == next)
+		return next;
 
-	return name;
+	return ptr;
 }
 
-const xchar *pw_skip_name_back(const xchar *name)
+const xchar *pw_skip_name_back(const xchar *ptr, const xchar *end)
 {
-	while (*name && !chr_is_sep(*name))
-		name--;
+	while (ptr >= end && !chr_is_sep(*ptr))
+		ptr--;
 
-	const xchar *tmp = pw_skip_root(&name[1]);
+	const xchar *tmp = pw_skip_root(&ptr[1]);
 
-	if (tmp != &name[1])
-		name = &tmp[-1];
-	return name;
+	if (tmp != &ptr[1])
+		ptr = &tmp[-1];
+	return ptr;
 }
 
-int pw_step(struct pathwalk *pa)
+int pw_step(struct pathwalk *pw)
 {
 	const xchar *prev = NULL;
 	const xchar *next;
 
-	switch (pa->st) {
+	switch (pw->st) {
 	case PW_PRE:
-		prev = pa->buf;
+		prev = pw->ptb;
 		next = pw_skip_root(prev);
 
 		if (next != prev) {
-			next_state(pa, PW_ROOT_NAME, prev, next - prev);
+			next_state(pw, PW_ROOT_NAME, prev, next - prev);
 			break;
 		}
 
 	case PW_ROOT_NAME:
 		if (!prev)
-			prev = &pa->se[pa->se_len];
+			prev = &pw->comp[pw->comp_len];
 		next = pw_skip_sep(prev);
 
 		if (next != prev) {
-			next_state(pa, PW_ROOT_DIR, prev, next - prev);
+			next_state(pw, PW_ROOT_DIR, prev, next - prev);
 			break;
 		}
 
 	case PW_ROOT_DIR:
 		if (!prev)
-			prev = &pa->se[pa->se_len];
+			prev = &pw->comp[pw->comp_len];
 		next = pw_skip_name(prev);
 
 		if (next != prev) {
-			next_state(pa, PW_FILE_NAME, prev, next - prev);
+			next_state(pw, PW_FILE_NAME, prev, next - prev);
 			break;
 		}
 
-		next_state(pa, PW_END, NULL, 0);
+		next_state(pw, PW_END, NULL, 0);
 		goto done;
 
 	case PW_FILE_NAME:
-		prev = &pa->se[pa->se_len];
+		prev = &pw->comp[pw->comp_len];
 		next = pw_skip_sep(prev);
 
 		if (*next) {
 			prev = pw_skip_name(next);
-			next_state(pa, PW_FILE_NAME, next, prev - next);
+			next_state(pw, PW_FILE_NAME, next, prev - next);
 			break;
 		} else if (next != prev) {
-			next_state(pa, PW_TAIL_SEP, prev, next - prev);
+			next_state(pw, PW_TAIL_SEP, prev, next - prev);
 			break;
 		}
 
 	case PW_TAIL_SEP:
-		next_state(pa, PW_END, NULL, 0);
+		next_state(pw, PW_END, NULL, 0);
 	default:
 done:
 		return -1;
@@ -192,95 +187,95 @@ done:
 	return 0;
 }
 
-int pw_step_back(struct pathwalk *pa)
+int pw_step_back(struct pathwalk *pw)
 {
 	const xchar *prev;
 	const xchar *next;
 	const xchar *tmp;
 
-	switch (pa->st) {
+	switch (pw->st) {
 	case PW_END:
-		prev = &pa->buf[pa->len - 1];
-		next = pw_skip_sep_back(prev);
+		prev = &pw->ptb[pw->len - 1];
+		next = pw_skip_sep_back(prev, pw->ptb);
 
 		if (next == prev) {
-			next = pw_skip_root_back(prev);
+			next = pw_skip_root_back(prev, pw->ptb);
 
-			if (!*next) {
-				next_state(pa, PW_ROOT_NAME,
+			if (next < pw->ptb) {
+				next_state(pw, PW_ROOT_NAME,
 					   &next[1], prev - next);
 				break;
 			}
 
-			next = pw_skip_name_back(prev);
-			next_state(pa, PW_FILE_NAME, &next[1], prev - next);
+			next = pw_skip_name_back(prev, pw->ptb);
+			next_state(pw, PW_FILE_NAME, &next[1], prev - next);
 			break;
 		}
 
-		if (!*next) {
-			next_state(pa, PW_ROOT_DIR, &next[1], prev - next);
+		if (next < pw->ptb) {
+			next_state(pw, PW_ROOT_DIR, &next[1], prev - next);
 			break;
 		}
 
-		tmp = pw_skip_root_back(next);
+		tmp = pw_skip_root_back(next, pw->ptb);
 
-		if (!*tmp)
-			next_state(pa, PW_ROOT_DIR, &next[1], prev - next);
+		if (tmp < pw->ptb)
+			next_state(pw, PW_ROOT_DIR, &next[1], prev - next);
 		else
-			next_state(pa, PW_TAIL_SEP, &next[1], prev - next);
+			next_state(pw, PW_TAIL_SEP, &next[1], prev - next);
 		break;
 
 	case PW_TAIL_SEP:
-		prev = &pa->se[-1];
-		next = pw_skip_name_back(prev);
+		prev = &pw->comp[-1];
+		next = pw_skip_name_back(prev, pw->ptb);
 
-		next_state(pa, PW_FILE_NAME, &next[1], prev - next);
+		next_state(pw, PW_FILE_NAME, &next[1], prev - next);
 		break;
 
 	case PW_FILE_NAME:
-		prev = &pa->se[-1];
-		next = pw_skip_sep_back(prev);
+		prev = &pw->comp[-1];
+		next = pw_skip_sep_back(prev, pw->ptb);
 
-		if (!*next) {
+		if (next < pw->ptb) {
 			if (next == prev) {
-				next_state(pa, PW_PRE, NULL, 0);
+				next_state(pw, PW_PRE, NULL, 0);
 				goto done;
 			}
 
-			next_state(pa, PW_ROOT_DIR, &next[1], prev - next);
+			next_state(pw, PW_ROOT_DIR, &next[1], prev - next);
 			break;
 		}
 
-		tmp = pw_skip_root_back(next);
+		tmp = pw_skip_root_back(next, pw->ptb);
 
-		if (*tmp) {
+		if (tmp >= pw->ptb) {
 			prev = next;
-			next = pw_skip_name_back(prev);
+			next = pw_skip_name_back(prev, pw->ptb);
 
-			next_state(pa, PW_FILE_NAME, &next[1], prev - next);
+			next_state(pw, PW_FILE_NAME, &next[1], prev - next);
 			break;
 		}
 
 		if (next != prev)
-			next_state(pa, PW_ROOT_DIR, &next[1], prev - next);
+			next_state(pw, PW_ROOT_DIR, &next[1], prev - next);
 		else
-			next_state(pa, PW_ROOT_NAME, &tmp[1], prev - tmp);
+			next_state(pw, PW_ROOT_NAME, &tmp[1], prev - tmp);
 		break;
 
 	case PW_ROOT_DIR:
-		prev = &pa->se[-1];
-		next = &pa->buf[-1];
+		prev = &pw->comp[-1];
+		next = &pw->ptb[-1];
 
-		if (!*prev) {
-			next_state(pa, PW_PRE, NULL, 0);
+		if (prev < pw->ptb) {
+			next_state(pw, PW_PRE, NULL, 0);
 			goto done;
 		}
 
-		next_state(pa, PW_ROOT_NAME, &next[1], prev - next);
+		next_state(pw, PW_ROOT_NAME, &next[1], prev - next);
 		break;
 
 	case PW_ROOT_NAME:
-		next_state(pa, PW_PRE, NULL, 0);
+		next_state(pw, PW_PRE, NULL, 0);
 	default:
 done:
 		return -1;
@@ -289,86 +284,86 @@ done:
 	return 0;
 }
 
-const xchar *pw_to_parent(struct pathwalk *pa)
+const xchar *pw_to_parent(struct pathwalk *pw)
 {
-	uint len = pa->root_len;
-	enum pathwalk_state st = pa->st;
+	uint len = pw->root_len;
+	enum pathwalk_state st = pw->st;
 
-	pw_step_back(pa);
+	pw_step_back(pw);
 
-	if (pa->st == PW_TAIL_SEP)
-		pw_step_back(pa);
+	if (pw->st == PW_TAIL_SEP)
+		pw_step_back(pw);
 	if (st == PW_END)
-		pw_step_back(pa);
+		pw_step_back(pw);
 
-	switch (pa->st) {
+	switch (pw->st) {
 	case PW_FILE_NAME:
-		len = pa->se - pa->buf + pa->se_len;
+		len = pw->comp - pw->ptb + pw->comp_len;
 		break;
 
 	case PW_ROOT_NAME:
-		len = pa->se - pa->buf + pa->se_len;
-		if (pa->flags & PW_IS_ABS)
+		len = pw->comp - pw->ptb + pw->comp_len;
+		if (pw->flags & PW_IS_ABS)
 			len += 1;
 		break;
 
 	case PW_ROOT_DIR:
-		len = pa->se - pa->buf + 1;
+		len = pw->comp - pw->ptb + 1;
 		break;
 
 	case PW_PRE:
-		if (!(pa->flags & PW_IS_ABS))
+		if (!(pw->flags & PW_IS_ABS))
 			return XC(".");
 
 		goto out;
 	}
 
-	if (pa->flags & PW_SHR_RTB) {
-		pa->st = PW_END;
-		pa->len = len;
+	if (pw->flags & PW_RTB_EQPTB) {
+		pw->st = PW_END;
+		pw->len = len;
 	}
 
 out:
-	if (!(pa->flags & PW_SHR_RTB))
-		memcpy(pa->rtb, pa->buf, len * sizeof(*pa->buf));
+	if (!(pw->flags & PW_RTB_EQPTB))
+		memcpy(pw->rtb, pw->ptb, len * sizeof(*pw->ptb));
 
-	pa->rtb[len] = 0;
-	return pa->rtb;
+	pw->rtb[len] = 0;
+	return pw->rtb;
 }
 
-const xchar *pw_basename(struct pathwalk *pa)
+const xchar *pw_basename(struct pathwalk *pw)
 {
-	pa->st = PW_END;
-	pw_step_back(pa);
+	pw->st = PW_END;
+	pw_step_back(pw);
 
-	if (pa->st == PW_TAIL_SEP) {
-		*(xchar *)pa->se = 0;
-		pw_step_back(pa);
+	if (pw->st == PW_TAIL_SEP) {
+		*(xchar *)pw->comp = 0;
+		pw_step_back(pw);
 	}
 
-	if (pa->st == PW_ROOT_DIR) {
-		const xchar *ret = &pa->se[pa->se_len - 1];
+	if (pw->st == PW_ROOT_DIR) {
+		const xchar *ret = &pw->comp[pw->comp_len - 1];
 
-		pw_step_back(pa);
+		pw_step_back(pw);
 
-		if (pa->st == PW_ROOT_NAME)
-			return pa->buf;
+		if (pw->st == PW_ROOT_NAME)
+			return pw->ptb;
 		return ret;
 	}
 
-	return pa->se;
+	return pw->comp;
 }
 
-const xchar *pw_dirname(struct pathwalk *pa)
+const xchar *pw_dirname(struct pathwalk *pw)
 {
-	BUG_ON(pa->flags & PW_SHR_RTB);
+	BUG_ON(pw->flags & PW_RTB_EQPTB);
 
-	enum pathwalk_state st = pa->st;
-	const xchar *se = pa->se;
+	enum pathwalk_state st = pw->st;
+	const xchar *comp = pw->comp;
 
-	const xchar *ret = pw_to_parent(pa);
+	const xchar *ret = pw_to_parent(pw);
 
-	pa->st = st;
-	pa->se = se;
+	pw->st = st;
+	pw->comp = comp;
 	return ret;
 }

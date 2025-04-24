@@ -3,8 +3,8 @@
  * Copyright 2025 Jiamu Sun <barroit@linux.com>
  */
 
-#ifndef NG39_PATHALT_TYPES_H
-#define NG39_PATHALT_TYPES_H
+#ifndef NG39_PATHWALK_TYPES_H
+#define NG39_PATHWALK_TYPES_H
 
 #include "types.h"
 
@@ -17,21 +17,22 @@ enum pathwalk_state {
 	PW_END,
 };
 
-#define PW_IS_ABS  (1U << 0)
-#define PW_SHR_RTB (1U << 1)
+#define PW_IS_ABS    (1U << 0)
+#define PW_RTB_EQPTB (1U << 1)
+#define PW_RTB_SHARE (1U << 2)
 
 /*
- * Some optimizations apply if pathwalk->buf and pathwalk->rtb point to same
+ * Some optimizations apply if pathwalk->ptb and pathwalk->rtb point to same
  * address. In that case, pathwalk->st becomes unreliable, and don't use:
  *
  *	pw_dirname
  */
 struct pathwalk {
-	xchar *buf;
+	xchar *ptb;
 	uint len;
 
-	const xchar *se;
-	uint se_len;
+	const xchar *comp;
+	uint comp_len;
 
 	xchar *rtb;
 
@@ -42,4 +43,4 @@ struct pathwalk {
 	u32 flags;
 };
 
-#endif /* NG39_PATHALT_TYPES_H */
+#endif /* NG39_PATHWALK_TYPES_H */

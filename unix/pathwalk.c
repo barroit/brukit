@@ -10,7 +10,7 @@ const xchar *pw_skip_root(const xchar *name)
 	return name;
 }
 
-const xchar *pw_skip_root_back(const xchar *name)
+const xchar *pw_skip_root_back(const xchar *start, const xchar *end)
 {
-	return name;
+	return start;
 }
