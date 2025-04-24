@@ -55,10 +55,6 @@ xchar *sb_detach(struct strbuf *sb)
 	return ret;
 }
 
-/*
- * Ensure strbuf has at least sb->len + new spaces (excluding null terminator)
- * to store characters.
- */
 static inline void sb_grow(struct strbuf *sb, uint new)
 {
 	REALLOCBUF(sb->buf, sb->len + new + 1, sb->cap);
@@ -97,12 +93,6 @@ uint sb_putc_at(struct strbuf *sb, uint off, const xchar c)
 
 	return 1;
 }
-
-/*
- * Tell the compiler this fmt cannot be NULL.
- */
-static uint __sb_printf_at(struct strbuf *sb, uint off,
-			   const xchar *fmt, va_list *ap);
 
 static uint __sb_printf_at(struct strbuf *sb, uint off,
 			   const xchar *fmt, va_list *ap)
@@ -171,19 +161,19 @@ void sb_trim(struct strbuf *sb)
 	sb->buf[sb->len] = 0;
 }
 
-void sb_init_cwd(struct strbuf *sb, const xchar *name)
+void sb_pth_legacy_init_cwd(struct strbuf *sb, const xchar *name)
 {
 	memset(sb, 0, sizeof(*sb));
 	sb->off.cwd = sb_puts(sb, name);
 }
 
-void sb_reinit_cwd(struct strbuf *sb, const xchar *name)
+void sb_pth_legacy_reinit_cwd(struct strbuf *sb, const xchar *name)
 {
 	sb_trunc(sb, sb->len);
 	sb->off.cwd = sb_puts(sb, name);
 }
 
-uint sb_pth_append(struct strbuf *sb, const xchar *name)
+uint sb_pth_legacy_append(struct strbuf *sb, const xchar *name)
 {
 	uint __len = xc_strlen(name);
 	uint len = __len + 1;
@@ -199,7 +189,7 @@ uint sb_pth_append(struct strbuf *sb, const xchar *name)
 	return len;
 }
 
-uint sb_pth_append_at_cwd(struct strbuf *sb, const xchar *name)
+uint sb_pth_legacy_append_at_cwd(struct strbuf *sb, const xchar *name)
 {
 	uint __len = xc_strlen(name);
 	uint len = __len + 1;
@@ -219,7 +209,7 @@ uint sb_pth_append_at_cwd(struct strbuf *sb, const xchar *name)
 	return len;
 }
 
-void sb_pth_to_dirname(struct strbuf *sb)
+void sb_pth_legacy_to_dirname(struct strbuf *sb)
 {
 	xchar *sep = pth_last_sep(sb->buf);
 

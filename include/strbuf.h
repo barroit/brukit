@@ -75,24 +75,14 @@ uint sb_printf_at_cwd(struct strbuf *sb, const xchar *fmt, ...) __printf(2, 3);
 
 void sb_trim(struct strbuf *sb);
 
-void sb_init_cwd(struct strbuf *sb, const xchar *name);
-
-void sb_reinit_cwd(struct strbuf *sb, const xchar *name);
-
-uint sb_pth_append(struct strbuf *sb, const xchar *name);
-
-uint sb_pth_append_at_cwd(struct strbuf *sb, const xchar *name);
-
-void sb_pth_to_dirname(struct strbuf *sb);
 
 /*
  * __sb_mb_str*
- *	do not copy the string if the buffer type is already char *
+ *	doesn't return a copy if buffer type is char *
  *
  * sb_mb_str*
- *	returns a copy of the string, which must be freed using free(3)
+ *	returns a copy of string
  */
-
 char *__sb_mb_str(struct strbuf *sb);
 
 char *__sb_mb_str_fb(struct strbuf *sb, const char *fb);
@@ -100,5 +90,16 @@ char *__sb_mb_str_fb(struct strbuf *sb, const char *fb);
 char *sb_mb_str(struct strbuf *sb);
 
 char *sb_mb_str_fb(struct strbuf *sb, const char *fb);
+
+
+void sb_pth_legacy_init_cwd(struct strbuf *sb, const xchar *name);
+
+void sb_pth_legacy_reinit_cwd(struct strbuf *sb, const xchar *name);
+
+uint sb_pth_legacy_append(struct strbuf *sb, const xchar *name);
+
+uint sb_pth_legacy_append_at_cwd(struct strbuf *sb, const xchar *name);
+
+void sb_pth_legacy_to_dirname(struct strbuf *sb);
 
 #endif /* NG39_STRBUF_H */

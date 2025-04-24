@@ -38,7 +38,7 @@ static int yield_file(struct __fiter *ctx, WIN32_FIND_DATA *ent)
 
 	if (pth_is_dot(name))
 		return 0;
-	sb_pth_append(ctx->sb, name);
+	sb_pth_legacy_append(ctx->sb, name);
 
 	if (!is_lnk) {
 		if (__fiter_is_list_dir_only(ctx->flags) && !is_dir)
@@ -109,7 +109,7 @@ static int yield_file(struct __fiter *ctx, WIN32_FIND_DATA *ent)
 
 int __fiter_loop_dir(struct __fiter *ctx)
 {
-	sb_pth_append(ctx->sb, XC("*"));
+	sb_pth_legacy_append(ctx->sb, XC("*"));
 
 	int ret;
 	WIN32_FIND_DATA ent;

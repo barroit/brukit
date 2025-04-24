@@ -12,14 +12,14 @@
 
 UT_BEGIN();
 
-UT_ROUTINE(sb_init_cwd)
+UT_ROUTINE(sb_pth_legacy_init_cwd)
 {
 	struct strbuf __cleanup(sb_destroy) sb;
 
-	sb_init_cwd(&sb, XC("path/to/default/cwd"));
+	sb_pth_legacy_init_cwd(&sb, XC("path/to/default/cwd"));
 	UA_STREQ(sb.buf, XC("path/to/default/cwd"));
 
-	sb_reinit_cwd(&sb, XC("path/to/new/cwd"));
+	sb_pth_legacy_reinit_cwd(&sb, XC("path/to/new/cwd"));
 	UA_STREQ(sb.buf, XC("path/to/new/cwd"));
 }
 
@@ -69,7 +69,7 @@ UT_ROUTINE(sb_trunc)
 	UA_ZERO(sb.len);
 	UA_ZERO(sb.buf[0]);
 
-	sb_reinit_cwd(&sb, XC("/path/to/dir"));
+	sb_pth_legacy_reinit_cwd(&sb, XC("/path/to/dir"));
 
 	sb_puts(&sb, XC("/dummy/path"));
 	sb_trunc_to_cwd(&sb);
@@ -125,16 +125,14 @@ UT_ROUTINE(sb_off_ws)
 {
 	struct strbuf __cleanup(sb_destroy) sb;
 
-	/*
-	 * This is just a test. Do not initialize a strbuf with a trailing
-	 * slash and use path-related APIs if the strbuf is working with
-	 * off.cwd (cwd stands for working space).
-	 */
-	sb_init_cwd(&sb, XC("path/to/root/dir/"));
+	sb_pth_legacy_init_cwd(&sb, XC("path/to/root/dir/"));
 
 	UA_STREQ(sb.buf, XC("path/to/root/dir/"));
 	UA_EQ(sb.off.cwd, xc_strlen(XC("path/to/root/dir/")));
 
+	/*
+	 * Don't copy this, use path-legacy-related APIs in your code.
+	 */
 	sb_puts(&sb, XC("executable"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir/executable"));
 
@@ -150,21 +148,21 @@ UT_ROUTINE(sb_pth_api)
 	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
 
 #if defined(__unix__)
-	sb_init_cwd(&sb, XC("path/to/root/dir"));
+	sb_pth_legacy_init_cwd(&sb, XC("path/to/root/dir"));
 
-	sb_pth_append(&sb, XC("executable"));
+	sb_pth_legacy_append(&sb, XC("executable"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir/executable"));
 
-	sb_pth_append_at_cwd(&sb, XC("file"));
+	sb_pth_legacy_append_at_cwd(&sb, XC("file"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir/file"));
 
 #elif defined(_WIN32)
-	sb_init_cwd(&sb, XC("path\\to\\root\\dir"));
+	sb_pth_legacy_init_cwd(&sb, XC("path\\to\\root\\dir"));
 
-	sb_pth_append(&sb, XC("executable"));
+	sb_pth_legacy_append(&sb, XC("executable"));
 	UA_STREQ(sb.buf, XC("path\\to\\root\\dir\\executable"));
 
-	sb_pth_append_at_cwd(&sb, XC("file"));
+	sb_pth_legacy_append_at_cwd(&sb, XC("file"));
 	UA_STREQ(sb.buf, XC("path\\to\\root\\dir\\file"));
 #endif
 }
