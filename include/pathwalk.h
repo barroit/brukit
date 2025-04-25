@@ -17,10 +17,13 @@ void pw_init(struct pathwalk *pw, const xchar *path);
 
 void pw_destroy(struct pathwalk *pw);
 
-const xchar *pw_to_parent(struct pathwalk *pw);
+const xchar *pw_to_dirname(struct pathwalk *pw);
 
 const xchar *pw_basename(struct pathwalk *pw);
 
+/*
+ * Don't use this if pw->ptb == pw->rtb.
+ */
 const xchar *pw_dirname(struct pathwalk *pw);
 
 int pw_step(struct pathwalk *pw);

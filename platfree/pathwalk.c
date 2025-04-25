@@ -282,7 +282,7 @@ done:
 	return 0;
 }
 
-const xchar *pw_to_parent(struct pathwalk *pw)
+const xchar *pw_to_dirname(struct pathwalk *pw)
 {
 	uint len = pw->root_len;
 	enum pathwalk_state st = pw->st;
@@ -357,7 +357,7 @@ const xchar *pw_dirname(struct pathwalk *pw)
 	enum pathwalk_state st = pw->st;
 	const xchar *comp = pw->comp;
 
-	const xchar *ret = pw_to_parent(pw);
+	const xchar *ret = pw_to_dirname(pw);
 
 	pw->st = st;
 	pw->comp = comp;

@@ -24,28 +24,28 @@ UT_ROUTINE(pa_dirname_rel_path)
 	UA_STREQ(dir, XC("relative/directory"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("relative/directory"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("relative/directory"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("relative"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("relative"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("relative"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("."));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("."));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("."));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("."));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("."));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("."));
 }
 
@@ -60,28 +60,28 @@ UT_ROUTINE(pa_dirname_abs_path)
 	UA_STREQ(dir, XC("////absolute//directory"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("////absolute//directory"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("////absolute//directory"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("////absolute"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("////absolute"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("////absolute"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("/"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("/"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("/"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("/"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("/"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("/"));
 }
 
@@ -100,16 +100,16 @@ UT_ROUTINE(pa_dirname_shr_rtb_rel_path)
 	memcpy(ptb, path, (len + 1) * sizeof(*path));
 	__pw_init(&pw, ptb, len, rtb, PW_RTB_SHARE);
 
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("relative/directory"));
 
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("relative"));
 
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("."));
 
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("."));
 }
 
@@ -128,16 +128,16 @@ UT_ROUTINE(pa_dirname_shr_rtb_abs_path)
 	memcpy(ptb, path, (len + 1) * sizeof(*path));
 	__pw_init(&pw, ptb, len, rtb, PW_RTB_SHARE);
 
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("////absolute//directory"));
 
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("////absolute"));
 
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("/"));
 
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("/"));
 }
 
@@ -152,28 +152,28 @@ UT_ROUTINE_WIN32(pa_dirname_rel_path)
 	UA_STREQ(dir, XC("C:relative\\directory"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:relative\\directory"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("C:relative\\directory"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:relative"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:relative"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("C:relative"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("C:"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("."));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("."));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("."));
 }
 
@@ -188,35 +188,35 @@ UT_ROUTINE_WIN32(pa_dirname_abs_path)
 	UA_STREQ(dir, XC("C:\\\\\\\\absolute\\\\\\directory"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\\\\\\\absolute\\\\\\directory"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\\\\\\\absolute\\\\\\directory"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\\\\\\\absolute"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\\\\\\\absolute"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\\\\\\\absolute"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("C:\\"));
 }
 
@@ -231,28 +231,28 @@ UT_ROUTINE_WIN32(pa_dirname_net_path)
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\c$\\path"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\c$\\path"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\c$\\path"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\c$"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\c$"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\c$"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
 }
 
@@ -267,14 +267,14 @@ UT_ROUTINE_WIN32(pa_dirname_drive_path)
 	UA_STREQ(dir, XC("c:\\"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("c:\\"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("c:\\"));
 
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("c:\\"));
 	dir = pw_dirname(&pw);
 	UA_STREQ(dir, XC("c:\\"));
-	dir = pw_to_parent(&pw);
+	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("c:\\"));
 }
 
