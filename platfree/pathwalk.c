@@ -310,10 +310,18 @@ const xchar *pw_to_dirname(struct pathwalk *pw)
 		break;
 
 	case PW_PRE:
-		if (!(pw->flags & PW_IS_ABS))
-			return XC(".");
+		if (pw->flags & PW_IS_ABS)
+			goto out;
 
-		goto out;
+		if (pw->rtb == pw->ptb) {
+			pw->st = PW_END;
+			pw->len = 1;
+		}
+
+		pw->rtb[0] = '.';
+		pw->rtb[1] = 0;
+
+		return pw->rtb;
 	}
 
 	if (pw->rtb == pw->ptb) {
