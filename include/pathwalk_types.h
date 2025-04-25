@@ -18,8 +18,7 @@ enum pathwalk_state {
 };
 
 #define PW_IS_ABS    (1U << 0)
-#define PW_RTB_EQPTB (1U << 1)
-#define PW_RTB_SHARE (1U << 2)
+#define PW_RTB_SHARE (1U << 1)
 
 /*
  * Some optimizations apply if pathwalk->ptb and pathwalk->rtb point to same

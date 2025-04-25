@@ -52,7 +52,7 @@ void pw_init(struct pathwalk *pw, const xchar *path)
 
 void pw_destroy(struct pathwalk *pw)
 {
-	if (!(pw->flags & PW_RTB_EQPTB) && !(pw->flags & PW_RTB_SHARE))
+	if (pw->rtb != pw->ptb && !(pw->flags & PW_RTB_SHARE))
 		free(pw->rtb);
 
 	free(pw->ptb);
@@ -316,13 +316,13 @@ const xchar *pw_to_parent(struct pathwalk *pw)
 		goto out;
 	}
 
-	if (pw->flags & PW_RTB_EQPTB) {
+	if (pw->rtb == pw->ptb) {
 		pw->st = PW_END;
 		pw->len = len;
 	}
 
 out:
-	if (!(pw->flags & PW_RTB_EQPTB))
+	if (pw->rtb != pw->ptb)
 		memcpy(pw->rtb, pw->ptb, len * sizeof(*pw->ptb));
 
 	pw->rtb[len] = 0;
@@ -354,8 +354,6 @@ const xchar *pw_basename(struct pathwalk *pw)
 
 const xchar *pw_dirname(struct pathwalk *pw)
 {
-	BUG_ON(pw->flags & PW_RTB_EQPTB);
-
 	enum pathwalk_state st = pw->st;
 	const xchar *comp = pw->comp;
 
