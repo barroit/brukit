@@ -16,23 +16,6 @@
 #include "xalloc.h"
 #include "xcf.h"
 
-#define __DO_SB_PRINTF(sb, off, fmt)	\
-({					\
-	va_list ap[2];			\
-	uint ret;			\
-					\
-	va_start(ap[0], fmt);		\
-	va_copy(ap[1], ap[0]);		\
-					\
-	ret = __sb_printf_at(sb, off,	\
-			     fmt, ap);	\
-					\
-	va_end(ap[0]);			\
-	va_end(ap[1]);			\
-					\
-	ret;				\
-})
-
 void sb_init(struct strbuf *sb)
 {
 	memset(sb, 0, sizeof(*sb));
@@ -119,19 +102,36 @@ retry:
 	return nr;
 }
 
+#define SB_PRINTF(sb, off, fmt)		\
+({					\
+	va_list ap[2];			\
+	uint ret;			\
+					\
+	va_start(ap[0], fmt);		\
+	va_copy(ap[1], ap[0]);		\
+					\
+	ret = __sb_printf_at(sb, off,	\
+			     fmt, ap);	\
+					\
+	va_end(ap[0]);			\
+	va_end(ap[1]);			\
+					\
+	ret;				\
+})
+
 uint sb_printf_at(struct strbuf *sb, uint off, const xchar *fmt, ...)
 {
-	return __DO_SB_PRINTF(sb, off, fmt);
+	return SB_PRINTF(sb, off, fmt);
 }
 
 uint sb_printf(struct strbuf *sb, const xchar *fmt, ...)
 {
-	return __DO_SB_PRINTF(sb, sb->len, fmt);
+	return SB_PRINTF(sb, sb->len, fmt);
 }
 
 uint sb_printf_at_cwd(struct strbuf *sb, const xchar *fmt, ...)
 {
-	return __DO_SB_PRINTF(sb, sb->off.cwd, fmt);
+	return SB_PRINTF(sb, sb->off.cwd, fmt);
 }
 
 void sb_trim(struct strbuf *sb)
