@@ -21,20 +21,19 @@ static const xchar *skip_drive(const xchar *name)
 	return name;
 }
 
-static const xchar *skip_drive_back(const xchar *name)
+static const xchar *skip_drive_back(const xchar *ptr, const xchar *end)
 {
-	if (!name[0] || !name[-1])
-		return name;
+	if (ptr < end || ptr == end)
+		return ptr;
 
-	xchar sep = name[0];
-	xchar du = name[-1] & 0xdf;
+	xchar sep = ptr[0];
+	xchar du = ptr[-1] & 0xdf;
 
 	if ('A' <= du && du <= 'Z' && sep == ':')
-		name -= 2;
+		ptr -= 2;
 
-	return name;
+	return ptr;
 }
-
 
 static const xchar *skip_network_root(const xchar *name)
 {
@@ -50,18 +49,17 @@ static const xchar *skip_network_root(const xchar *name)
 	return next;
 }
 
-
-static const xchar *skip_network_root_back(const xchar *name)
+static const xchar *skip_network_root_back(const xchar *ptr, const xchar *end)
 {
-	const xchar *prev = pw_skip_name_back(name);
+	const xchar *prev = pw_skip_name_back(ptr, end);
 
-	if (prev == name)
+	if (prev == ptr)
 		return prev;
 
-	const xchar *next = pw_skip_nsep_back(prev, 2);
+	const xchar *next = pw_skip_nsep_back(prev, end, 2);
 
 	if (next == prev)
-		return name;
+		return ptr;
 	return next;
 }
 
@@ -75,12 +73,12 @@ const xchar *pw_skip_root(const xchar *name)
 	return skip_network_root(name);
 }
 
-const xchar *pw_skip_root_back(const xchar *name)
+const xchar *pw_skip_root_back(const xchar *ptr, const xchar *end)
 {
-	const xchar *p = skip_network_root_back(name);
+	const xchar *next = skip_network_root_back(ptr, end);
 
-	if (!*p)
-		return p;
+	if (next < end)
+		return next;
 
-	return skip_drive_back(name);
+	return skip_drive_back(ptr, end);
 }
