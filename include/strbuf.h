@@ -92,6 +92,32 @@ char *sb_mb_str(struct strbuf *sb);
 char *sb_mb_str_fb(struct strbuf *sb, const char *fb);
 
 
+void sb_pth_init(struct strbuf **sb, const xchar *name);
+
+void sb_pth_reinit(struct strbuf **sb, const xchar *name);
+
+void sb_pth_destroy(struct strbuf **sb);
+
+uint sb_pth_push_cwd(struct strbuf *sb, const xchar *name);
+
+uint sb_pth_push(struct strbuf *sb, const xchar *name);
+
+uint sb_pth_push_no_sep(struct strbuf *sb, const xchar *name);
+
+uint __sb_pth_join(struct strbuf *sb, ...);
+
+#define sb_pth_join(sb, ...) __sb_pth_join(sb, __VA_ARGS__, NULL);
+
+static inline void sb_pth_sync_cwd(struct strbuf *sb)
+{
+	sb->off.cwd = sb->len;
+}
+
+/*
+ * Doesn't update sb->off.cwd
+ */
+void sb_pth_pop(struct strbuf *sb);
+
 void sb_pth_legacy_init_cwd(struct strbuf *sb, const xchar *name);
 
 void sb_pth_legacy_reinit_cwd(struct strbuf *sb, const xchar *name);

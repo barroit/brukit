@@ -12,6 +12,7 @@
 
 #include "strconv.h"
 #include "path.h"
+#include "pathwalk.h"
 #include "termas.h"
 #include "xalloc.h"
 #include "xcf.h"
@@ -40,7 +41,9 @@ xchar *sb_detach(struct strbuf *sb)
 
 static inline void sb_grow(struct strbuf *sb, uint new)
 {
-	REALLOCBUF(sb->buf, sb->len + new + 1, sb->cap);
+	uint size = sb->len + new + 1;
+
+	REALLOCBUF(sb->buf, size, sb->cap);
 }
 
 uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s)
@@ -259,4 +262,160 @@ char *sb_mb_str_fb(struct strbuf *sb, const char *fb)
 		ret = strdup((char *)ret);
 
 	return ret;
+}
+
+#define PW(sb) ((struct pathwalk *)((void *)sb + sizeof(*sb)))
+
+void sb_pth_init(struct strbuf **__sb, const xchar *name)
+{
+	struct strbuf *sb;
+	struct pathwalk *pw;
+
+	uint size = sizeof(*sb) + sizeof(*pw);
+
+	sb = xmalloc(size);
+	pw = (void *)sb + sizeof(*sb);
+
+	memset(sb, 0, sizeof(*sb));
+
+	sb_pth_push_no_sep(sb, name);
+
+	__pw_init(pw, sb->buf, sb->len, sb->buf, 0);
+	*__sb = sb;
+}
+
+void sb_pth_reinit(struct strbuf **__sb, const xchar *name)
+{
+	struct strbuf *sb = *__sb;
+	struct pathwalk *pw = (void *)sb + sizeof(*sb);
+
+	sb_trunc(sb, sb->len);
+	sb->off.cwd = 0;
+
+	sb_pth_push_no_sep(sb, name);
+
+	__pw_init(pw, sb->buf, sb->len, sb->buf, 0);
+}
+
+void sb_pth_destroy(struct strbuf **__sb)
+{
+	struct strbuf *sb = *__sb;
+
+	free(sb->buf);
+	free(sb);
+}
+
+static void __sb_pth_add_no_sep(struct strbuf *sb, const xchar *name, uint len)
+{
+	memcpy(&sb->buf[sb->len], name, (len + 1) * sizeof(*name));
+	sb->len += len;
+
+	__pw_init(PW(sb), sb->buf, sb->len, sb->buf, 0);
+}
+
+static void __sb_pth_add(struct strbuf *sb, const xchar *name, uint len)
+{
+	if (!pw_in_root(PW(sb))) {
+		sb->buf[sb->len] = PTH_SEP;
+		sb->len += 1;
+	}
+
+	__sb_pth_add_no_sep(sb, name, len);
+}
+
+uint sb_pth_push_cwd(struct strbuf *sb, const xchar *name)
+{
+	if (!sb->off.cwd) {
+		sb_trunc(sb, sb->len);
+		return sb_pth_push_no_sep(sb, name);
+	}
+
+	uint comp_len = xc_strlen(name);
+	uint len = comp_len + 1;
+	uint overlap = sb->len - sb->off.cwd;
+
+	if (len > overlap)
+		sb_grow(sb, len - overlap);
+
+	xchar *dst = &sb->buf[sb->off.cwd + 1];
+
+	if (!pw_in_root(PW(sb)))
+		sb->buf[sb->off.cwd] = PTH_SEP;
+	else
+		dst = &dst[-1];
+
+	memcpy(dst, name, (comp_len + 1) * sizeof(*name));
+
+	if (len > overlap)
+		sb->len += len - overlap;
+	else
+		sb->len -= overlap - len;
+
+	__pw_init(PW(sb), sb->buf, sb->len, sb->buf, 0);
+	return len;
+}
+
+#define SB_PTH_ADD(sb, name, fn)	\
+({					\
+	uint comp_len = xc_strlen(name);\
+	uint len = comp_len + 1;	\
+					\
+	sb_grow(sb, len);		\
+	fn(sb, name, comp_len);		\
+					\
+	len;				\
+})
+
+uint sb_pth_push(struct strbuf *sb, const xchar *name)
+{
+	return SB_PTH_ADD(sb, name, __sb_pth_add);
+}
+
+uint sb_pth_push_no_sep(struct strbuf *sb, const xchar *name)
+{
+	return SB_PTH_ADD(sb, name, __sb_pth_add_no_sep);
+}
+
+uint __sb_pth_join(struct strbuf *sb, ...)
+{
+	va_list ap;
+	va_list cp;
+	uint len = 0;
+
+	va_start(ap, sb);
+	va_copy(cp, ap);
+
+	while (39) {
+		const xchar *str = va_arg(ap, const xchar *);
+
+		if (!str)
+			break;
+
+		len += xc_strlen(str) + 1;
+	}
+
+	va_end(ap);
+	sb_grow(sb, len);
+
+	while (39) {
+		const xchar *str = va_arg(cp, const xchar *);
+
+		if (!str)
+			break;
+
+		uint comp_len = xc_strlen(str);
+
+		__sb_pth_add(sb, str, comp_len);
+	}
+
+	va_end(cp);
+	return len;
+}
+
+void sb_pth_pop(struct strbuf *sb)
+{
+	struct pathwalk *pw = PW(sb);
+
+	pw_to_dirname(pw);
+	sb->len = pw->len;
 }
