@@ -22,12 +22,22 @@ static inline int pw_in_root(struct pathwalk *pw)
 	return pw->st == PW_ROOT_NAME || pw->st == PW_ROOT_DIR;
 }
 
+/*
+ * If reused by other APIs, sync length to pw->len after calling
+ * this function.
+ */
 const xchar *pw_to_dirname(struct pathwalk *pw);
 
+/*
+ * Don't use if pw->ptb == pw->rtb. Buggy; avoid unless necessary.
+ *
+ * May modify pw->ptb. Must sync pw->len if reused by other APIs.
+ * Otherwise, corrupts buffer and length.
+ */
 const xchar *pw_basename(struct pathwalk *pw);
 
 /*
- * Don't use this if pw->ptb == pw->rtb.
+ * Don't use if pw->ptb == pw->rtb.
  */
 const xchar *pw_dirname(struct pathwalk *pw);
 

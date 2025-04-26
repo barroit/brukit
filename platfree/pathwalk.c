@@ -334,25 +334,28 @@ out:
 
 const xchar *pw_basename(struct pathwalk *pw)
 {
-	pw->st = __PW_TAIL;
-	pw_step_back(pw);
+	if (pw->st == __PW_TAIL)
+		pw_step_back(pw);
 
 	if (pw->st == PW_TAIL_SEP) {
 		*(xchar *)pw->comp = 0;
+		pw->len = pw->comp - pw->ptb;
+
 		pw_step_back(pw);
 	}
 
-	if (pw->st == PW_ROOT_DIR) {
-		const xchar *ret = &pw->comp[pw->comp_len - 1];
+	if (pw->st == PW_ROOT_DIR || pw->st == PW_ROOT_NAME) {
+		if (pw->st == PW_ROOT_DIR)
+			pw_step_back(pw);
 
-		pw_step_back(pw);
-
-		if (pw->st == PW_ROOT_NAME)
-			return pw->ptb;
-		return ret;
+		memcpy(pw->rtb, pw->ptb, pw->root_len * sizeof(*pw->comp));
+		pw->rtb[pw->root_len] = 0;
+		return pw->rtb;
 	}
 
-	return pw->comp;
+	memcpy(pw->rtb, pw->comp, pw->comp_len * sizeof(*pw->comp));
+	pw->rtb[pw->comp_len] = 0;
+	return pw->rtb;
 }
 
 const xchar *pw_dirname(struct pathwalk *pw)
