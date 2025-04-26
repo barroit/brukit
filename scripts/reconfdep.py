@@ -7,8 +7,8 @@ from sys import argv
 if len(argv) < 3:
 	exit(128)
 
-top = env['TOP']
-build = env['BUILD']
+top = env['SRCTREE']
+build = env['OBJTREE']
 
 sample_name = path.join(top, 'scripts', 'reconfdep.def')
 dotconfig_name = argv[1]

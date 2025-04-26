@@ -2,9 +2,9 @@
 
 cmake_minimum_required(VERSION 3.21)
 
-set(srctree $ENV{TOP})
-set(objtree $ENV{BUILD})
-set(gendir  $ENV{GEN})
+set(srctree $ENV{SRCTREE})
+set(objtree $ENV{OBJTREE})
+set(gendir  $ENV{GENDIR})
 
 set(SANFLAGS -fsanitize=address,undefined)
 

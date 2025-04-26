@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
-# Requires CC TOP GEN BUILD
+# Requires CC SRCTREE GENDIR OBJTREE
 
 import atexit
 import multiprocessing as mp
@@ -16,9 +16,9 @@ if len(argv) < 2:
 	exit(128)
 
 cc    = env['CC']
-top   = env['TOP']
-gen   = env['GEN']
-build = env['BUILD']
+top   = env['SRCTREE']
+gen   = env['GENDIR']
+build = env['OBJTREE']
 
 data_name = path.join(top, 'scripts', 'cc-feature.def')
 

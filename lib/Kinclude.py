@@ -30,7 +30,7 @@ ld = env['LD']
 if not ld:
 	die('no ld provided (export LD in environment)')
 
-top = env['TOP']
+top = env['SRCTREE']
 if not top:
 	die('no tree path specified (export BSTREE in env)')
 

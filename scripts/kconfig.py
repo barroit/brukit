@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
 # Start menuconfig/alldefconfig in a portable manner.
-# You must provide TOP, CC, and LD in the process that starts this script.
+# You must provide SRCTREE, CC, and LD in the process that starts this script.
 
 from sys import argv, exit
 from os import environ as env, getcwd, path, pathsep, chdir
@@ -12,7 +12,7 @@ if len(argv) < 2:
 	exit(128)
 
 cmd = argv[1]
-top = env['TOP']
+top = env['SRCTREE']
 cwd = getcwd()
 lib = path.join(top, 'lib')
 pyp = env.get('PYTHONPATH')

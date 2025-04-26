@@ -7,23 +7,25 @@ endif
 MAKEFLAGS += -rR
 MAKEFLAGS += --no-print-directory
 
-export TOP   := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
-export GEN   := $(TOP)/include/generated
-export BUILD := $(TOP)/build.unix
+srctree := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+gendir  := $(srctree)/include/generated
+objtree := $(srctree)/build.unix
+
+export SRCTREE := $(srctree)
+export GENDIR  := $(gendir)
+export OBJTREE := $(objtree)
+
+export CC := gcc
+export LD := ld.bfd
 
 ifneq ($(LLVM),)
-CC := clang
-LD := ld.lld
-else
-CC := gcc
-LD := ld.bfd
+export CC := clang
+export LD := ld.lld
 endif
 
-export CC LD
+export LASTPLAT := $(srctree)/.lastplat
 
-export LASTPLAT := $(TOP)/.lastplat
-
-export DOTCONFIG := $(TOP)/.config.unix
+export DOTCONFIG := $(srctree)/.config.unix
 export DEFCONFIG := $(DOTCONFIG).def
 
 ifneq ($(wildcard $(DOTCONFIG)),)
@@ -45,9 +47,9 @@ RERECONFDEP  := reconfdep
 endif
 endif
 
-export RECONFDEP := $(BUILD)/reconfdep
+export RECONFDEP := $(objtree)/reconfdep
 
-CMAKE_CC_FEATURE := $(BUILD)/features.cmake
+CMAKE_CC_FEATURE := $(objtree)/features.cmake
 
 build:
 
@@ -57,10 +59,10 @@ build:
 menuconfig:
 	@scripts/kconfig.py menuconfig
 
-$(GEN):
+$(gendir):
 	@mkdir $@
 
-$(CMAKE_CC_FEATURE): $(GEN)
+$(CMAKE_CC_FEATURE): $(gendir)
 	@scripts/cc-feature.py cmake
 
 mk_defconfig:
@@ -73,43 +75,43 @@ reconfdep: $(MK_DEFCONFIG) $(RM_DEFCONFIG)
 	@scripts/reconfdep.py $(RELCONFIG) $(RECONFDEP)
 
 configure: $(CMAKE_CC_FEATURE) reconfdep
-	@cmake -S . -B $(BUILD) $(EXTOPT)
+	@cmake -S . -B $(objtree) $(EXTOPT)
 
 lastplat:
-	@if [ -f $(BUILD)/CMakeCache.txt ] &&			\
+	@if [ -f $(objtree)/CMakeCache.txt ] &&			\
 	    [ "$$(cat $(LASTPLAT) 2>&1 )" != unix ]; then	\
 		echo unix > $(LASTPLAT);			\
 	fi
 
 build: lastplat $(RECONFIGURE) $(RERECONFDEP)
-	@cmake --build $(BUILD) --parallel
+	@cmake --build $(objtree) --parallel
 
 all: configure build
 
 .PHONY: clean distclean
 
 clean:
-	@cmake --build $(BUILD) --target clean
+	@cmake --build $(objtree) --target clean
 
 distclean:
 	@rm -rf include/generated
 	@rm -f include/arch
 	@rm -f $(DOTCONFIG)*
 	@rm -f $(LASTPLAT)
-	@git ls-files --directory -o $(BUILD) | xargs rm -rf
+	@git ls-files --directory -o $(objtree) | xargs rm -rf
 
-__tests := $(wildcard $(BUILD)/t/*.t)
-tests   := $(patsubst $(BUILD)/%,%,$(__tests))
+__tests := $(wildcard $(objtree)/t/*.t)
+tests   := $(patsubst $(objtree)/%,%,$(__tests))
 
 .PHONY: $(tests)
 
 $(tests):
-	@$(BUILD)/$@
+	@$(objtree)/$@
 
 .PHONY: t/all
 
 t/all:
-	@ctest --test-dir $(BUILD)/tests --parallel $(shell nproc)
+	@ctest --test-dir $(objtree)/tests --parallel $(shell nproc)
 
 scripts := $(wildcard scripts/*.sh) $(wildcard scripts/*.py)
 args    := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))

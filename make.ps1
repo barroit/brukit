@@ -33,18 +33,16 @@ function export
 
 $BUILD_NAME = 'build.win32'
 
-export TOP=$($PSScriptRoot.Replace('\','/'))
-# $TOP = $TOP.TrimEnd('/')
-
-export GEN=$TOP/include/generated
-export BUILD=$TOP/$BUILD_NAME
+export SRCTREE=$($PSScriptRoot.Replace('\','/'))
+export GENDIR=$SRCTREE/include/generated
+export OBJTREE=$SRCTREE/$BUILD_NAME
 
 export CC=clang.exe
 export LD=ld.lld.exe
 
-export LASTPLAT=$TOP/.lastplat
+export LASTPLAT=$SRCTREE/.lastplat
 
-export DOTCONFIG=$TOP/.config.win32
+export DOTCONFIG=$SRCTREE/.config.win32
 export DEFCONFIG=$DOTCONFIG.def
 
 if (Test-Path $DOTCONFIG) {
@@ -66,7 +64,7 @@ if (Test-Path $DOTCONFIG) {
 	}
 }
 
-export RECONFDEP=$BUILD/reconfdep
+export RECONFDEP=$OBJTREE/reconfdep
 
 $__menuconfig = 1 -shl 0
 $__configure  = 1 -shl 1
@@ -118,16 +116,16 @@ if ($target -band $__reconfdep) {
 }
 
 if ($target -band $__configure) {
-	if (!(Test-Path $BUILD/features.cmake)) {
-		if (!(Test-Path $GEN)) {
-			mkdir $GEN
+	if (!(Test-Path $OBJTREE/features.cmake)) {
+		if (!(Test-Path $GENDIR)) {
+			mkdir $GENDIR
 		}
 
 		python scripts/cc-feature.py cmake
 	}
 
 	& $0 reconfdep
-	cmake -G Ninja -S . -B $BUILD
+	cmake -G Ninja -S . -B $OBJTREE
 }
 
 if ($target -band $__build) {
@@ -143,11 +141,11 @@ if ($target -band $__build) {
 		& $0 reconfdep
 	}
 
-	cmake --build $BUILD --parallel
+	cmake --build $OBJTREE --parallel
 }
 
 if ($target -band $__clean) {
-	cmake --build $BUILD --target clean
+	cmake --build $OBJTREE --target clean
 }
 
 if ($target -band $__distclean) {
@@ -179,9 +177,9 @@ $cpus = $env:NUMBER_OF_PROCESSORS
 
 if ($target -band $__test) {
 	if ($__target -eq 't/all') {
-		ctest --test-dir $BUILD/tests --parallel $cpus
+		ctest --test-dir $OBJTREE/tests --parallel $cpus
 	} else {
-		$t = "$BUILD/$__target.exe"
+		$t = "$OBJTREE/$__target.exe"
 
 		if (!(Test-Path $t)) {
 			error "not a test '$t'"
