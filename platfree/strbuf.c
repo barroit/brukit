@@ -418,3 +418,8 @@ void sb_pth_pop(struct strbuf *sb)
 	pw_to_dirname(pw);
 	sb->len = pw->len;
 }
+
+int sb_pth_in_root(struct strbuf *sb)
+{
+	return pw_in_root(PW(sb));
+}

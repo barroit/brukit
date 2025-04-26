@@ -118,6 +118,8 @@ static inline void sb_pth_sync_cwd(struct strbuf *sb)
  */
 void sb_pth_pop(struct strbuf *sb);
 
+int sb_pth_in_root(struct strbuf *sb);
+
 void sb_pth_legacy_init_cwd(struct strbuf *sb, const xchar *name);
 
 void sb_pth_legacy_reinit_cwd(struct strbuf *sb, const xchar *name);
