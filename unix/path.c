@@ -15,22 +15,22 @@
 
 int chr_is_sep(char c)
 {
-	return c == PTH_SEP_UNI;
+	return c == PTH_SEP_UNIX;
 }
 
 int pth_is_abs(const char *name)
 {
-	return name[0] == PTH_SEP_UNI;
+	return name[0] == PTH_SEP_UNIX;
 }
 
 char *pth_next_sep(const char *s)
 {
-	return strchr(s, PTH_SEP_UNI);
+	return strchr(s, PTH_SEP_UNIX);
 }
 
 char *pth_last_sep(const char *s)
 {
-	return strrchr(s, PTH_SEP_UNI);
+	return strrchr(s, PTH_SEP_UNIX);
 }
 
 char *delink(const char *name)

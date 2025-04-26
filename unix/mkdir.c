@@ -38,7 +38,7 @@ int __mkdirp(char *buf)
 		if (err && errno != EEXIST)
 			return err;
 
-		*sep = PTH_SEP_UNI;
+		*sep = PTH_SEP_UNIX;
 		while (chr_is_sep(sep[1]))
 			sep++;
 

@@ -15,7 +15,7 @@
 
 int chr_is_sep(xchar c)
 {
-	return c == XC(PTH_SEP_WIN) || c == XC(PTH_SEP_UNI);
+	return c == XC(PTH_SEP_WIN32) || c == XC(PTH_SEP_UNIX);
 }
 
 int pth_is_abs(const xchar *name)
