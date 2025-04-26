@@ -13,7 +13,7 @@
 
 UT_BEGIN();
 
-UT_ROUTINE(pa_dirname_rel_path)
+UT_ROUTINE(pw_dirname_rel_path)
 {
 	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
@@ -49,7 +49,7 @@ UT_ROUTINE(pa_dirname_rel_path)
 	UA_STREQ(dir, XC("."));
 }
 
-UT_ROUTINE(pa_dirname_abs_path)
+UT_ROUTINE(pw_dirname_abs_path)
 {
 	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
@@ -85,7 +85,7 @@ UT_ROUTINE(pa_dirname_abs_path)
 	UA_STREQ(dir, XC("/"));
 }
 
-UT_ROUTINE(pa_dirname_shr_rtb_rel_path)
+UT_ROUTINE(pw_dirname_shr_rtb_rel_path)
 {
 	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
@@ -113,7 +113,7 @@ UT_ROUTINE(pa_dirname_shr_rtb_rel_path)
 	UA_STREQ(dir, XC("."));
 }
 
-UT_ROUTINE(pa_dirname_shr_rtb_abs_path)
+UT_ROUTINE(pw_dirname_shr_rtb_abs_path)
 {
 	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
@@ -141,7 +141,7 @@ UT_ROUTINE(pa_dirname_shr_rtb_abs_path)
 	UA_STREQ(dir, XC("/"));
 }
 
-UT_ROUTINE_WIN32(pa_dirname_rel_path)
+UT_ROUTINE_WIN32(pw_dirname_rel_path)
 {
 	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
@@ -177,7 +177,7 @@ UT_ROUTINE_WIN32(pa_dirname_rel_path)
 	UA_STREQ(dir, XC("."));
 }
 
-UT_ROUTINE_WIN32(pa_dirname_abs_path)
+UT_ROUTINE_WIN32(pw_dirname_abs_path)
 {
 	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
@@ -220,7 +220,7 @@ UT_ROUTINE_WIN32(pa_dirname_abs_path)
 	UA_STREQ(dir, XC("C:\\"));
 }
 
-UT_ROUTINE_WIN32(pa_dirname_net_path)
+UT_ROUTINE_WIN32(pw_dirname_net_path)
 {
 	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
@@ -256,7 +256,7 @@ UT_ROUTINE_WIN32(pa_dirname_net_path)
 	UA_STREQ(dir, XC("\\\\127.0.0.1\\"));
 }
 
-UT_ROUTINE_WIN32(pa_dirname_drive_path)
+UT_ROUTINE_WIN32(pw_dirname_drive_path)
 {
 	struct pathwalk __cleanup(pw_destroy) pw;
 	const xchar *dir;
