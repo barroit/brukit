@@ -11,6 +11,8 @@ srctree := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 gendir  := $(srctree)/include/generated
 objtree := $(srctree)/build.unix
 
+generator := Unix Makefiles
+
 export SRCTREE := $(srctree)
 export GENDIR  := $(gendir)
 export OBJTREE := $(objtree)
@@ -21,6 +23,10 @@ export LD := ld.bfd
 ifneq ($(LLVM),)
 export CC := clang
 export LD := ld.lld
+endif
+
+ifneq ($(NINJA),)
+generator := Ninja
 endif
 
 export LASTPLAT := $(srctree)/.lastplat
@@ -75,7 +81,7 @@ reconfdep: $(MK_DEFCONFIG) $(RM_DEFCONFIG)
 	@scripts/reconfdep.py $(RELCONFIG) $(RECONFDEP)
 
 configure: $(CMAKE_CC_FEATURE) reconfdep
-	@cmake -S . -B $(objtree) $(EXTOPT)
+	@cmake -G "$(generator)" -S . -B $(objtree) $(EXTOPT)
 
 lastplat:
 	@if [ -f $(objtree)/CMakeCache.txt ] &&			\
