@@ -46,9 +46,7 @@ void pw_init(struct pathwalk *pw, const xchar *path)
 	xchar *ptb = xmalloc(size);
 	xchar *rtb = &ptb[len + 1];
 
-	memcpy(ptb, path, len + 1);
-	memcpy(rtb, path, len + 1);
-
+	memcpy(ptb, path, (len + 1) * sizeof(*path));
 	__pw_init(pw, ptb, len, rtb, PW_RTB_SHARE);
 }
 

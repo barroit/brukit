@@ -92,14 +92,12 @@ UT_ROUTINE(pa_dirname_shr_rtb_rel_path)
 	const xchar *path = XC("relative/directory/file///");
 
 	size_t len = xc_strlen(path);
-	size_t size = ((len + 1) * sizeof(path)) * 2;
+	size_t size = ((len + 1) * sizeof(*path)) * 2;
 
 	xchar *ptb = xmalloc(size);
 	xchar *rtb = &ptb[len + 1];
 
-	memcpy(ptb, path, len + 1);
-	memcpy(rtb, path, len + 1);
-
+	memcpy(ptb, path, (len + 1) * sizeof(*path));
 	__pw_init(&pw, ptb, len, rtb, PW_RTB_SHARE);
 
 	dir = pw_to_parent(&pw);
@@ -122,14 +120,12 @@ UT_ROUTINE(pa_dirname_shr_rtb_abs_path)
 	const xchar *path = XC("////absolute//directory/file///");
 
 	size_t len = xc_strlen(path);
-	size_t size = ((len + 1) * sizeof(path)) * 2;
+	size_t size = ((len + 1) * sizeof(*path)) * 2;
 
 	xchar *ptb = xmalloc(size);
 	xchar *rtb = &ptb[len + 1];
 
-	memcpy(ptb, path, len + 1);
-	memcpy(rtb, path, len + 1);
-
+	memcpy(ptb, path, (len + 1) * sizeof(*path));
 	__pw_init(&pw, ptb, len, rtb, PW_RTB_SHARE);
 
 	dir = pw_to_parent(&pw);
