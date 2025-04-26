@@ -9,4 +9,4 @@ math(EXPR len "4 - ${len}")
 string(REPEAT 0. ${len} pad)
 
 string(PREPEND prog_version_manifest ${pad})
-configure_file(${prog_name}.manifest.in ${TREE}/${prog_name}.manifest)
+configure_file(${prog_name}.manifest.in ${srctree}/${prog_name}.manifest)
