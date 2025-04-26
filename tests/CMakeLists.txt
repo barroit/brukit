@@ -5,7 +5,7 @@ include(CTest)
 if(UNIX)
   set(sh /bin/sh)
 elseif(WIN32)
-  include_scp(${srctree}/lib/cmake.sh)
+  include_scp(${srctree}/lib/cmake.winsh)
   set(sh ${sh_exe})
 endif()
 
