@@ -141,6 +141,70 @@ UT_ROUTINE(pw_dirname_shr_rtb_abs_path)
 	UA_STREQ(dir, XC("/"));
 }
 
+#include "stdio.h"
+
+UT_ROUTINE(pw_basename_abs)
+{
+	struct pathwalk __cleanup(pw_destroy) pw;
+	const xchar *name;
+
+	pw_init(&pw, XC("////path//to/a/file////"));
+
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("file"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("a"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("to"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("path"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("/"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("/"));
+}
+
+UT_ROUTINE(pw_basename_rel)
+{
+	struct pathwalk __cleanup(pw_destroy) pw;
+	const xchar *name;
+
+	pw_init(&pw, XC("./path//to/a/file"));
+
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("file"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("a"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("to"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("path"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("."));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("."));
+}
+
 UT_ROUTINE_WIN32(pw_dirname_rel_path)
 {
 	struct pathwalk __cleanup(pw_destroy) pw;
@@ -276,6 +340,52 @@ UT_ROUTINE_WIN32(pw_dirname_drive_path)
 	UA_STREQ(dir, XC("c:\\"));
 	dir = pw_to_dirname(&pw);
 	UA_STREQ(dir, XC("c:\\"));
+}
+
+UT_ROUTINE_WIN32(pw_basename_local)
+{
+	struct pathwalk __cleanup(pw_destroy) pw;
+	const xchar *name;
+
+	pw_init(&pw, XC("C:\\path\\to\\file"));
+
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("file"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("to"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("path"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("C:\\"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("C:\\"));
+}
+
+UT_ROUTINE_WIN32(pw_basename_remote)
+{
+	struct pathwalk __cleanup(pw_destroy) pw;
+	const xchar *name;
+
+	pw_init(&pw, XC("\\\\127.0.0.1\\file\\\\"));
+
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("file"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("\\\\127.0.0.1\\"));
+
+	pw_to_dirname(&pw);
+	name = pw_basename(&pw);
+	UA_STREQ(name, XC("\\\\127.0.0.1\\"));
 }
 
 UT_END();
