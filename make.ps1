@@ -111,7 +111,7 @@ if ($target -band $__reconfdep) {
 	}
 
 	if ($RM_DEFCONFIG) {
-		rm $DEFCONFIG
+		Remove-Item -Force $DEFCONFIG
 	}
 
 	python scripts/reconfdep.py $RELCONFIG $RECONFDEP
@@ -155,19 +155,23 @@ if ($target -band $__distclean) {
 	$buildgens = git ls-files --directory -o $BUILD_NAME
 
 	if (Test-Path include/generated) {
-		Remove-Item -Recurse include/generated
+		Remove-Item -Force -Recurse include/generated
 	}
+
 	if ($dotconfig) {
-		Remove-Item $dotconfig
+		Remove-Item -Force $dotconfig
 	}
+
 	if (Test-Path $LASTPLAT) {
-		Remove-Item $LASTPLAT
+		Remove-Item -Force $LASTPLAT
 	}
+
 	if (Test-Path *.manifest) {
-		Remove-Item *.manifest
+		Remove-Item -Force *.manifest
 	}
+
 	if ($buildgens) {
-		Remove-Item -Recurse $buildgens
+		Remove-Item -Force -Recurse $buildgens
 	}
 }
 
