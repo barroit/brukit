@@ -1,27 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later or MIT
 /*
- * Copyright 2024 Jiamu Sun <barroit@linux.com>
+ * Copyright 2024, 2025 Jiamu Sun <barroit@linux.com>
  */
 
 #include "unitest.h"
 
 #include <string.h>
 
+#include "path.h"
 #include "strbuf.h"
 #include "xcf.h"
 
+#define SEP XC(PTH_SEP_STR)
+
 UT_BEGIN();
-
-UT_ROUTINE(sb_pth_legacy_init_cwd)
-{
-	struct strbuf __cleanup(sb_destroy) sb;
-
-	sb_pth_legacy_init_cwd(&sb, XC("path/to/default/cwd"));
-	UA_STREQ(sb.buf, XC("path/to/default/cwd"));
-
-	sb_pth_legacy_reinit_cwd(&sb, XC("path/to/new/cwd"));
-	UA_STREQ(sb.buf, XC("path/to/new/cwd"));
-}
 
 UT_ROUTINE(sb_puts)
 {
@@ -143,28 +135,28 @@ UT_ROUTINE(sb_off_ws)
 	UA_STREQ(sb.buf, XC("path/to/root/dir/.miku39"));
 }
 
-UT_ROUTINE(sb_pth_api)
+UT_ROUTINE(sb_pth_legacy_init_cwd)
 {
-	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
+	struct strbuf __cleanup(sb_destroy) sb;
 
-#if defined(__unix__)
+	sb_pth_legacy_init_cwd(&sb, XC("path/to/default/cwd"));
+	UA_STREQ(sb.buf, XC("path/to/default/cwd"));
+
+	sb_pth_legacy_reinit_cwd(&sb, XC("path/to/new/cwd"));
+	UA_STREQ(sb.buf, XC("path/to/new/cwd"));
+}
+
+UT_ROUTINE(sb_pth_legacy_api)
+{
+	struct strbuf __cleanup(sb_destroy) sb;
+
 	sb_pth_legacy_init_cwd(&sb, XC("path/to/root/dir"));
 
 	sb_pth_legacy_append(&sb, XC("executable"));
-	UA_STREQ(sb.buf, XC("path/to/root/dir/executable"));
+	UA_STREQ(sb.buf, XC("path/to/root/dir") SEP XC("executable"));
 
 	sb_pth_legacy_append_at_cwd(&sb, XC("file"));
-	UA_STREQ(sb.buf, XC("path/to/root/dir/file"));
-
-#elif defined(_WIN32)
-	sb_pth_legacy_init_cwd(&sb, XC("path\\to\\root\\dir"));
-
-	sb_pth_legacy_append(&sb, XC("executable"));
-	UA_STREQ(sb.buf, XC("path\\to\\root\\dir\\executable"));
-
-	sb_pth_legacy_append_at_cwd(&sb, XC("file"));
-	UA_STREQ(sb.buf, XC("path\\to\\root\\dir\\file"));
-#endif
+	UA_STREQ(sb.buf, XC("path/to/root/dir") SEP XC("file"));
 }
 
 UT_END();
