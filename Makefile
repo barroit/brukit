@@ -11,7 +11,7 @@ srctree := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 gendir  := $(srctree)/include/generated
 objtree := $(srctree)/build.unix
 
-generator := Unix Makefiles
+generator := Ninja
 
 export SRCTREE := $(srctree)
 export GENDIR  := $(gendir)
@@ -25,8 +25,8 @@ export CC := clang
 export LD := ld.lld
 endif
 
-ifneq ($(NINJA),)
-generator := Ninja
+ifneq ($(MAKEFILE),)
+generator := Unix Makefiles
 endif
 
 export LASTPLAT := $(srctree)/.lastplat
