@@ -40,8 +40,6 @@
 
 #define __warn_unused_result __attr((__warn_unused_result__))
 
-#define __leaf __attr((__leaf__))
-
 #undef __always_inline
 #define __always_inline inline __attr((__always_inline__))
 

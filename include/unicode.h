@@ -14,8 +14,8 @@
  * Check if a symbol is an end-of-clause character, such as a comma,
  * period, question mark, etc.
  */
-int iseoc(wchar_t c) __leaf __pure;
+int iseoc(wchar_t c) __pure;
 
-int iswide(wchar_t c) __leaf __pure;
+int iswide(wchar_t c) __pure;
 
 #endif /* NG39_UNICODE_CLAUSE_H */

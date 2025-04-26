@@ -19,18 +19,18 @@
 #include "attr.h"
 #include "types.h"
 
-xchar *strskip(const xchar *s1, const xchar *s2) __leaf __pure;
+xchar *strskip(const xchar *s1, const xchar *s2) __pure;
 
 int strskip2(const xchar *s1, const xchar *s2, const xchar **res);
 
-xchar *__strchrnul(const xchar *s, xchar c) __leaf __pure;
+xchar *__strchrnul(const xchar *s, xchar c) __pure;
 
-size_t __mbslen(const char *s) __leaf __pure;
+size_t __mbslen(const char *s) __pure;
 
 /*
  * Only supports UTF-8 input.
  */
-wchar_t __mbtowc(const char *seq) __leaf __pure;
+wchar_t __mbtowc(const char *seq) __pure;
 
 char *mbsws(const char *s);
 
