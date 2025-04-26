@@ -12,13 +12,17 @@
 #include "attr.h"
 #include "types.h"
 
-#define PTH_SEP_UNIX  '/'
-#define PTH_SEP_WIN32 '\\'
+#define PTH_SEP_UNIX      '/'
+#define PTH_SEP_UNIX_STR  "/"
+#define PTH_SEP_WIN32     '\\'
+#define PTH_SEP_WIN32_STR "\\"
 
 #if defined(__unix__)
-# define PTH_SEP PTH_SEP_UNIX
+# define PTH_SEP     PTH_SEP_UNIX
+# define PTH_SEP_STR PTH_SEP_UNIX_STR
 #elif defined(_WIN32)
-# define PTH_SEP PTH_SEP_WIN32
+# define PTH_SEP     PTH_SEP_WIN32
+# define PTH_SEP_STR PTH_SEP_WIN32_STR
 #endif
 
 int chr_is_sep(xchar c);
