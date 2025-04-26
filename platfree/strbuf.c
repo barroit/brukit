@@ -13,7 +13,6 @@
 #include "strconv.h"
 #include "path.h"
 #include "pathwalk.h"
-#include "termas.h"
 #include "xalloc.h"
 #include "xcf.h"
 
