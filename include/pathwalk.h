@@ -17,6 +17,11 @@ void pw_init(struct pathwalk *pw, const xchar *path);
 
 void pw_destroy(struct pathwalk *pw);
 
+static inline int pw_in_root(struct pathwalk *pw)
+{
+	return pw->st == PW_ROOT_NAME || pw->st == PW_ROOT_DIR;
+}
+
 const xchar *pw_to_dirname(struct pathwalk *pw);
 
 const xchar *pw_basename(struct pathwalk *pw);

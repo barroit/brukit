@@ -35,7 +35,7 @@ void __pw_init(struct pathwalk *pw, xchar *ptb,
 		pw->flags |= PW_IS_ABS;
 	}
 
-	pw->st = PW_END;
+	pw->st = __PW_TAIL;
 }
 
 void pw_init(struct pathwalk *pw, const xchar *path)
@@ -130,7 +130,7 @@ int pw_step(struct pathwalk *pw)
 	const xchar *next;
 
 	switch (pw->st) {
-	case PW_PRE:
+	case __PW_HEAD:
 		prev = pw->ptb;
 		next = pw_skip_root(prev);
 
@@ -159,8 +159,7 @@ int pw_step(struct pathwalk *pw)
 			break;
 		}
 
-		next_state(pw, PW_END, NULL, 0);
-		goto done;
+		return -1;
 
 	case PW_FILE_NAME:
 		prev = &pw->comp[pw->comp_len];
@@ -176,9 +175,6 @@ int pw_step(struct pathwalk *pw)
 		}
 
 	case PW_TAIL_SEP:
-		next_state(pw, PW_END, NULL, 0);
-	default:
-done:
 		return -1;
 	}
 
@@ -192,7 +188,7 @@ int pw_step_back(struct pathwalk *pw)
 	const xchar *tmp;
 
 	switch (pw->st) {
-	case PW_END:
+	case __PW_TAIL:
 		prev = &pw->ptb[pw->len - 1];
 		next = pw_skip_sep_back(prev, pw->ptb);
 
@@ -235,10 +231,8 @@ int pw_step_back(struct pathwalk *pw)
 		next = pw_skip_sep_back(prev, pw->ptb);
 
 		if (next < pw->ptb) {
-			if (next == prev) {
-				next_state(pw, PW_PRE, NULL, 0);
-				goto done;
-			}
+			if (next == prev)
+				return -1;
 
 			next_state(pw, PW_ROOT_DIR, &next[1], prev - next);
 			break;
@@ -264,18 +258,12 @@ int pw_step_back(struct pathwalk *pw)
 		prev = &pw->comp[-1];
 		next = &pw->ptb[-1];
 
-		if (prev < pw->ptb) {
-			next_state(pw, PW_PRE, NULL, 0);
-			goto done;
-		}
+		if (prev < pw->ptb)
+			return -1;
 
 		next_state(pw, PW_ROOT_NAME, &next[1], prev - next);
-		break;
 
 	case PW_ROOT_NAME:
-		next_state(pw, PW_PRE, NULL, 0);
-	default:
-done:
 		return -1;
 	}
 
@@ -284,15 +272,20 @@ done:
 
 const xchar *pw_to_dirname(struct pathwalk *pw)
 {
+	int err;
 	uint len = pw->root_len;
 	enum pathwalk_state st = pw->st;
 
-	pw_step_back(pw);
+	err = pw_step_back(pw);
+	if (err)
+		goto empty;
 
 	if (pw->st == PW_TAIL_SEP)
 		pw_step_back(pw);
-	if (st == PW_END)
-		pw_step_back(pw);
+	if (st == __PW_TAIL)
+		err = pw_step_back(pw);
+	if (err)
+		goto empty;
 
 	switch (pw->st) {
 	case PW_FILE_NAME:
@@ -307,14 +300,15 @@ const xchar *pw_to_dirname(struct pathwalk *pw)
 
 	case PW_ROOT_DIR:
 		len = pw->comp - pw->ptb + 1;
-		break;
+	}
 
-	case PW_PRE:
+	if (0) {
+empty:
 		if (pw->flags & PW_IS_ABS)
 			goto out;
 
 		if (pw->rtb == pw->ptb) {
-			pw->st = PW_END;
+			pw->st = __PW_TAIL;
 			pw->len = 1;
 		}
 
@@ -325,7 +319,8 @@ const xchar *pw_to_dirname(struct pathwalk *pw)
 	}
 
 	if (pw->rtb == pw->ptb) {
-		pw->st = PW_END;
+		if (!pw_in_root(pw))
+			pw->st = __PW_TAIL;
 		pw->len = len;
 	}
 
@@ -339,7 +334,7 @@ out:
 
 const xchar *pw_basename(struct pathwalk *pw)
 {
-	pw->st = PW_END;
+	pw->st = __PW_TAIL;
 	pw_step_back(pw);
 
 	if (pw->st == PW_TAIL_SEP) {

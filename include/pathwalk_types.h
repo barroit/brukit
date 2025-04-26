@@ -9,12 +9,14 @@
 #include "types.h"
 
 enum pathwalk_state {
-	PW_PRE,
+	__PW_HEAD,
+
 	PW_ROOT_DIR,
 	PW_ROOT_NAME,
 	PW_FILE_NAME,
 	PW_TAIL_SEP,
-	PW_END,
+
+	__PW_TAIL,
 };
 
 #define PW_IS_ABS    (1U << 0)
