@@ -1,1 +1,0 @@
-../../barroit/scripts/synckit.sh
