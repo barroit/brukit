@@ -28,8 +28,6 @@
 /build
 
 # みくみくにしてあげる♪
-.program
-.brukit
 *.ico
 *.rc
 *.manifest.in

@@ -5,9 +5,6 @@ comma  := ,
 # I do this my way
 $(warn-off)
 
-# check if .program exists
-$(error-if,$(not-exist,.program),.program not found$(comma) `make init.sh`?)
-
 # check if $(CC) and $(LD) exist
 $(error-if,$(failure,$(CC) -v),C compiler '$(CC)' not found)
 $(error-if,$(failure,$(LD) -v),linker '$(LD)' not found)

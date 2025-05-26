@@ -5,7 +5,8 @@ set -e
 
 . scripts/use-posix-libkit.sh
 
-note 'preparing source files'
+note 'preparing source files ...'
+
 make configure EXTOPT='-DCMAKE_C_FLAGS="-C -DINTL_PREP_MO"' >/dev/null
 
 cd build.unix
@@ -16,7 +17,7 @@ printf '%s\n' "$i" | xargs -P$(nproc) -n1 make >/dev/null
 
 cd ..
 
-domain=$(v2 .program name)
+domain=$(readlower <NAME)
 
 cd locale
 
@@ -50,4 +51,5 @@ done
 cd ..
 
 note 'cleaning up source files ...'
+
 make configure EXTOPT='-DCMAKE_C_FLAGS=""' >/dev/null

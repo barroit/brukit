@@ -91,21 +91,15 @@ def greater(kconf, name, v1, v2):
 	return __if_less(v1, v2, 'n', 'y')
 
 def pg_info(kconf, name):
-	dotprog = path.join(srctree, '.program')
-	info = {}
-	file = open(dotprog, 'r')
+	name_path = path.join(srctree, 'NAME')
+	version_path = path.join(srctree, 'VERSION')
 
-	for line in file:
-		if not line.strip() or line.startswith("#"):
-			continue
+	with open(name_path, 'r') as file:
+		name = file.readline().rstrip().lower()
 
-		k, v = line.split(maxsplit=1)
-		info[k] = v.strip()
+	with open(version_path, 'r') as file:
+		version = file.readline().rstrip()
 
-	file.close()
-
-	name = info['name']
-	version = info['version']
 	arch = platform.machine().lower()
 	build = platform.system()
 
