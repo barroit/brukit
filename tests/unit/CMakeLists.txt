@@ -15,7 +15,7 @@ foreach(name ${unit_tests})
   get_filename_component(name ${name} NAME_WE)
 
   add_executable(${name}.t ${name}.c ussert.c main.c)
-  add_dependencies(${name}.t genconfig feature)
+  add_dependencies(${name}.t gen-autoconf gen-features)
 
   add_test(NAME api_${name} COMMAND ${name}.t WORKING_DIRECTORY ${objtree})
 endforeach()

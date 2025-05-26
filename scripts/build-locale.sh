@@ -14,7 +14,7 @@ make configure EXTOPT='-DCMAKE_C_FLAGS="-E -C -DINTL_PREP_MO"' >/dev/null
 make lastplat
 
 cd build.unix
-make genconfig feature
+make gen-autoconf gen-features
 
 dot_i=$(make help | grep '\.i$' | cut -d' ' -f2)
 

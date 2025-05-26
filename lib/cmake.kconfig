@@ -7,7 +7,7 @@ add_custom_command(OUTPUT ${gendir}/autoconf.h
 		   DEPENDS $ENV{LASTPLAT} $ENV{RELCONFIG}
 		   WORKING_DIRECTORY ${srctree})
 
-add_custom_target(genconfig DEPENDS ${gendir}/autoconf.h)
+add_custom_target(gen-autoconf DEPENDS ${gendir}/autoconf.h)
 
 file(STRINGS $ENV{RELCONFIG} lines ENCODING UTF-8)
 
