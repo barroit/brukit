@@ -1,38 +1,32 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
-# Start menuconfig/alldefconfig in a portable manner.
-# You must provide SRCTREE, CC, and LD in the process that starts this script.
+from libkit import *
 
-from sys import argv, exit
-from os import environ as env, getcwd, path, pathsep, chdir
-from subprocess import run
-
-if len(argv) < 2:
-	exit(128)
+if argc < 2:
+	die('missing command name')
 
 cmd = argv[1]
-top = env['SRCTREE']
-cwd = getcwd()
-lib = path.join(top, 'lib')
-pyp = env.get('PYTHONPATH')
 
-env['PYTHONPATH'] = (pyp + pathsep if pyp else '') + lib
-env['PYTHONDONTWRITEBYTECODE'] = 'y'
-env['KCONFIG_FUNCTIONS'] = 'Kinclude'
+srctree = env_or_die('SRCTREE')
+dotconf = env_or_die('DOTCONFIG')
+
+env['PYTHONPATH'] = f"{srctree}/scripts"
+env['KCONFIG_FUNCTIONS'] = 'kinclude'
 
 if cmd == 'menuconfig':
 	env['MENUCONFIG_STYLE'] = 'aquatic'
-	env['KCONFIG_CONFIG'] = env['DOTCONFIG']
+	env['KCONFIG_CONFIG'] = dotconf
 elif cmd == 'alldefconfig':
 	pass
 elif cmd == 'genconfig':
 	pass
 else:
-	exit(128)
+	die(f"unknown command name '{cmd}'")
 
-if cwd != top:
-	chdir(top)
+if pwd() != srctree:
+	chdir(srctree)
 
-res = run(argv[1:])
+res = execl(argv[1:])
+
 exit(res.returncode)

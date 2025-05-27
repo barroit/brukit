@@ -57,28 +57,30 @@ export RECONFDEP := $(objtree)/reconfdep
 
 CMAKE_CC_FEATURE := $(objtree)/features.cmake
 
+NOPYC := PYTHONDONTWRITEBYTECODE=y
+
 build:
 
 .PHONY: menuconfig mk_defconfig rm_defconfig \
 	reconfdep configure lastplat build all
 
 menuconfig:
-	@scripts/kconfig.py menuconfig
+	@$(NOPYC) scripts/kconfig.py menuconfig
 
 $(gendir):
 	@mkdir $@
 
 $(CMAKE_CC_FEATURE): $(gendir)
-	@scripts/cc-feature.py cmake
+	@$(NOPYC) scripts/cc-feature.py cmake
 
 mk_defconfig:
-	@scripts/kconfig.py alldefconfig
+	@$(NOPYC) scripts/kconfig.py alldefconfig
 
 rm_defconfig:
 	@rm $(DEFCONFIG)
 
 reconfdep: $(MK_DEFCONFIG) $(RM_DEFCONFIG)
-	@scripts/reconfdep.py $(RELCONFIG) $(RECONFDEP)
+	@$(NOPYC) scripts/reconfdep.py $(RELCONFIG) $(RECONFDEP)
 
 configure: $(CMAKE_CC_FEATURE) reconfdep
 	@cmake -G "$(generator)" -S . -B $(objtree) $(EXTOPT)
@@ -121,6 +123,8 @@ t/all:
 
 scripts := $(wildcard scripts/*.sh) $(wildcard scripts/*.py)
 args    := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+
+export $(NOPYC)
 
 .PHONY: $(args)
 

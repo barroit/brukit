@@ -1,36 +1,21 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 # Copyright 2024 Jiamu Sun <barroit@linux.com>
 
-from sys import exit
-from os import getpid, mkdir, unlink, path, environ as env
-from subprocess import run, PIPE, DEVNULL
+from os import path
 
-import os
 import re
 import textwrap
 import platform
 import kconfiglib
 
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-RESET='\033[0m'
-
-def die(*args):
-	print(f'{RED}fatal:{RESET}', *args)
-	exit(128)
-
-def env_or_die(name):
-	if not name in env:
-		die(f"missing env '{name}'")
-	return env[name]
-
-def die_kconf(kconf, *args):
-	die(f'{YELLOW}{kconf.filename}:{kconf.linenr}:{RESET}', *args)
+from libkit import *
 
 srctree = env_or_die('SRCTREE')
-
 cc = env_or_die('CC')
 ld = env_or_die('LD')
+
+def die_kconf(kconf, *args):
+	die(f"{YELLOW}{kconf.filename}:{kconf.linenr}:{RESET}", *args)
 
 def word(kconf, name, val, pos):
 	pos = int(pos) - 1
@@ -42,11 +27,11 @@ def warn_off(kconf, name):
 
 	return ''
 
-def __if_success(cmd, y, n):
+def if_success(cmd, y, n):
 	cmd = cmd.split()
 
 	try:
-		res = run(cmd, stdout=DEVNULL, stderr=DEVNULL)
+		res = execl(cmd, stdout=DEVNULL, stderr=DEVNULL)
 	except:
 		return n
 
@@ -56,39 +41,39 @@ def __if_success(cmd, y, n):
 		return n
 
 def success(kconf, name, cmd):
-	return __if_success(cmd, 'y', 'n')
+	return if_success(cmd, 'y', 'n')
 
 def failure(kconf, name, cmd):
-	return __if_success(cmd, 'n', 'y')
+	return if_success(cmd, 'n', 'y')
 
 def error_if(kconf, name, cond, mas):
 	if cond == 'y':
 		die_kconf(kconf, mas)
 	return ''
 
-def __if_exist(name, y, n):
+def if_exist(name, y, n):
 	if path.exists(name):
 		return y
 	else:
 		return n
 
 def exist(kconf, name, file):
-	return __if_exist(file, 'y', 'n')
+	return if_exist(file, 'y', 'n')
 
 def not_exist(kconf, name, file):
-	return __if_exist(file, 'n', 'y')
+	return if_exist(file, 'n', 'y')
 
-def __if_less(v1, v2, y, n):
+def if_less(v1, v2, y, n):
 	if int(v1) < int(v2):
 		return y
 	else:
 		return n
 
 def less(kconf, name, v1, v2):
-	return __if_less(v1, v2, 'y', 'n')
+	return if_less(v1, v2, 'y', 'n')
 
 def greater(kconf, name, v1, v2):
-	return __if_less(v1, v2, 'n', 'y')
+	return if_less(v1, v2, 'n', 'y')
 
 def pg_info(kconf, name):
 	name_path = path.join(srctree, 'NAME')
@@ -114,7 +99,7 @@ def cc_info(kconf, name):
 		GCC	__GNUC__	__GNUC_MINOR__	__GNUC_PATCHLEVEL__
 		#endif
 	""")
-	res = run(cmd, text=True, input=file, capture_output=True)
+	res = execl(cmd, text=True, input=file, capture_output=True)
 
 	if not res.stdout:
 		return ''
@@ -130,8 +115,8 @@ def cc_option(kconf, name, opt):
 	pid = getpid()
 	out = f".tmp_{pid}.o"
 
-	cmd = [ cc, '-Werror', opt, '-c', '-x', 'c', os.devnull, '-o', out ]
-	res = run(cmd, stdout=DEVNULL, stderr=DEVNULL)
+	cmd = [ cc, '-Werror', opt, '-c', '-x', 'c', devnull, '-o', out ]
+	res = execl(cmd, stdout=DEVNULL, stderr=DEVNULL)
 
 	if path.isfile(out):
 		unlink(out)
@@ -143,7 +128,7 @@ def cc_option(kconf, name, opt):
 
 def ld_info(kconf, name):
 	cmd = [ ld, '-v' ]
-	res = run(cmd, text=True, capture_output=True)
+	res = execl(cmd, text=True, capture_output=True)
 
 	if not res.stdout:
 		return ''
@@ -180,24 +165,24 @@ def ld_info(kconf, name):
 
 def ld_option(kconf, name, opt):
 	cmd = [ ld, '-v', opt ]
-	res = run(cmd, stdout=DEVNULL, stderr=DEVNULL)
+	res = execl(cmd, stdout=DEVNULL, stderr=DEVNULL)
 
 	if res.returncode == 0:
 		return 'y'
 	else:
 		return 'n'
 
-def __is_platform(name):
+def is_platform(name):
 	if platform.system() == name:
 		return 'y'
 	else:
 		return 'n'
 
 def is_win32(kconf, name):
-	return __is_platform('Windows')
+	return is_platform('Windows')
 
 def is_unix(kconf, name):
-	if __is_platform('Windows') == 'n':
+	if is_platform('Windows') == 'n':
 		return 'y'
 	else:
 		return 'n'
