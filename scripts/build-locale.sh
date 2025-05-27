@@ -11,7 +11,7 @@ export MAKEFILE=1
 
 make distclean
 make configure EXTOPT='-DCMAKE_C_FLAGS="-E -C -DINTL_PREP_MO"' >/dev/null
-make lastplat
+make dotplat
 
 cd build.unix
 make gen-autoconf gen-features

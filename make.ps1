@@ -40,7 +40,7 @@ export OBJTREE=$SRCTREE/$BUILD_NAME
 export CC=clang.exe
 export LD=ld.lld.exe
 
-export LASTPLAT=$SRCTREE/.lastplat
+export DOTPLAT=$SRCTREE/.platform
 
 export DOTCONFIG=$SRCTREE/.config.win32
 export DEFCONFIG=$DOTCONFIG.def
@@ -129,8 +129,8 @@ if ($target -band $__configure) {
 }
 
 if ($target -band $__build) {
-	if (!(Test-Path $LASTPLAT) -or (cat $LASTPLAT) -ne 'win32') {
-		echo win32 > $LASTPLAT
+	if (!(Test-Path $DOTPLAT) -or (cat $DOTPLAT) -ne 'win32') {
+		echo win32 > $DOTPLAT
 	}
 
 	if ($RECONFIGURE) {
@@ -160,8 +160,8 @@ if ($target -band $__distclean) {
 		Remove-Item -Force $dotconfig
 	}
 
-	if (Test-Path $LASTPLAT) {
-		Remove-Item -Force $LASTPLAT
+	if (Test-Path $DOTPLAT) {
+		Remove-Item -Force $DOTPLAT
 	}
 
 	if (Test-Path *.manifest) {

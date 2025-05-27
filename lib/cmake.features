@@ -2,6 +2,6 @@
 
 add_custom_command(OUTPUT ${gendir}/features.h
 		   COMMAND ${python3} scripts/cc-feature.py header
-		   DEPENDS $ENV{LASTPLAT} WORKING_DIRECTORY ${srctree})
+		   DEPENDS $ENV{DOTPLAT} WORKING_DIRECTORY ${srctree})
 
 add_custom_target(gen-features DEPENDS ${gendir}/features.h)

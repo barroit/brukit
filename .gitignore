@@ -11,7 +11,7 @@
 /!build.*/locale
 /!build.*/scripts
 /!build.*/t
-/.lastplat
+/.platform
 
 /include/generated
 /include/arch

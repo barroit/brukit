@@ -29,7 +29,7 @@ ifneq ($(MAKEFILE),)
 generator := Unix Makefiles
 endif
 
-export LASTPLAT := $(srctree)/.lastplat
+export DOTPLAT := $(srctree)/.platform
 
 export DOTCONFIG := $(srctree)/.config.unix
 export DEFCONFIG := $(DOTCONFIG).def
@@ -62,7 +62,7 @@ NOPYC := PYTHONDONTWRITEBYTECODE=y
 build:
 
 .PHONY: menuconfig mk_defconfig rm_defconfig \
-	reconfdep configure lastplat build all
+	reconfdep configure dotplat build all
 
 menuconfig:
 	@$(NOPYC) scripts/kconfig.py menuconfig
@@ -85,13 +85,13 @@ reconfdep: $(MK_DEFCONFIG) $(RM_DEFCONFIG)
 configure: $(CMAKE_CC_FEATURE) reconfdep
 	@cmake -G "$(generator)" -S . -B $(objtree) $(EXTOPT)
 
-lastplat:
+dotplat:
 	@if [ -f $(objtree)/CMakeCache.txt ] &&			\
-	    [ "$$(cat $(LASTPLAT) 2>&1 )" != unix ]; then	\
-		echo unix > $(LASTPLAT);			\
+	    [ "$$(cat $(DOTPLAT) 2>&1 )" != unix ]; then	\
+		echo unix > $(DOTPLAT);			\
 	fi
 
-build: lastplat $(RECONFIGURE) $(RERECONFDEP)
+build: dotplat $(RECONFIGURE) $(RERECONFDEP)
 	@cmake --build $(objtree) --parallel
 
 all: configure build
@@ -105,7 +105,7 @@ distclean:
 	@rm -rf include/generated
 	@rm -f include/arch
 	@rm -f $(DOTCONFIG)*
-	@rm -f $(LASTPLAT)
+	@rm -f $(DOTPLAT)
 	@git ls-files --directory -o $(objtree) | xargs rm -rf
 
 __tests := $(wildcard $(objtree)/t/*.t)
