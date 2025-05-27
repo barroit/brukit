@@ -31,25 +31,25 @@ endif
 
 export DOTPLAT := $(srctree)/.platform
 
-export DOTCONFIG := $(srctree)/.config.unix
-export DEFCONFIG := $(DOTCONFIG).def
+export USRCONF := $(srctree)/.config.unix
+export DEFCONF := $(USRCONF).1
 
-ifneq ($(wildcard $(DOTCONFIG)),)
-RELCONFIG := $(DOTCONFIG)
+ifneq ($(wildcard $(USRCONF)),)
+DOTCONF := $(USRCONF)
 else
-RELCONFIG    := $(DEFCONFIG)
-MK_DEFCONFIG := mk_defconfig
+DOTCONF := $(DEFCONF)
+GEN_DEFCONF := gen-defconf
 endif
 
-export RELCONFIG
-export KCONFIG_CONFIG := $(RELCONFIG)
+export DOTCONF
+export KCONFIG_CONFIG := $(DOTCONF)
 
-ifneq ($(wildcard $(DOTCONFIG)),)
-ifneq ($(wildcard $(DEFCONFIG)),)
-RECONFIGURE  := configure
-RM_DEFCONFIG := rm_defconfig
+ifneq ($(wildcard $(USRCONF)),)
+ifneq ($(wildcard $(DEFCONF)),)
+RECONFIGURE := configure
+RM_DEFCONF  := rm-defconf
 else
-RERECONFDEP  := reconfdep
+RERECONFDEP := reconfdep
 endif
 endif
 
@@ -61,7 +61,7 @@ NOPYC := PYTHONDONTWRITEBYTECODE=y
 
 build:
 
-.PHONY: menuconfig mk_defconfig rm_defconfig \
+.PHONY: menuconfig gen-defconf rm-defconf \
 	reconfdep configure dotplat build all
 
 menuconfig:
@@ -73,14 +73,14 @@ $(gendir):
 $(CMAKE_CC_FEATURE): $(gendir)
 	@$(NOPYC) scripts/cc-feature.py cmake
 
-mk_defconfig:
+gen-defconf:
 	@$(NOPYC) scripts/kconfig.py alldefconfig
 
-rm_defconfig:
-	@rm $(DEFCONFIG)
+rm-defconf:
+	@rm $(DEFCONF)
 
-reconfdep: $(MK_DEFCONFIG) $(RM_DEFCONFIG)
-	@$(NOPYC) scripts/reconfdep.py $(RELCONFIG) $(RECONFDEP)
+reconfdep: $(GEN_DEFCONF) $(RM_DEFCONF)
+	@$(NOPYC) scripts/reconfdep.py $(DOTCONF) $(RECONFDEP)
 
 configure: $(CMAKE_CC_FEATURE) reconfdep
 	@cmake -G "$(generator)" -S . -B $(objtree) $(EXTOPT)
@@ -104,7 +104,7 @@ clean:
 distclean:
 	@rm -rf include/generated
 	@rm -f include/arch
-	@rm -f $(DOTCONFIG)*
+	@rm -f $(USRCONF)*
 	@rm -f $(DOTPLAT)
 	@git ls-files --directory -o $(objtree) | xargs rm -rf
 

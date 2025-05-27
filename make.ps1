@@ -42,23 +42,23 @@ export LD=ld.lld.exe
 
 export DOTPLAT=$SRCTREE/.platform
 
-export DOTCONFIG=$SRCTREE/.config.win32
-export DEFCONFIG=$DOTCONFIG.def
+export USRCONF=$SRCTREE/.config.win32
+export DEFCONF=$USRCONF.1
 
-if (Test-Path $DOTCONFIG) {
-	$RELCONFIG    = $DOTCONFIG
+if (Test-Path $USRCONF) {
+	$DOTCONF    = $USRCONF
 } else {
-	$RELCONFIG    = $DEFCONFIG
-	$MK_DEFCONFIG = 1
+	$DOTCONF    = $DEFCONF
+	$GEN_DEFCONF = 1
 }
 
-export RELCONFIG=$RELCONFIG
-export KCONFIG_CONFIG=$RELCONFIG
+export DOTCONF=$DOTCONF
+export KCONFIG_CONFIG=$DOTCONF
 
-if (Test-Path $DOTCONFIG) {
-	if (Test-Path $DEFCONFIG) {
+if (Test-Path $USRCONF) {
+	if (Test-Path $DEFCONF) {
 		$RECONFIGURE  = 1
-		$RM_DEFCONFIG = 1
+		$RM_DEFCONF = 1
 	} else {
 		$RERECONFDEP  = 1
 	}
@@ -104,15 +104,15 @@ if ($target -band $__menuconfig) {
 }
 
 if ($target -band $__reconfdep) {
-	if ($MK_DEFCONFIG) {
+	if ($GEN_DEFCONF) {
 		python scripts/kconfig.py alldefconfig
 	}
 
-	if ($RM_DEFCONFIG) {
-		Remove-Item -Force $DEFCONFIG
+	if ($RM_DEFCONF) {
+		Remove-Item -Force $DEFCONF
 	}
 
-	python scripts/reconfdep.py $RELCONFIG $RECONFDEP
+	python scripts/reconfdep.py $DOTCONF $RECONFDEP
 }
 
 if ($target -band $__configure) {
@@ -149,15 +149,15 @@ if ($target -band $__clean) {
 }
 
 if ($target -band $__distclean) {
-	$dotconfig = Get-ChildItem -Force $env:KCONFIG_CONFIG*
+	$dotconfs = Get-ChildItem -Force $env:KCONFIG_CONFIG*
 	$buildgens = git ls-files --directory -o $BUILD_NAME
 
 	if (Test-Path include/generated) {
 		Remove-Item -Force -Recurse include/generated
 	}
 
-	if ($dotconfig) {
-		Remove-Item -Force $dotconfig
+	if ($dotconfs) {
+		Remove-Item -Force $dotconfs
 	}
 
 	if (Test-Path $DOTPLAT) {

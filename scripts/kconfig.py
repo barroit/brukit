@@ -9,7 +9,7 @@ if argc < 2:
 cmd = argv[1]
 
 srctree = env_or_die('SRCTREE')
-dotconf = env_or_die('DOTCONFIG')
+dotconf = env_or_die('USRCONF')
 
 env['PYTHONPATH'] = f"{srctree}/scripts"
 env['KCONFIG_FUNCTIONS'] = 'kinclude'
