@@ -3,23 +3,12 @@
 
 set -e
 
-ln -sf ../../../barroit/hooks/pre-commit.sh \
-       .git/hooks/pre-commit
+. scripts/use-posix-libkit.sh
 
-ln -sf ../../../barroit/hooks/prepare-commit-msg.sh \
-       .git/hooks/prepare-commit-msg
+$LIBKIT_ROOT/../scripts/setup-repo.sh
 
-if ! git remote | grep -q brukit; then
-	cmd=add
-else
-	cmd=set-url
-fi
-git remote $cmd brukit $(cat .brukit)
+ln -sf build.unix/tests/Testing/Temporary/LastTest.log tres.unix
+ln -sf build.win32/tests/Testing/Temporary/LastTest.log tres.win32
 
-git fetch brukit master
-
-if ! git for-each-ref --format='%(refname)' refs/heads | grep -q brukit; then
-	git branch --track brukit brukit/master
-else
-	git branch --force brukit brukit/master
-fi
+ln -sf tres.unix tres
+ln -sf build.unix build

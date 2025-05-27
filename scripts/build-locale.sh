@@ -5,18 +5,24 @@ set -e
 
 . scripts/use-posix-libkit.sh
 
-note 'preparing source files'
-make configure EXTOPT='-DCMAKE_C_FLAGS="-C -DINTL_PREP_MO"' >/dev/null
+note 'preparing source files ...'
+
+export MAKEFILE=1
+
+make distclean
+make configure EXTOPT='-DCMAKE_C_FLAGS="-E -C -DINTL_PREP_MO"' >/dev/null
+make lastplat
 
 cd build.unix
+make genconfig feature
 
-i=$(make help | grep '\.i$' | cut -d' ' -f2)
+dot_i=$(make help | grep '\.i$' | cut -d' ' -f2)
 
-printf '%s\n' "$i" | xargs -P$(nproc) -n1 make >/dev/null
+printf '%s\n' "$dot_i" | xargs -P$(nproc) -n1 make >/dev/null
 
 cd ..
 
-domain=$(v2 .program name)
+domain=$(readlower <NAME)
 
 cd locale
 
@@ -26,7 +32,7 @@ cat <<EOF >.lang.$$
 zh_CN
 ja_JP
 EOF
-trap 'rm .lang.$$' EXIT
+trap "rm $PWD/.lang.$$" EXIT
 
 xgettext --add-comments=TRANSLATORS --omit-header --no-location \
 	 --from-code=UTF-8 -LC -i -k_ -kN_ -k__H_ -k__HN_ $src
@@ -50,4 +56,5 @@ done
 cd ..
 
 note 'cleaning up source files ...'
-make configure EXTOPT='-DCMAKE_C_FLAGS=""' >/dev/null
+
+make distclean

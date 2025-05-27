@@ -1,54 +1,44 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 # Copyright 2024 Jiamu Sun <barroit@linux.com>
 
-from sys import exit
-from os import getpid, mkdir, unlink, path, environ as env
-from subprocess import run, PIPE, DEVNULL
+from os import path
 
-import os
 import re
 import textwrap
 import platform
 import kconfiglib
 
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-RESET='\033[0m'
+from libkit import *
 
-def die(*args):
-	print(f'{RED}fatal:{RESET}', *args)
-	exit(128)
+srctree = env_or_die('SRCTREE')
+cc = env_or_die('CC')
+ld = env_or_die('LD')
 
 def die_kconf(kconf, *args):
-	die(f'{YELLOW}{kconf.filename}:{kconf.linenr}:{RESET}', *args)
-
-cc = env['CC']
-if not cc:
-	die('no cc provided (export CC in environment)')
-
-ld = env['LD']
-if not ld:
-	die('no ld provided (export LD in environment)')
-
-top = env['SRCTREE']
-if not top:
-	die('no tree path specified (export BSTREE in env)')
+	die(f"{YELLOW}{kconf.filename}:{kconf.linenr}:{RESET}", *args)
 
 def word(kconf, name, val, pos):
 	pos = int(pos) - 1
+
 	return val.split('\t')[pos]
 
 def warn_off(kconf, name):
 	kconf.warn = False
-	return ""
+
+	return ''
 
 def if_success(cmd, y, n):
 	cmd = cmd.split()
+
 	try:
-		res = run(cmd, stdout=DEVNULL, stderr=DEVNULL)
+		res = execl(cmd, stdout=DEVNULL, stderr=DEVNULL)
 	except:
 		return n
-	return y if res.returncode == 0 else n
+
+	if res.returncode == 0:
+		return y
+	else:
+		return n
 
 def success(kconf, name, cmd):
 	return if_success(cmd, 'y', 'n')
@@ -59,10 +49,13 @@ def failure(kconf, name, cmd):
 def error_if(kconf, name, cond, mas):
 	if cond == 'y':
 		die_kconf(kconf, mas)
-	return ""
+	return ''
 
 def if_exist(name, y, n):
-	return y if path.exists(name) else n
+	if path.exists(name):
+		return y
+	else:
+		return n
 
 def exist(kconf, name, file):
 	return if_exist(file, 'y', 'n')
@@ -71,7 +64,10 @@ def not_exist(kconf, name, file):
 	return if_exist(file, 'n', 'y')
 
 def if_less(v1, v2, y, n):
-	return y if int(v1) < int(v2) else n
+	if int(v1) < int(v2):
+		return y
+	else:
+		return n
 
 def less(kconf, name, v1, v2):
 	return if_less(v1, v2, 'y', 'n')
@@ -80,24 +76,19 @@ def greater(kconf, name, v1, v2):
 	return if_less(v1, v2, 'n', 'y')
 
 def pg_info(kconf, name):
-	dotprog = path.join(top, '.program')
-	info = {}
+	name_path = path.join(srctree, 'NAME')
+	version_path = path.join(srctree, 'VERSION')
 
-	# Do not use with as it makes readability worse
-	file = open(dotprog, 'r')
-	for line in file:
-		if not line.strip() or line.startswith("#"):
-			continue
+	with open(name_path, 'r') as file:
+		name = file.readline().rstrip().lower()
 
-		k, v = line.split(maxsplit=1)
-		info[k] = v.strip()
-	file.close()
+	with open(version_path, 'r') as file:
+		version = file.readline().rstrip()
 
-	name = info['name']
-	version = info['version']
 	arch = platform.machine().lower()
 	build = platform.system()
-	return f'{name}\t{version}\t{arch}\t{build}'
+
+	return f"{name}\t{version}\t{arch}\t{build}"
 
 def cc_info(kconf, name):
 	cmd = [ cc, '-E', '-P', '-x', 'c', '-' ]
@@ -108,78 +99,99 @@ def cc_info(kconf, name):
 		GCC	__GNUC__	__GNUC_MINOR__	__GNUC_PATCHLEVEL__
 		#endif
 	""")
-	res = run(cmd, text=True, input=file, capture_output=True)
+	res = execl(cmd, text=True, input=file, capture_output=True)
 
 	if not res.stdout:
 		return ''
-	sl = res.stdout.split()
 
-	name = sl[0]
-	version = int(sl[1]) * 1000 + int(sl[2])
+	seg = res.stdout.split()
+	name = seg[0]
+	version = int(seg[1]) * 1000 + int(seg[2])
 	minver = (9 if name == 'GCC' else 6) * 1000
-	return f'{name}\t{version}\t{minver}'
+
+	return f"{name}\t{version}\t{minver}"
 
 def cc_option(kconf, name, opt):
 	pid = getpid()
-	out = f'.tmp_{pid}.o'
-	cmd = [ cc, '-Werror', opt, '-c', '-x', 'c', os.devnull, '-o', out ]
+	out = f".tmp_{pid}.o"
 
-	res = run(cmd, stdout=DEVNULL, stderr=DEVNULL)
+	cmd = [ cc, '-Werror', opt, '-c', '-x', 'c', devnull, '-o', out ]
+	res = execl(cmd, stdout=DEVNULL, stderr=DEVNULL)
+
 	if path.isfile(out):
 		unlink(out)
 
-	return 'y' if res.returncode == 0 else 'n'
+	if res.returncode == 0:
+		return 'y'
+	else:
+		return 'n'
 
 def ld_info(kconf, name):
 	cmd = [ ld, '-v' ]
-	res = run(cmd, text=True, capture_output=True)
+	res = execl(cmd, text=True, capture_output=True)
 
 	if not res.stdout:
 		return ''
-	sl = res.stdout.split()
 
-	if sl[0] == 'GNU' and sl[1] == 'ld':
+	seg = res.stdout.split()
+
+	if seg[0] == 'GNU' and seg[1] == 'ld':
 		# GNU ld (GNU Binutils for Ubuntu) 2.42
 		name = 'BFD'
-		version = sl[-1]
-	elif sl[0] == 'GNU' and sl[1] == 'gold':
+		version = seg[-1]
+
+	elif seg[0] == 'GNU' and seg[1] == 'gold':
 		return ''
+
 	else:
 		# Ubuntu LLD 18.1.3 (compatible with GNU linkers)
 		# or
 		# LLD 18.1.8 (compatible with GNU linkers)
-		# or the unsupported
+		# or dumbfucks
 		# Microsoft (R) Incremental Linker Version 14.40.33812.0
-		while len(sl) > 1 and sl[0] != "LLD":
-			sl.pop(0)
+		while len(seg) > 1 and seg[0] != "LLD":
+			seg.pop(0)
 
-		if sl[0] != 'LLD':
+		if seg[0] != 'LLD':
 			return ''
 
 		name = 'LLD'
-		version = sl[1]
+		version = seg[1]
 
-	version = re.match(r'^[0-9.]*', version).group(0)
-	sl = version.split('.')
-	version = int(sl[0]) * 1000 + int(sl[1])
-	return f'{name}\t{version}'
+	ver_seg = re.match(r'^[0-9.]*', version).group(0).split('.')
+	version = int(ver_seg[0]) * 1000 + int(ver_seg[1])
+
+	return f"{name}\t{version}"
 
 def ld_option(kconf, name, opt):
 	cmd = [ ld, '-v', opt ]
-	res = run(cmd, stdout=DEVNULL, stderr=DEVNULL)
-	return 'y' if res.returncode == 0 else 'n'
+	res = execl(cmd, stdout=DEVNULL, stderr=DEVNULL)
 
-def is_plat(name):
-	return 'y' if platform.system() == name else 'n'
+	if res.returncode == 0:
+		return 'y'
+	else:
+		return 'n'
+
+def is_platform(name):
+	if platform.system() == name:
+		return 'y'
+	else:
+		return 'n'
 
 def is_win32(kconf, name):
-	return is_plat('Windows')
+	return is_platform('Windows')
 
 def is_unix(kconf, name):
-	return 'y' if is_plat('Windows') == 'n' else 'n'
+	if is_platform('Windows') == 'n':
+		return 'y'
+	else:
+		return 'n'
 
 def is_empty(kconf, name, val):
-	return 'y' if not val.strip() else 'n'
+	if not val.strip():
+		return 'y'
+	else:
+		return 'n'
 
 def to_lower(kconf, name, val):
 	return val.lower()

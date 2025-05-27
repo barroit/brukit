@@ -1,35 +1,33 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
-.gdbinit
-.lldbinit
+/.gdbinit
+/.lldbinit
 
-.config.unix*
-.config.win32*
-*.manifest
+/.config.unix*
+/.config.win32*
+/*.manifest
 
-build.*/*
-!build.*/locale
-!build.*/scripts
-!build.*/t
-.lastplat
+/build.*/*
+/!build.*/locale
+/!build.*/scripts
+/!build.*/t
+/.lastplat
 
-include/generated
-include/arch
+/include/generated
+/include/arch
 
-unitest.h
+/tests/unit/unitest.h
 
-locale/*~
-locale/generated.pot
-locale/messages.po
+/locale/*~
+/locale/generated.pot
+/locale/messages.po
 
-.tmp
-DRAFT
+/EastAsianWidth.txt
 
-EastAsianWidth.txt
+/tres*
+/build
 
 # みくみくにしてあげる♪
-.program
-.brukit
 *.ico
 *.rc
 *.manifest.in

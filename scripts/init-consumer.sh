@@ -1,6 +1,8 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
+set -e
+
 . scripts/use-posix-libkit.sh
 
 if [ ! -f .program.in ]; then
@@ -32,11 +34,6 @@ content=$(cat .gitignore)
 printf '%s\n' "$content" >.gitignore
 
 ini_section readme .program.in >README
-
-cat <<EOF >.program
-name	$name
-version	0.0
-EOF
 
 cat <<EOF >$name.manifest.in
 <?xml version="1.0" encoding="UTF-8"?>
@@ -113,7 +110,7 @@ fi
 
 cat <<EOF >.pickignore
 .program.in.example
-scripts/init.sh
+scripts/init-consumer.sh
 EOF
 
 if [ "$license_new" != "$license_old" ]; then
@@ -128,8 +125,6 @@ fi
 
 rm .program.in*
 (rm $0) &
-
-printf '%s\n' $(git remote get-url origin) >.brukit
 
 scripts/setup-repo.sh
 scripts/syncmo.sh
