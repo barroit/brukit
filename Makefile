@@ -49,28 +49,28 @@ ifneq ($(wildcard $(DEFCONF)),)
 RECONFIGURE := configure
 RM_DEFCONF  := rm-defconf
 else
-RERECONFDEP := reconfdep
+REDEPCONFIG := depconfig
 endif
 endif
 
-export RECONFDEP := $(objtree)/reconfdep
+export DEPCONF := $(objtree)/depconf
 
-CMAKE_CC_FEATURE := $(objtree)/features.cmake
+CC_FEATURES := $(objtree)/features.cmake
 
 NOPYC := PYTHONDONTWRITEBYTECODE=y
 
 build:
 
 .PHONY: menuconfig gen-defconf rm-defconf \
-	reconfdep configure dotplat build all
+	depconfig configure dotplat build all
 
 menuconfig:
 	@$(NOPYC) scripts/kconfig.py menuconfig
 
-$(gendir):
+$(GENDIR):
 	@mkdir $@
 
-$(CMAKE_CC_FEATURE): $(gendir)
+$(CC_FEATURES): $(GENDIR)
 	@$(NOPYC) scripts/cc-feature.py cmake
 
 gen-defconf:
@@ -79,19 +79,22 @@ gen-defconf:
 rm-defconf:
 	@rm $(DEFCONF)
 
-reconfdep: $(GEN_DEFCONF) $(RM_DEFCONF)
-	@$(NOPYC) scripts/reconfdep.py $(DOTCONF) $(RECONFDEP)
+$(DEPCONF):
+	@touch $@
 
-configure: $(CMAKE_CC_FEATURE) reconfdep
+depconfig: $(GEN_DEFCONF) $(RM_DEFCONF) $(DEPCONF)
+	@$(NOPYC) scripts/depconf.py
+
+configure: $(CMAKE_CC_FEATURE) depconfig
 	@cmake -G "$(generator)" -S . -B $(objtree) $(EXTOPT)
 
 dotplat:
 	@if [ -f $(objtree)/CMakeCache.txt ] &&			\
-	    [ "$$(cat $(DOTPLAT) 2>&1 )" != unix ]; then	\
-		echo unix > $(DOTPLAT);			\
+	    [ "$$(cat $(DOTPLAT) 2>&1)" != $$(uname -o) ]; then	\
+		uname -o >$(DOTPLAT);				\
 	fi
 
-build: dotplat $(RECONFIGURE) $(RERECONFDEP)
+build: dotplat $(RECONFIGURE) $(REDEPCONFIG)
 	@cmake --build $(objtree) --parallel
 
 all: configure build
@@ -108,8 +111,8 @@ distclean:
 	@rm -f $(DOTPLAT)
 	@git ls-files --directory -o $(objtree) | xargs rm -rf
 
-__tests := $(wildcard $(objtree)/t/*.t)
-tests   := $(patsubst $(objtree)/%,%,$(__tests))
+tests := $(wildcard $(objtree)/t/*.t)
+tests := $(patsubst $(objtree)/%,%,$(tests))
 
 .PHONY: $(tests)
 
@@ -124,8 +127,6 @@ t/all:
 scripts := $(wildcard scripts/*.sh) $(wildcard scripts/*.py)
 args    := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-export $(NOPYC)
-
 .PHONY: $(args)
 
 $(args):
@@ -134,4 +135,4 @@ $(args):
 .PHONY: $(scripts)
 
 $(scripts):
-	@./$@ $(args)
+	@$(NOPYC) ./$@ $(args)

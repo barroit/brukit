@@ -17,4 +17,4 @@ foreach(line ${lines})
   endif()
 endforeach()
 
-set_directory_properties(PROPERTIES CMAKE_CONFIGURE_DEPENDS $ENV{RECONFDEP})
+set_directory_properties(PROPERTIES CMAKE_CONFIGURE_DEPENDS $ENV{DEPCONF})

@@ -60,11 +60,11 @@ if (Test-Path $USRCONF) {
 		$RECONFIGURE  = 1
 		$RM_DEFCONF = 1
 	} else {
-		$RERECONFDEP  = 1
+		$REDEPCONFIG  = 1
 	}
 }
 
-export RECONFDEP=$OBJTREE/reconfdep
+export DEPCONF=$OBJTREE/depconf
 
 $__menuconfig = 1 -shl 0
 $__configure  = 1 -shl 1
@@ -75,11 +75,11 @@ $__distclean  = 1 -shl 4
 $__install    = 1 -shl 5
 $__uninstall  = 1 -shl 6
 $__test       = 1 -shl 7
-$__reconfdep  = 1 -shl 8
+$__depconfig  = 1 -shl 8
 
 switch -CaseSensitive ($__target) {
 'menuconfig' { $target = $__menuconfig; break }
-'reconfdep'  { $target = $__reconfdep;  break }
+'depconfig'  { $target = $__depconfig;  break }
 'configure'  { $target = $__configure;  break }
 'build'	     { $target = $__build;      break }
 'all'	     { $target = $__all;        break }
@@ -103,7 +103,7 @@ if ($target -band $__menuconfig) {
 	python scripts/kconfig.py menuconfig
 }
 
-if ($target -band $__reconfdep) {
+if ($target -band $__depconfig) {
 	if ($GEN_DEFCONF) {
 		python scripts/kconfig.py alldefconfig
 	}
@@ -112,7 +112,11 @@ if ($target -band $__reconfdep) {
 		Remove-Item -Force $DEFCONF
 	}
 
-	python scripts/reconfdep.py $DOTCONF $RECONFDEP
+	if (!(Test-Path $DEPCONF)) {
+		New-Item $DEPCONF
+	}
+
+	python scripts/depconf.py
 }
 
 if ($target -band $__configure) {
@@ -124,7 +128,7 @@ if ($target -band $__configure) {
 		python scripts/cc-feature.py cmake
 	}
 
-	& $0 reconfdep
+	& $0 depconfig
 	cmake -G Ninja -S . -B $OBJTREE
 }
 
@@ -137,8 +141,8 @@ if ($target -band $__build) {
 		& $0 configure
 	}
 
-	if ($RERECONFDEP) {
-		& $0 reconfdep
+	if ($REDEPCONFIG) {
+		& $0 depconfig
 	}
 
 	cmake --build $OBJTREE --parallel
