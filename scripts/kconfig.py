@@ -7,25 +7,20 @@ if argc < 2:
 	die('missing command name')
 
 cmd = argv[1]
-
 srctree = env_or_die('SRCTREE')
-dotconf = env_or_die('USRCONF')
 
 env['PYTHONPATH'] = f"{srctree}/scripts"
 env['KCONFIG_FUNCTIONS'] = 'kinclude'
 
 if cmd == 'menuconfig':
 	env['MENUCONFIG_STYLE'] = 'aquatic'
-	env['KCONFIG_CONFIG'] = dotconf
+	env['KCONFIG_CONFIG'] = env_or_die('USRCONF')
 elif cmd == 'alldefconfig':
 	pass
 elif cmd == 'genconfig':
 	pass
 else:
 	die(f"unknown command name '{cmd}'")
-
-if pwd() != srctree:
-	chdir(srctree)
 
 res = execl(argv[1:])
 
