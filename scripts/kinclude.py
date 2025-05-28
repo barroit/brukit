@@ -76,13 +76,10 @@ def greater(kconf, name, v1, v2):
 	return if_less(v1, v2, 'n', 'y')
 
 def pg_info(kconf, name):
-	name_path = path.join(srctree, 'NAME')
-	version_path = path.join(srctree, 'VERSION')
-
-	with open(name_path, 'r') as file:
+	with open(f"{srctree}/NAME", 'r') as file:
 		name = file.readline().rstrip().lower()
 
-	with open(version_path, 'r') as file:
+	with open(f"{srctree}/VERSION", 'r') as file:
 		version = file.readline().rstrip()
 
 	arch = platform.machine().lower()

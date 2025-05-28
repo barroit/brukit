@@ -8,8 +8,6 @@ import textwrap
 
 from libkit import *
 
-from os import path
-
 if argc < 2:
 	die('missing generation type')
 
@@ -71,7 +69,7 @@ else:
 	echo_def  = echo_def_header
 
 def rmtmp():
-	if path.isfile(tmp):
+	if isfile(tmp):
 		unlink(tmp)
 
 atexit.register(rmtmp)

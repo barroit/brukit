@@ -57,24 +57,24 @@ export DEPCONF := $(objtree)/depconf
 
 CC_FEATURES := $(objtree)/features.cmake
 
-NOPYC := PYTHONDONTWRITEBYTECODE=y
-
 build:
 
 .PHONY: menuconfig gen-defconf rm-defconf \
 	depconfig configure dotplat build all
 
+export PYTHONDONTWRITEBYTECODE=y
+
 menuconfig:
-	@$(NOPYC) scripts/kconfig.py menuconfig
+	@scripts/kconfig.py menuconfig
 
 $(GENDIR):
 	@mkdir $@
 
 $(CC_FEATURES): $(GENDIR)
-	@$(NOPYC) scripts/cc-feature.py cmake
+	@scripts/cc-feature.py cmake
 
 gen-defconf:
-	@$(NOPYC) scripts/kconfig.py alldefconfig
+	@scripts/kconfig.py alldefconfig
 
 rm-defconf:
 	@rm $(DEFCONF)
@@ -83,7 +83,7 @@ $(DEPCONF):
 	@touch $@
 
 depconfig: $(GEN_DEFCONF) $(RM_DEFCONF) $(DEPCONF)
-	@$(NOPYC) scripts/depconf.py
+	@scripts/depconf.py
 
 configure: $(CC_FEATURES) depconfig
 	@cmake -G "$(generator)" -S . -B $(objtree) $(EXTOPT)
@@ -135,4 +135,4 @@ $(args):
 .PHONY: $(scripts)
 
 $(scripts):
-	@$(NOPYC) ./$@ $(args)
+	@./$@ $(args)

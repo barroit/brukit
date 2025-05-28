@@ -12,3 +12,7 @@ ln -sf build.win32/tests/Testing/Temporary/LastTest.log tres.win32
 
 ln -sf tres.unix tres
 ln -sf build.unix build
+
+if [ -f brukit ]; then
+	ln -sf VERSION.1 VERSION
+fi
