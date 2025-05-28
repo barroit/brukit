@@ -4,12 +4,12 @@ add_custom_command(OUTPUT ${gendir}/autoconf.h
 		   COMMAND ${python3} scripts/kconfig.py
 		   genconfig --header-path ${gendir}/autoconf.h
 		   COMMAND ${CMAKE_COMMAND} -E touch ${gendir}/autoconf.h
-		   DEPENDS $ENV{LASTPLAT} $ENV{RELCONFIG}
+		   DEPENDS $ENV{DOTPLAT} $ENV{DOTCONF}
 		   WORKING_DIRECTORY ${srctree})
 
-add_custom_target(genconfig DEPENDS ${gendir}/autoconf.h)
+add_custom_target(gen-autoconf DEPENDS ${gendir}/autoconf.h)
 
-file(STRINGS $ENV{RELCONFIG} lines ENCODING UTF-8)
+file(STRINGS $ENV{DOTCONF} lines ENCODING UTF-8)
 
 foreach(line ${lines})
   if(line MATCHES "^(CONFIG_[^=]+)=(\"?)([^\"]*)(\"?)$")
@@ -17,4 +17,4 @@ foreach(line ${lines})
   endif()
 endforeach()
 
-set_directory_properties(PROPERTIES CMAKE_CONFIGURE_DEPENDS $ENV{RECONFDEP})
+set_directory_properties(PROPERTIES CMAKE_CONFIGURE_DEPENDS $ENV{DEPCONF})

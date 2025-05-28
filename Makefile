@@ -29,69 +29,72 @@ ifneq ($(MAKEFILE),)
 generator := Unix Makefiles
 endif
 
-export LASTPLAT := $(srctree)/.lastplat
+export DOTPLAT := $(srctree)/.platform
 
-export DOTCONFIG := $(srctree)/.config.unix
-export DEFCONFIG := $(DOTCONFIG).def
+export USRCONF := $(srctree)/.config.unix
+export DEFCONF := $(USRCONF).1
 
-ifneq ($(wildcard $(DOTCONFIG)),)
-RELCONFIG := $(DOTCONFIG)
+ifneq ($(wildcard $(USRCONF)),)
+DOTCONF := $(USRCONF)
 else
-RELCONFIG    := $(DEFCONFIG)
-MK_DEFCONFIG := mk_defconfig
+DOTCONF := $(DEFCONF)
+GEN_DEFCONF := gen-defconf
 endif
 
-export RELCONFIG
-export KCONFIG_CONFIG := $(RELCONFIG)
+export DOTCONF
+export KCONFIG_CONFIG := $(DOTCONF)
 
-ifneq ($(wildcard $(DOTCONFIG)),)
-ifneq ($(wildcard $(DEFCONFIG)),)
-RECONFIGURE  := configure
-RM_DEFCONFIG := rm_defconfig
+ifneq ($(wildcard $(USRCONF)),)
+ifneq ($(wildcard $(DEFCONF)),)
+RECONFIGURE := configure
+RM_DEFCONF  := rm-defconf
 else
-RERECONFDEP  := reconfdep
+REDEPCONFIG := depconfig
 endif
 endif
 
-export RECONFDEP := $(objtree)/reconfdep
+export DEPCONF := $(objtree)/depconf
 
-CMAKE_CC_FEATURE := $(objtree)/features.cmake
+CC_FEATURES := $(objtree)/features.cmake
 
 NOPYC := PYTHONDONTWRITEBYTECODE=y
 
 build:
 
-.PHONY: menuconfig mk_defconfig rm_defconfig \
-	reconfdep configure lastplat build all
+.PHONY: menuconfig gen-defconf rm-defconf \
+	depconfig configure dotplat build all
 
 menuconfig:
 	@$(NOPYC) scripts/kconfig.py menuconfig
 
-$(gendir):
+$(GENDIR):
 	@mkdir $@
 
-$(CMAKE_CC_FEATURE): $(gendir)
+$(CC_FEATURES): $(GENDIR)
 	@$(NOPYC) scripts/cc-feature.py cmake
 
-mk_defconfig:
+gen-defconf:
 	@$(NOPYC) scripts/kconfig.py alldefconfig
 
-rm_defconfig:
-	@rm $(DEFCONFIG)
+rm-defconf:
+	@rm $(DEFCONF)
 
-reconfdep: $(MK_DEFCONFIG) $(RM_DEFCONFIG)
-	@$(NOPYC) scripts/reconfdep.py $(RELCONFIG) $(RECONFDEP)
+$(DEPCONF):
+	@touch $@
 
-configure: $(CMAKE_CC_FEATURE) reconfdep
+depconfig: $(GEN_DEFCONF) $(RM_DEFCONF) $(DEPCONF)
+	@$(NOPYC) scripts/depconf.py
+
+configure: $(CMAKE_CC_FEATURE) depconfig
 	@cmake -G "$(generator)" -S . -B $(objtree) $(EXTOPT)
 
-lastplat:
+dotplat:
 	@if [ -f $(objtree)/CMakeCache.txt ] &&			\
-	    [ "$$(cat $(LASTPLAT) 2>&1 )" != unix ]; then	\
-		echo unix > $(LASTPLAT);			\
+	    [ "$$(cat $(DOTPLAT) 2>&1)" != $$(uname -o) ]; then	\
+		uname -o >$(DOTPLAT);				\
 	fi
 
-build: lastplat $(RECONFIGURE) $(RERECONFDEP)
+build: dotplat $(RECONFIGURE) $(REDEPCONFIG)
 	@cmake --build $(objtree) --parallel
 
 all: configure build
@@ -104,12 +107,12 @@ clean:
 distclean:
 	@rm -rf include/generated
 	@rm -f include/arch
-	@rm -f $(DOTCONFIG)*
-	@rm -f $(LASTPLAT)
+	@rm -f $(USRCONF)*
+	@rm -f $(DOTPLAT)
 	@git ls-files --directory -o $(objtree) | xargs rm -rf
 
-__tests := $(wildcard $(objtree)/t/*.t)
-tests   := $(patsubst $(objtree)/%,%,$(__tests))
+tests := $(wildcard $(objtree)/t/*.t)
+tests := $(patsubst $(objtree)/%,%,$(tests))
 
 .PHONY: $(tests)
 
@@ -124,8 +127,6 @@ t/all:
 scripts := $(wildcard scripts/*.sh) $(wildcard scripts/*.py)
 args    := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-export $(NOPYC)
-
 .PHONY: $(args)
 
 $(args):
@@ -134,4 +135,4 @@ $(args):
 .PHONY: $(scripts)
 
 $(scripts):
-	@./$@ $(args)
+	@$(NOPYC) ./$@ $(args)

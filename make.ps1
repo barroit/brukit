@@ -40,31 +40,31 @@ export OBJTREE=$SRCTREE/$BUILD_NAME
 export CC=clang.exe
 export LD=ld.lld.exe
 
-export LASTPLAT=$SRCTREE/.lastplat
+export DOTPLAT=$SRCTREE/.platform
 
-export DOTCONFIG=$SRCTREE/.config.win32
-export DEFCONFIG=$DOTCONFIG.def
+export USRCONF=$SRCTREE/.config.win32
+export DEFCONF=$USRCONF.1
 
-if (Test-Path $DOTCONFIG) {
-	$RELCONFIG    = $DOTCONFIG
+if (Test-Path $USRCONF) {
+	$DOTCONF    = $USRCONF
 } else {
-	$RELCONFIG    = $DEFCONFIG
-	$MK_DEFCONFIG = 1
+	$DOTCONF    = $DEFCONF
+	$GEN_DEFCONF = 1
 }
 
-export RELCONFIG=$RELCONFIG
-export KCONFIG_CONFIG=$RELCONFIG
+export DOTCONF=$DOTCONF
+export KCONFIG_CONFIG=$DOTCONF
 
-if (Test-Path $DOTCONFIG) {
-	if (Test-Path $DEFCONFIG) {
+if (Test-Path $USRCONF) {
+	if (Test-Path $DEFCONF) {
 		$RECONFIGURE  = 1
-		$RM_DEFCONFIG = 1
+		$RM_DEFCONF = 1
 	} else {
-		$RERECONFDEP  = 1
+		$REDEPCONFIG  = 1
 	}
 }
 
-export RECONFDEP=$OBJTREE/reconfdep
+export DEPCONF=$OBJTREE/depconf
 
 $__menuconfig = 1 -shl 0
 $__configure  = 1 -shl 1
@@ -75,11 +75,11 @@ $__distclean  = 1 -shl 4
 $__install    = 1 -shl 5
 $__uninstall  = 1 -shl 6
 $__test       = 1 -shl 7
-$__reconfdep  = 1 -shl 8
+$__depconfig  = 1 -shl 8
 
 switch -CaseSensitive ($__target) {
 'menuconfig' { $target = $__menuconfig; break }
-'reconfdep'  { $target = $__reconfdep;  break }
+'depconfig'  { $target = $__depconfig;  break }
 'configure'  { $target = $__configure;  break }
 'build'	     { $target = $__build;      break }
 'all'	     { $target = $__all;        break }
@@ -103,16 +103,20 @@ if ($target -band $__menuconfig) {
 	python scripts/kconfig.py menuconfig
 }
 
-if ($target -band $__reconfdep) {
-	if ($MK_DEFCONFIG) {
+if ($target -band $__depconfig) {
+	if ($GEN_DEFCONF) {
 		python scripts/kconfig.py alldefconfig
 	}
 
-	if ($RM_DEFCONFIG) {
-		Remove-Item -Force $DEFCONFIG
+	if ($RM_DEFCONF) {
+		Remove-Item -Force $DEFCONF
 	}
 
-	python scripts/reconfdep.py $RELCONFIG $RECONFDEP
+	if (!(Test-Path $DEPCONF)) {
+		New-Item $DEPCONF
+	}
+
+	python scripts/depconf.py
 }
 
 if ($target -band $__configure) {
@@ -124,21 +128,21 @@ if ($target -band $__configure) {
 		python scripts/cc-feature.py cmake
 	}
 
-	& $0 reconfdep
+	& $0 depconfig
 	cmake -G Ninja -S . -B $OBJTREE
 }
 
 if ($target -band $__build) {
-	if (!(Test-Path $LASTPLAT) -or (cat $LASTPLAT) -ne 'win32') {
-		echo win32 > $LASTPLAT
+	if (!(Test-Path $DOTPLAT) -or (cat $DOTPLAT) -ne 'win32') {
+		echo win32 > $DOTPLAT
 	}
 
 	if ($RECONFIGURE) {
 		& $0 configure
 	}
 
-	if ($RERECONFDEP) {
-		& $0 reconfdep
+	if ($REDEPCONFIG) {
+		& $0 depconfig
 	}
 
 	cmake --build $OBJTREE --parallel
@@ -149,19 +153,19 @@ if ($target -band $__clean) {
 }
 
 if ($target -band $__distclean) {
-	$dotconfig = Get-ChildItem -Force $env:KCONFIG_CONFIG*
+	$dotconfs = Get-ChildItem -Force $env:KCONFIG_CONFIG*
 	$buildgens = git ls-files --directory -o $BUILD_NAME
 
 	if (Test-Path include/generated) {
 		Remove-Item -Force -Recurse include/generated
 	}
 
-	if ($dotconfig) {
-		Remove-Item -Force $dotconfig
+	if ($dotconfs) {
+		Remove-Item -Force $dotconfs
 	}
 
-	if (Test-Path $LASTPLAT) {
-		Remove-Item -Force $LASTPLAT
+	if (Test-Path $DOTPLAT) {
+		Remove-Item -Force $DOTPLAT
 	}
 
 	if (Test-Path *.manifest) {

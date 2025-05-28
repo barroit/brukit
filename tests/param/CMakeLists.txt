@@ -12,7 +12,7 @@ foreach(name ${prms})
   get_filename_component(name ${name} NAME_WE)
 
   add_executable(${name}.p ${name}.c main.c)
-  add_dependencies(${name}.p genconfig feature)
+  add_dependencies(${name}.p gen-autoconf gen-features)
 
   add_test(NAME prm_${name}
 	   COMMAND ${testcmd} ${prmsrc}/${name}.sh ${prmobj}/${name}.p
