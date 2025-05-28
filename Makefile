@@ -85,7 +85,7 @@ $(DEPCONF):
 depconfig: $(GEN_DEFCONF) $(RM_DEFCONF) $(DEPCONF)
 	@$(NOPYC) scripts/depconf.py
 
-configure: $(CMAKE_CC_FEATURE) depconfig
+configure: $(CC_FEATURES) depconfig
 	@cmake -G "$(generator)" -S . -B $(objtree) $(EXTOPT)
 
 dotplat:
