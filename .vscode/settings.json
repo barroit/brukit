@@ -1,31 +1,31 @@
 {
-	"fileHeaderComment.parameter": {
-		"*": {
-			"license": "GPL-3.0-or-later or MIT",
-			"year": "2025"
-		}
-	},
-	"files.associations": {
-		"*.h": "c",
-		"**/lib/cmake.*": "cmake",
-		"**/LICENSES/**": "plaintext"
-	},
-	"search.exclude": {
-		"**/locale/**": true
-	},
-	"C_Cpp.files.exclude": {
-		"**/sandbox/*": true
-	},
-	"C_Cpp.default.includePath": [
-		"${workspaceFolder}/include"
-	],
-	"C_Cpp.default.forcedInclude": [
-		"${workspaceFolder}/include/generated/autoconf.h",
-		"${workspaceFolder}/include/generated/program.h",
-		"${workspaceFolder}/include/generated/features.h"
-	],
-	"C_Cpp.default.defines": [
-		"_GNU_SOURCE",
-		"HAVE_INTL"
-	]
+   "fileHeaderComment.parameter": {
+      "*": {
+         "license": "GPL-3.0-or-later or MIT",
+         "year": "2025"
+      }
+   },
+   "files.associations": {
+      "*.h": "c",
+      "**/lib/cmake.*": "cmake",
+      "**/LICENSES/**": "plaintext"
+   },
+   "search.exclude": {
+      "**/locale/**": true
+   },
+   "C_Cpp.files.exclude": {
+      "**/sandbox/*": true
+   },
+   "C_Cpp.default.includePath": [
+      "${workspaceFolder}/include"
+   ],
+   "C_Cpp.default.forcedInclude": [
+      "${workspaceFolder}/include/generated/autoconf.h",
+      "${workspaceFolder}/include/generated/program.h",
+      "${workspaceFolder}/include/generated/features.h"
+   ],
+   "C_Cpp.default.defines": [
+      "_GNU_SOURCE",
+      "HAVE_INTL"
+   ]
 }

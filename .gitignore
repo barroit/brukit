@@ -5,13 +5,14 @@
 
 /.config.unix*
 /.config.win32*
+/.platform
 /*.manifest
 
 /build.*/*
+/Documentation/build
 /!build.*/locale
 /!build.*/scripts
 /!build.*/t
-/.platform
 
 /include/generated
 /include/arch
@@ -31,7 +32,6 @@
 *.ico
 *.rc
 *.manifest.in
-!tests/**/main.c
-locale/**/*.mo
+VERSION
 
-/Documentation/build
+/locale/**/*.mo
