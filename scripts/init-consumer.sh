@@ -64,6 +64,12 @@ if [ "$license_new" != "$license_old" ]; then
 	old	$license_old
 	EOF
 
+	if [ "$license_new" = GPL-3.0-or-later ]; then
+		rm LICENSES/MIT
+	elif [ "$license_new" = MIT ]; then
+		rm LICENSES/GPL-3.0-or-later
+	fi
+
 	git add .
 	scripts/fix-license.sh "$license_old" "$license_new"
 fi
