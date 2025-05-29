@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
 ifneq ($(filter extra-prereqs,$(.FEATURES)),extra-prereqs)
-$(error GNU Make >= 4.3 is required. Your Make version is $(MAKE_VERSION))
+  $(error GNU Make >= 4.3 is required. Your Make version is $(MAKE_VERSION))
 endif
 
 MAKEFLAGS += -rR
@@ -26,51 +26,52 @@ export LD := ld.lld
 endif
 
 ifneq ($(MAKEFILE),)
-generator := Unix Makefiles
+  generator := Unix Makefiles
 endif
 
 export DOTPLAT := $(srctree)/.platform
+export DEPCONF := $(objtree)/depconf
 
 export USRCONF := $(srctree)/.config.unix
 export DEFCONF := $(USRCONF).1
 
 ifneq ($(wildcard $(USRCONF)),)
-DOTCONF := $(USRCONF)
+  export DOTCONF := $(USRCONF)
 else
-DOTCONF := $(DEFCONF)
-GEN_DEFCONF := gen-defconf
+  export DOTCONF := $(DEFCONF)
 endif
-
-export DOTCONF
-export KCONFIG_CONFIG := $(DOTCONF)
 
 ifneq ($(wildcard $(USRCONF)),)
-ifneq ($(wildcard $(DEFCONF)),)
-RECONFIGURE := configure
-RM_DEFCONF  := rm-defconf
+  ifneq ($(wildcard $(DEFCONF)),)
+    build_prereq := configure
+    depconfig_prereq  := rm-defconf
+  else
+    build_prereq := depconfig
+  endif
 else
-REDEPCONFIG := depconfig
-endif
+  depconfig_prereq := gen-defconf
 endif
 
-export DEPCONF := $(objtree)/depconf
-
-CC_FEATURES := $(objtree)/features.cmake
+export KCONFIG_CONFIG := $(DOTCONF)
+export PYTHONDONTWRITEBYTECODE := y
 
 build:
 
 .PHONY: menuconfig gen-defconf rm-defconf \
 	depconfig configure dotplat build all
 
-export PYTHONDONTWRITEBYTECODE=y
-
 menuconfig:
 	@scripts/kconfig.py menuconfig
 
-$(GENDIR):
-	@mkdir $@
+$(objtree)/.dir:
+	@mkdir $(objtree)
+	@touch $@
 
-$(CC_FEATURES): $(GENDIR)
+$(gendir)/.dir:
+	@mkdir $(gendir)
+	@touch $@
+
+$(objtree)/features.cmake: $(objtree)/.dir $(gendir)/.dir
 	@scripts/cc-feature.py cmake
 
 gen-defconf:
@@ -79,13 +80,13 @@ gen-defconf:
 rm-defconf:
 	@rm $(DEFCONF)
 
-$(DEPCONF):
+$(objtree)/depconf: $(objtree)/.dir
 	@touch $@
 
-depconfig: $(GEN_DEFCONF) $(RM_DEFCONF) $(DEPCONF)
+depconfig: $(depconfig_prereq) $(objtree)/depconf
 	@scripts/depconf.py
 
-configure: $(CC_FEATURES) depconfig
+configure: $(objtree)/features.cmake depconfig
 	@cmake -G "$(generator)" -S . -B $(objtree) $(EXTOPT)
 
 dotplat:
@@ -94,7 +95,7 @@ dotplat:
 		uname -o >$(DOTPLAT);				\
 	fi
 
-build: dotplat $(RECONFIGURE) $(REDEPCONFIG)
+build: $(build_prereq) dotplat
 	@cmake --build $(objtree) --parallel
 
 all: configure build
@@ -109,7 +110,7 @@ distclean:
 	@rm -f include/arch
 	@rm -f $(USRCONF)*
 	@rm -f $(DOTPLAT)
-	@git ls-files --directory -o $(objtree) | xargs rm -rf
+	@rm -rf $(objtree)
 
 tests := $(wildcard $(objtree)/t/*.t)
 tests := $(patsubst $(objtree)/%,%,$(tests))
