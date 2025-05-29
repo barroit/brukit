@@ -38,6 +38,12 @@ jobs:
 
          - run: pip install sphinx==8.2.3
 
+         - run: ./ubuntu/setup.sh set-current
+           working-directory: barroit
+
+         - run: ./scripts/setup-repo.sh
+           working-directory: master
+
          - run: make html
            working-directory: master/Documentation
 
