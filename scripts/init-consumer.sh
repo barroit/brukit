@@ -54,7 +54,6 @@ fi
 
 cat <<EOF >.pickignore
 .manifest.1
-.program.in.example
 scripts/init-consumer.sh
 EOF
 
