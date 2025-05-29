@@ -1,0 +1,28 @@
+From 73742652cb3aabe9de57646b6ab2d79fb9767fc2 Mon Sep 17 00:00:00 2001
+From: Jiamu Sun <barroit@linux.com>
+Date: Sat, 31 May 2025 08:52:01 +0900
+Subject: [PATCH] build: add brukit.rc
+
+Signed-off-by: Jiamu Sun <barroit@linux.com>
+---
+ brukit.rc | 4 ++++
+ 1 file changed, 4 insertions(+)
+ create mode 100644 brukit.rc
+
+diff --git a/brukit.rc b/brukit.rc
+new file mode 100644
+index 000000000000..c8c00e8d19b3
+--- /dev/null
++++ b/brukit.rc
+@@ -0,0 +1,4 @@
++// SPDX-License-Identifier: GPL-3.0-or-later or MIT
++#include "resource.h"
++
++PROG_ICON	ICON	"cherry.ico"
+
+base-commit: a8620a0f9b94e856647790793654927f06ad8236
+prerequisite-patch-id: 08ef84e2c4433d8d7a10e678ce5e55a1cdb2fa35
+prerequisite-patch-id: cb0d80055a178d22b8ad81029da2496783e3afc5
+-- 
+2.47.0
+

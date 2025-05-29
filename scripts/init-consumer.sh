@@ -37,9 +37,9 @@ eval "$(cat .manifest.1)" >$name.manifest.in
 
 cat <<EOF >$name.rc
 // SPDX-License-Identifier: $license_new
-#include "resdecl.h"
+#include "resource.h"
 
-RES_PROG_ICON	ICON	"$icon"
+PROG_ICON	ICON	"$icon"
 EOF
 
 if ! printf '%s\n' "$conf" | grep -wq no_arch; then
