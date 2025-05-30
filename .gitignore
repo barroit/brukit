@@ -28,6 +28,8 @@
 /tres*
 /build
 
+/scripts/libkit.py
+
 # みくみくにしてあげる♪
 *.ico
 *.rc
