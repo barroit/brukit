@@ -1,0 +1,33 @@
+From 978497d55002814d6a371a8661c3ac512619e652 Mon Sep 17 00:00:00 2001
+From: Jiamu Sun <barroit@linux.com>
+Date: Sat, 31 May 2025 09:02:39 +0900
+Subject: [PATCH] build: add cherry.ico
+
+Signed-off-by: Jiamu Sun <barroit@linux.com>
+---
+ cherry.ico | Bin 0 -> 1150 bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 cherry.ico
+
+diff --git a/cherry.ico b/cherry.ico
+new file mode 100644
+index 0000000000000000000000000000000000000000..1021140a2ea6e572513b7ef5502ede2727ac9008
+GIT binary patch
+literal 1150
+zcmdUsAr8V&5JZQB1Vvgw(8vlB1O|uT0w~VFX}}>-NbUeff#3-e1D{!7o5{~_!4cZL
+z?q+so`_lpq-gyo_dzd$YE`WkiqVm#N0M7pH>a=G;sXM>=ydM?opqQT8VY>RPcWpd4
+zm$Og#*lT-Yt?vD?H+81Ey!!2|F{!L;Ro-mcPkuAcrK)DMPkE~}&slY<ysEo*uvwJ3
+z;dT`a->H7>ZEiWo{Z_x(VLm0^?K9PX*$4jFCmC>P0egkoaR=PUeF<DSyG+RGoniI?
+Dt0B2=
+
+literal 0
+HcmV?d00001
+
+
+base-commit: 077145b9829e515e1a332dd66832824b13c6fafc
+prerequisite-patch-id: b69c4bce5cefb21d457ed4732e68759aa7d80092
+prerequisite-patch-id: cb0d80055a178d22b8ad81029da2496783e3afc5
+prerequisite-patch-id: cd6ccbe58bdd0a0496bb6042a39bf4e0ed68f49b
+-- 
+2.47.0
+

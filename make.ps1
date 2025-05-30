@@ -31,40 +31,42 @@ function export
 	Set-Variable -Scope Script $name $value
 }
 
-$BUILD_NAME = 'build.win32'
+$srctree = ($PSScriptRoot.Replace('\','/'))
+$gendir  = "$srctree/include/generated"
+$objtree = "$srctree/build.win32"
 
-export SRCTREE=$($PSScriptRoot.Replace('\','/'))
-export GENDIR=$SRCTREE/include/generated
-export OBJTREE=$SRCTREE/$BUILD_NAME
+export SRCTREE=$srctree
+export GENDIR=$gendir
+export OBJTREE=$objtree
 
 export CC=clang.exe
 export LD=ld.lld.exe
 
-export DOTPLAT=$SRCTREE/.platform
+export DOTPLAT=$srctree/.platform
 
-export USRCONF=$SRCTREE/.config.win32
+export USRCONF=$srctree/.config.win32
 export DEFCONF=$USRCONF.1
 
 if (Test-Path $USRCONF) {
-	$DOTCONF    = $USRCONF
+	export DOTCONF=$USRCONF
 } else {
-	$DOTCONF    = $DEFCONF
-	$GEN_DEFCONF = 1
+	export DOTCONF=$DEFCONF
 }
-
-export DOTCONF=$DOTCONF
-export KCONFIG_CONFIG=$DOTCONF
 
 if (Test-Path $USRCONF) {
 	if (Test-Path $DEFCONF) {
-		$RECONFIGURE  = 1
-		$RM_DEFCONF = 1
+		$build_prereq  = 'configure'
+		$depconfig_prereq = 'rm-defconf'
+
 	} else {
-		$REDEPCONFIG  = 1
+		$build_prereq  = 'depconfig'
 	}
+
+} else {
+	$depconfig_prereq = 'gen-defconf'
 }
 
-export DEPCONF=$OBJTREE/depconf
+export DEPCONF=$objtree/depconf
 
 $__menuconfig = 1 -shl 0
 $__configure  = 1 -shl 1
@@ -89,9 +91,12 @@ switch -CaseSensitive ($__target) {
 'uninstall'  { $target = $__uninstall;  break }
 }
 
+export KCONFIG_CONFIG=$DOTCONF
+export PYTHONDONTWRITEBYTECODE=y
+
 if (!$target) {
 	switch -Wildcard ($__target) {
-	't/*'       { $target = $__test; break}
+	't/*' { $target = $__test; break}
 	}
 
 	if (!$target) {
@@ -104,32 +109,39 @@ if ($target -band $__menuconfig) {
 }
 
 if ($target -band $__depconfig) {
-	if ($GEN_DEFCONF) {
+	if ($depconfig_prereq -eq 'gen-defconf') {
 		python scripts/kconfig.py alldefconfig
-	}
-
-	if ($RM_DEFCONF) {
-		Remove-Item -Force $DEFCONF
+	} elseif ($depconfig_prereq -eq 'rm-defconf') {
+		if (Test-Path $DEFCONF) {
+			Remove-Item -Force $DEFCONF
+		}
 	}
 
 	if (!(Test-Path $DEPCONF)) {
-		New-Item $DEPCONF
+		if (!(Test-Path $objtree)) {
+			New-Item -ItemType Directory $objtree >NUL
+		}
+		New-Item $DEPCONF >NUL
 	}
 
 	python scripts/depconf.py
 }
 
 if ($target -band $__configure) {
-	if (!(Test-Path $OBJTREE/features.cmake)) {
-		if (!(Test-Path $GENDIR)) {
-			mkdir $GENDIR
+	if (!(Test-Path $objtree/features.cmake)) {
+		if (!(Test-Path $gendir)) {
+			New-Item -ItemType Directory $gendir >NUL
+		}
+
+		if (!(Test-Path $objtree)) {
+			New-Item -ItemType Directory $objtree >NUL
 		}
 
 		python scripts/cc-feature.py cmake
 	}
 
 	& $0 depconfig
-	cmake -G Ninja -S . -B $OBJTREE
+	cmake -G Ninja -S . -B $objtree
 }
 
 if ($target -band $__build) {
@@ -137,53 +149,36 @@ if ($target -band $__build) {
 		echo win32 > $DOTPLAT
 	}
 
-	if ($RECONFIGURE) {
-		& $0 configure
+	switch -CaseSensitive ($build_prereq) {
+	'configure' { & $0 configure; break }
+	'depconfig' { & $0 depconfig; break }
 	}
 
-	if ($REDEPCONFIG) {
-		& $0 depconfig
-	}
-
-	cmake --build $OBJTREE --parallel
+	cmake --build $objtree --parallel
 }
 
 if ($target -band $__clean) {
-	cmake --build $OBJTREE --target clean
+	cmake --build $objtree --target clean
 }
 
 if ($target -band $__distclean) {
-	$dotconfs = Get-ChildItem -Force $env:KCONFIG_CONFIG*
-	$buildgens = git ls-files --directory -o $BUILD_NAME
+	$ErrorActionPreference = 'SilentlyContinue'
 
-	if (Test-Path include/generated) {
-		Remove-Item -Force -Recurse include/generated
-	}
-
-	if ($dotconfs) {
-		Remove-Item -Force $dotconfs
-	}
-
-	if (Test-Path $DOTPLAT) {
-		Remove-Item -Force $DOTPLAT
-	}
-
-	if (Test-Path *.manifest) {
-		Remove-Item -Force *.manifest
-	}
-
-	if ($buildgens) {
-		Remove-Item -Force -Recurse $buildgens
-	}
+	Remove-Item -Force -Recurse include/generated
+	Remove-Item -Force $USRCONF*
+	Remove-Item -Force $DOTPLAT
+	Remove-Item -Force *.manifest
+	Remove-Item -Force -Recurse $objtree
 }
 
 $cpus = $env:NUMBER_OF_PROCESSORS
 
 if ($target -band $__test) {
 	if ($__target -eq 't/all') {
-		ctest --test-dir $OBJTREE/tests --parallel $cpus
+		ctest --test-dir $objtree/tests --parallel $cpus
+
 	} else {
-		$t = "$OBJTREE/$__target.exe"
+		$t = "$objtree/$__target.exe"
 
 		if (!(Test-Path $t)) {
 			error "not a test '$t'"
