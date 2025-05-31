@@ -76,7 +76,7 @@ rm brukit
 
 scripts/setup-repo.sh
 
-make scripts/build-locale.sh
+make scripts/bump-locale.sh
 
 git add .
 git commit -sm 'INITIAL CONSUMER'

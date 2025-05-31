@@ -8,15 +8,15 @@
 /.platform
 /*.manifest
 
+/build
 /build.*/*
 /Documentation/build
-/!build.*/locale
-/!build.*/scripts
-/!build.*/t
 
 /include/generated
 /include/arch
 
+/tres
+/tres.*
 /tests/unit/unitest.h
 
 /locale/*~
@@ -24,9 +24,6 @@
 /locale/messages.po
 
 /EastAsianWidth.txt
-
-/tres*
-/build
 
 /scripts/libkit.py
 
