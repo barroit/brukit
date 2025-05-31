@@ -1,21 +1,25 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
+$ErrorActionPreference = 'Stop'
+
 try {
 	New-Item -ItemType SymbolicLink -Force -Target .39 .miku >NUL
 	Remove-Item .miku
 
 	$symlink_enabled = $true
+
 } catch {
 	$symlink_enabled = $false
 }
 
-$ErrorActionPreference = 'Stop'
-
-if ($symlink_enabled) {
-	New-Item -ItemType SymbolicLink -Force `
-		 -Target ../../barroit/current/libkit.py scripts/libkit.py
-} else {
-	git apply fixes/scripts-libkit-py-port-use-local-copy.patch
+if (!(Test-Path scripts/libkit.py)) {
+	if ($symlink_enabled) {
+		New-Item -ItemType SymbolicLink -Force `
+			 -Target ../../barroit/current/libkit.py `
+			 scripts/libkit.py
+	} else {
+		git apply fixes/scripts-add-libkit-py.patch
+	}
 }
 
 if ($symlink_enabled) {
