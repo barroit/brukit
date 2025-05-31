@@ -112,28 +112,25 @@ distclean:
 	@rm -f $(DOTPLAT)
 	@rm -rf $(objtree)
 
-tests := $(wildcard $(objtree)/t/*.t)
-tests := $(patsubst $(objtree)/%,%,$(tests))
+test_src := $(wildcard $(objtree)/tests/unit/*.t $(objtree)/tests/param/*.p)
+test := $(patsubst $(objtree)/tests/%,%,$(test_src))
 
-.PHONY: $(tests)
+.PHONY: tests $(test)
 
-$(tests):
-	@$(objtree)/$@
-
-.PHONY: t/all
-
-t/all:
+tests:
 	@ctest --test-dir $(objtree)/tests --parallel $(shell nproc)
 
-scripts := $(wildcard scripts/*.sh) $(wildcard scripts/*.py)
-args    := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+$(test):
+	@$(objtree)/tests/$@
 
-.PHONY: $(args)
+scripts_src := $(wildcard $(srctree)/scripts/*.sh $(srctree)/scripts/*.py)
+scripts := $(patsubst $(srctree)/%,%,$(scripts_src))
+args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+
+.PHONY: $(args) $(scripts)
 
 $(args):
 	@:
-
-.PHONY: $(scripts)
 
 $(scripts):
 	@./$@ $(args)

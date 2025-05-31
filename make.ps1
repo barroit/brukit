@@ -1,16 +1,42 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
-# Using PowerShell feels like shoving a cactus up your ass. This is what
-# you get when you let a bunch of clueless idiots design a language. It's
-# a fucking nightmare dressed as a tool.
+
+# PowerShell is just cargo cult junk. They shoved every damn thing into some
+# object-pissing pipeline. It's bloated, slow, and forgot it's supposed to be a
+# shell. You can't pipe, can't grep, can't script without wading through layers
+# of .NET trash.
 
 #requires -version 6
 
 param
 (
-	[ArgumentCompletions('menuconfig', 'configure', 'build', 'all',`
+	# Ugly, but no other way in dumbass pwsh.
+	[ArgumentCompletions('menuconfig', 'depconfig', 'configure', `
+			     'build', 'all', 'tests', 'unit', 'param', `
 			     'clean', 'distclean', 'install', 'uninstall')]
-	[string]$__target = 'build'
+	[string]$1 = 'build',
+	[ArgumentCompletions('menuconfig', 'depconfig', 'configure', `
+			     'build', 'all', 'tests', 'unit', 'param', `
+			     'clean', 'distclean', 'install', 'uninstall')]
+	[string]$2 = '',
+	[ArgumentCompletions('menuconfig', 'depconfig', 'configure', `
+			     'build', 'all', 'tests', 'unit', 'param', `
+			     'clean', 'distclean', 'install', 'uninstall')]
+	[string]$3 = '',
+	[ArgumentCompletions('menuconfig', 'depconfig', 'configure', `
+			     'build', 'all', 'tests', 'unit', 'param', `
+			     'clean', 'distclean', 'install', 'uninstall')]
+	[string]$4 = '',
+	[ArgumentCompletions('menuconfig', 'depconfig', 'configure', `
+			     'build', 'all', 'tests', 'unit', 'param', `
+			     'clean', 'distclean', 'install', 'uninstall')]
+	[string]$5 = '',
+	[ArgumentCompletions('menuconfig', 'depconfig', 'configure', `
+			     'build', 'all', 'tests', 'unit', 'param', `
+			     'clean', 'distclean', 'install', 'uninstall')]
+	[string]$6 = ''
 )
+
+$argv = @($1, $2, $3, $4, $5, $6) + $args | Where-Object { $_ }
 
 $ErrorActionPreference = 'Stop'
 
@@ -78,31 +104,51 @@ $__install    = 1 -shl 5
 $__uninstall  = 1 -shl 6
 $__test       = 1 -shl 7
 $__depconfig  = 1 -shl 8
+$__test_all   = 1 -shl 9
 
-switch -CaseSensitive ($__target) {
-'menuconfig' { $target = $__menuconfig; break }
-'depconfig'  { $target = $__depconfig;  break }
-'configure'  { $target = $__configure;  break }
-'build'	     { $target = $__build;      break }
-'all'	     { $target = $__all;        break }
-'clean'	     { $target = $__clean;      break }
-'distclean'  { $target = $__distclean;  break }
-'install'    { $target = $__install;    break }
-'uninstall'  { $target = $__uninstall;  break }
+$target = 0
+$tests = @()
+
+foreach ($arg in $argv) {
+	$__target = 0
+
+	switch -CaseSensitive ($arg) {
+	'menuconfig' { $__target = $__menuconfig; break }
+	'depconfig'  { $__target = $__depconfig;  break }
+	'configure'  { $__target = $__configure;  break }
+	'build'	     { $__target = $__build;      break }
+	'all'	     { $__target = $__all;        break }
+	'clean'	     { $__target = $__clean;      break }
+	'distclean'  { $__target = $__distclean;  break }
+	'install'    { $__target = $__install;    break }
+	'uninstall'  { $__target = $__uninstall;  break }
+	'tests'      { $__target = $__test_all;   break }
+	}
+
+	if ($target -band $__target) {
+		error "overriding recipe for target '$arg'"
+	}
+
+	if (!$__target -and `
+	    (($arg -like 'unit/*') -or ($arg -like 'param/*'))) {
+		$file = "$objtree/tests/$arg.exe"
+
+		if (Test-Path $file) {
+			$__target = $__test
+
+			$tests += $file
+		}
+	}
+
+	if (!$__target) {
+		error "no rule to make target '$arg'"
+	}
+
+	$target = $target -bor $__target
 }
 
 export KCONFIG_CONFIG=$DOTCONF
 export PYTHONDONTWRITEBYTECODE=y
-
-if (!$target) {
-	switch -Wildcard ($__target) {
-	't/*' { $target = $__test; break}
-	}
-
-	if (!$target) {
-		error "unknown target '$__target'"
-	}
-}
 
 if ($target -band $__menuconfig) {
 	python scripts/kconfig.py menuconfig
@@ -171,19 +217,12 @@ if ($target -band $__distclean) {
 	Remove-Item -Force -Recurse $objtree
 }
 
-$cpus = $env:NUMBER_OF_PROCESSORS
+if ($target -band $__test_all) {
+	ctest --test-dir $objtree/tests --parallel $env:NUMBER_OF_PROCESSORS
+}
 
 if ($target -band $__test) {
-	if ($__target -eq 't/all') {
-		ctest --test-dir $objtree/tests --parallel $cpus
-
-	} else {
-		$t = "$objtree/$__target.exe"
-
-		if (!(Test-Path $t)) {
-			error "not a test '$t'"
-		}
-
-		& $t
+	foreach ($test in $tests) {
+		& $test
 	}
 }
