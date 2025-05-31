@@ -1,5 +1,10 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
+#
+# You must execute this script via:
+#
+#	make bump-locale.sh
+#
 
 set -e
 
@@ -10,7 +15,7 @@ note 'preparing source files ...'
 export MAKEFILE=1
 
 make distclean
-make configure EXTOPT='-DCMAKE_C_FLAGS="-E -C -DINTL_PREP_MO"' >/dev/null
+make configure CMAKEFLAGS='-DCMAKE_C_FLAGS="-E -C -DINTL_PREP_MO"' >/dev/null
 make dotplat
 
 cd build.unix

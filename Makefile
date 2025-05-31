@@ -11,22 +11,27 @@ srctree := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 gendir  := $(srctree)/include/generated
 objtree := $(srctree)/build.unix
 
-generator := Ninja
-
 export SRCTREE := $(srctree)
 export GENDIR  := $(gendir)
 export OBJTREE := $(objtree)
 
-export CC := gcc
-export LD := ld.bfd
+ifneq ($(wildcard $(objtree)/tools),)
+  export CC := $(shell grep CC $(objtree)/tools | cut -f2)
+  export LD := $(shell grep LD $(objtree)/tools | cut -f2)
+  export MK := $(shell grep MK $(objtree)/tools | cut -f2)
+else
+  export CC := gcc
+  export LD := ld.bfd
+  export MK := Ninja
+endif
 
 ifneq ($(LLVM),)
-export CC := clang
-export LD := ld.lld
+  export CC := clang
+  export LD := ld.lld
 endif
 
 ifneq ($(MAKEFILE),)
-  generator := Unix Makefiles
+  export MK := Unix Makefiles
 endif
 
 export DOTPLAT := $(srctree)/.platform
@@ -60,9 +65,6 @@ build:
 .PHONY: menuconfig gen-defconf rm-defconf \
 	depconfig configure dotplat build all
 
-menuconfig:
-	@scripts/kconfig.py menuconfig
-
 $(objtree)/.dir:
 	@mkdir $(objtree)
 	@touch $@
@@ -71,10 +73,18 @@ $(gendir)/.dir:
 	@mkdir $(gendir)
 	@touch $@
 
+$(objtree)/tools: $(objtree)/.dir
+	@printf '%s\t%s\n' CC "$(CC)" >$@
+	@printf '%s\t%s\n' LD "$(LD)" >>$@
+	@printf '%s\t%s\n' MK "$(MK)" >>$@
+
+menuconfig: $(objtree)/tools
+	@scripts/kconfig.py menuconfig
+
 $(objtree)/features.cmake: $(objtree)/.dir $(gendir)/.dir
 	@scripts/cc-feature.py cmake
 
-gen-defconf:
+gen-defconf: $(objtree)/tools
 	@scripts/kconfig.py alldefconfig
 
 rm-defconf:
@@ -86,8 +96,11 @@ $(objtree)/depconf: $(objtree)/.dir
 depconfig: $(depconfig_prereq) $(objtree)/depconf
 	@scripts/depconf.py
 
-configure: $(objtree)/features.cmake depconfig
-	@cmake -G "$(generator)" -S . -B $(objtree) $(EXTOPT)
+$(objtree)/flags: $(objtree)/.dir
+	@printf '%s\n' '$(CMAKEFLAGS)' >$@
+
+configure: $(objtree)/features.cmake depconfig $(objtree)/flags
+	@cmake -G '$(MK)' -S . -B $(objtree) $(shell cat $(objtree)/flags)
 
 dotplat:
 	@if [ -f $(objtree)/CMakeCache.txt ] &&			\
