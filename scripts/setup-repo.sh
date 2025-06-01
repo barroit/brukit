@@ -14,6 +14,9 @@ ln -sf build.unix/tests/Testing/Temporary/LastTest.log tres.unix
 ln -sf tres.unix tres
 ln -sf build.unix build
 
+mkdir -p share
+ln -snf ../locale share/locale
+
 if [ -f brukit ]; then
 	ln -sf VERSION.1 VERSION
 fi

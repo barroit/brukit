@@ -64,8 +64,7 @@ export PYTHONDONTWRITEBYTECODE := y
 
 build:
 
-.PHONY: menuconfig gen-defconf rm-defconf \
-	depconfig configure dotplat build all dump-flags
+.PHONY: menuconfig
 
 $(objtree)/.dir:
 	@mkdir $(objtree)
@@ -82,6 +81,9 @@ $(objtree)/tools: $(objtree)/.dir
 
 menuconfig: $(objtree)/tools
 	@scripts/kconfig.py menuconfig
+
+.PHONY: gen-defconf rm-defconf depconfig \
+	dump-flags configure dotplat build all
 
 $(objtree)/features.cmake: $(objtree)/.dir $(gendir)/.dir
 	@scripts/cc-feature.py cmake
@@ -114,6 +116,14 @@ build: $(build_prereq) dotplat
 	@cmake --build $(objtree) --parallel
 
 all: configure build
+
+.PHONY: install uninstall
+
+install:
+	@cmake --install $(objtree)
+
+uninstall:
+	@xargs rm -vf <$(objtree)/install_manifest.txt
 
 .PHONY: clean distclean
 

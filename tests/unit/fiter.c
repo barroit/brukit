@@ -51,7 +51,7 @@ UT_ROUTINE(fiter)
 	uint i;
 
 	idx_for_each(i, sizeof_array(flags)) {
-		int err = fiter(ws, cb, NULL, FI_RECUR_DIR);
+		int err = fiter(ws, cb, NULL, i);
 
 		UA_NOT(err);
 	}

@@ -35,7 +35,7 @@ src=$(find ../build.unix/CMakeFiles -type f -name '*.i')
 
 cat <<EOF >.lang.$$
 zh_CN
-ja_JP
+ja
 EOF
 trap "rm $PWD/.lang.$$" EXIT
 

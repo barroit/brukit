@@ -203,6 +203,16 @@ if ($target -band $__build) {
 	cmake --build $objtree --parallel
 }
 
+if ($target -band $__install) {
+	cmake --install $objtree
+}
+
+if ($target -band $__uninstall) {
+	Get-Content $objtree/install_manifest.txt | ForEach-Object {
+		Remove-Item -Force -Verbose $_
+	}
+}
+
 if ($target -band $__clean) {
 	cmake --build $objtree --target clean
 }

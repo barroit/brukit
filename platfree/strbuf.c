@@ -296,12 +296,20 @@ void sb_pth_reinit(struct strbuf **__sb, const xchar *name)
 	__pw_init(pw, sb->buf, sb->len, sb->buf, 0);
 }
 
-void sb_pth_destroy(struct strbuf **__sb)
+xchar *sb_pth_detach(struct strbuf **__sb)
 {
 	struct strbuf *sb = *__sb;
+	xchar *ret = sb->buf;
 
-	free(sb->buf);
 	free(sb);
+	return ret;
+}
+
+void sb_pth_destroy(struct strbuf **sb)
+{
+	xchar *buf = sb_pth_detach(sb);
+
+	free(buf);
 }
 
 static void __sb_pth_add_no_sep(struct strbuf *sb, const xchar *name, uint len)

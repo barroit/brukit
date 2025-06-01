@@ -96,6 +96,8 @@ void sb_pth_init(struct strbuf **sb, const xchar *name);
 
 void sb_pth_reinit(struct strbuf **sb, const xchar *name);
 
+xchar *sb_pth_detach(struct strbuf **sb);
+
 void sb_pth_destroy(struct strbuf **sb);
 
 uint sb_pth_push_cwd(struct strbuf *sb, const xchar *name);
