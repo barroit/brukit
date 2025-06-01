@@ -1,1 +1,0 @@
-../../barroit/scripts/merge-upstream.sh
