@@ -199,16 +199,16 @@ if(WIN32)
 			  _CRT_SECURE_NO_WARNINGS)
 endif()
 
-install(TARGETS ${exec_name} DESTINATION .)
+install(TARGETS ${exec_name} DESTINATION bin)
 
 if(CONFIG_ENABLE_I18N)
-  install(DIRECTORY locale DESTINATION locale
-	  FILES_MATCHING PATTERN *.mo PERMISSIONS OWNER_READ)
+  install(DIRECTORY ${srctree}/locale/
+	  DESTINATION share/locale FILES_MATCHING PATTERN *.mo)
 endif()
 
 if(WIN32)
-  file(GLOB dll ${CMAKE_BINARY_DIR}/*.dll)
-  install(FILES ${dll} DESTINATION .)
+  file(GLOB dll ${objtree}/*.dll)
+  install(FILES ${dll} DESTINATION bin)
 endif()
 
 if(CONFIG_ENABLE_TEST)

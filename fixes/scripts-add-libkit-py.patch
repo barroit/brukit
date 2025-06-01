@@ -1,0 +1,87 @@
+From c9be3bb93c6ee4663bb17cb0e21d8d01511018f2 Mon Sep 17 00:00:00 2001
+From: Jiamu Sun <barroit@linux.com>
+Date: Sat, 31 May 2025 11:20:19 +0900
+Subject: [PATCH] scripts: add libkit.py
+
+Signed-off-by: Jiamu Sun <barroit@linux.com>
+---
+ scripts/libkit.py | 64 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
+ create mode 100644 scripts/libkit.py
+
+diff --git a/scripts/libkit.py b/scripts/libkit.py
+new file mode 100644
+index 000000000000..5cabade62165
+--- /dev/null
++++ b/scripts/libkit.py
+@@ -0,0 +1,64 @@
++#!/usr/bin/python3
++# SPDX-License-Identifier: GPL-3.0-or-later
++
++import time
++
++from os import chdir,		\
++	       devnull,		\
++	       environ as env,	\
++	       getcwd as pwd,	\
++	       getpid,		\
++	       mkdir,		\
++	       path,		\
++	       unlink
++
++from subprocess import run as execl,	\
++		       DEVNULL
++
++from sys import argv,		\
++		exit,		\
++		stdout,		\
++		stderr
++
++realpath = path.abspath
++basename = path.basename
++dirname = path.dirname
++isfile = path.isfile
++isdir = path.isdir
++islink = path.islink
++
++argc = len(argv)
++
++BOLD='\033[1m'
++RED='\033[31m'
++YELLOW='\033[33m'
++GREEN='\033[32m'
++CYAN='\033[36m'
++WHITE='\033[37m'
++RESET='\033[0m'
++
++def current():
++	return time.monotonic()
++
++def log(*args):
++	print(f"{BOLD}{GREEN}[{current()}]{RESET}", *args)
++
++def note(*args):
++	print(f"{BOLD}{CYAN}note:{RESET}", *args)
++
++def warn(*args):
++	print(f"{BOLD}{YELLOW}warn:{RESET}", *args, file = stderr)
++	return -1
++
++def error(*args):
++	print(f"{BOLD}{RED}error:{RESET}", *args, file = stderr)
++	return -1
++
++def die(*args):
++	print(f"{BOLD}{RED}fatal:{RESET}", *args, file = stderr)
++	exit(128)
++
++def env_or_die(name):
++	if not name in env:
++		die(f"missing env '{name}'")
++	return env[name]
+
+base-commit: 956c87ceead286f5a37cedd027774db6ddb05303
+prerequisite-patch-id: ea75f60a5096b35e238d6df19f4542c4110c2fda
+-- 
+2.47.0
+

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later or MIT
 
 ifneq ($(filter extra-prereqs,$(.FEATURES)),extra-prereqs)
-$(error GNU Make >= 4.3 is required. Your Make version is $(MAKE_VERSION))
+  $(error GNU Make >= 4.3 is required. Your Make version is $(MAKE_VERSION))
 endif
 
 MAKEFLAGS += -rR
@@ -11,82 +11,100 @@ srctree := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 gendir  := $(srctree)/include/generated
 objtree := $(srctree)/build.unix
 
-generator := Ninja
+CMAKEFLAGS ?= $(shell cat $(objtree)/flags 2>/dev/null)
 
 export SRCTREE := $(srctree)
 export GENDIR  := $(gendir)
 export OBJTREE := $(objtree)
 
-export CC := gcc
-export LD := ld.bfd
+ifneq ($(wildcard $(objtree)/tools),)
+  export CC := $(shell grep CC $(objtree)/tools | cut -f2)
+  export LD := $(shell grep LD $(objtree)/tools | cut -f2)
+  export MK := $(shell grep MK $(objtree)/tools | cut -f2)
+else
+  export CC := gcc
+  export LD := ld.bfd
+  export MK := Ninja
+endif
 
 ifneq ($(LLVM),)
-export CC := clang
-export LD := ld.lld
+  export CC := clang
+  export LD := ld.lld
 endif
 
 ifneq ($(MAKEFILE),)
-generator := Unix Makefiles
+  export MK := Unix Makefiles
 endif
 
 export DOTPLAT := $(srctree)/.platform
+export DEPCONF := $(objtree)/depconf
 
 export USRCONF := $(srctree)/.config.unix
 export DEFCONF := $(USRCONF).1
 
 ifneq ($(wildcard $(USRCONF)),)
-DOTCONF := $(USRCONF)
+  export DOTCONF := $(USRCONF)
 else
-DOTCONF := $(DEFCONF)
-GEN_DEFCONF := gen-defconf
+  export DOTCONF := $(DEFCONF)
 endif
-
-export DOTCONF
-export KCONFIG_CONFIG := $(DOTCONF)
 
 ifneq ($(wildcard $(USRCONF)),)
-ifneq ($(wildcard $(DEFCONF)),)
-RECONFIGURE := configure
-RM_DEFCONF  := rm-defconf
+  ifneq ($(wildcard $(DEFCONF)),)
+    build_prereq := configure
+    depconfig_prereq  := rm-defconf
+  else
+    build_prereq := depconfig
+  endif
 else
-REDEPCONFIG := depconfig
-endif
+  depconfig_prereq := gen-defconf
 endif
 
-export DEPCONF := $(objtree)/depconf
-
-CC_FEATURES := $(objtree)/features.cmake
+export KCONFIG_CONFIG := $(DOTCONF)
+export PYTHONDONTWRITEBYTECODE := y
 
 build:
 
-.PHONY: menuconfig gen-defconf rm-defconf \
-	depconfig configure dotplat build all
+.PHONY: menuconfig
 
-export PYTHONDONTWRITEBYTECODE=y
+$(objtree)/.dir:
+	@mkdir $(objtree)
+	@touch $@
 
-menuconfig:
+$(gendir)/.dir:
+	@mkdir $(gendir)
+	@touch $@
+
+$(objtree)/tools: $(objtree)/.dir
+	@printf '%s\t%s\n' CC "$(CC)" >$@
+	@printf '%s\t%s\n' LD "$(LD)" >>$@
+	@printf '%s\t%s\n' MK "$(MK)" >>$@
+
+menuconfig: $(objtree)/tools
 	@scripts/kconfig.py menuconfig
 
-$(GENDIR):
-	@mkdir $@
+.PHONY: gen-defconf rm-defconf depconfig \
+	dump-flags configure dotplat build all
 
-$(CC_FEATURES): $(GENDIR)
+$(objtree)/features.cmake: $(objtree)/.dir $(gendir)/.dir
 	@scripts/cc-feature.py cmake
 
-gen-defconf:
+gen-defconf: $(objtree)/tools
 	@scripts/kconfig.py alldefconfig
 
 rm-defconf:
 	@rm $(DEFCONF)
 
-$(DEPCONF):
+$(objtree)/depconf: $(objtree)/.dir
 	@touch $@
 
-depconfig: $(GEN_DEFCONF) $(RM_DEFCONF) $(DEPCONF)
+depconfig: $(depconfig_prereq) $(objtree)/depconf
 	@scripts/depconf.py
 
-configure: $(CC_FEATURES) depconfig
-	@cmake -G "$(generator)" -S . -B $(objtree) $(EXTOPT)
+dump-flags: $(objtree)/.dir
+	@printf '%s\n' '$(CMAKEFLAGS)' >$(objtree)/flags
+
+configure: $(objtree)/features.cmake depconfig dump-flags
+	@cmake -G '$(MK)' -S . -B $(objtree) $(CMAKEFLAGS)
 
 dotplat:
 	@if [ -f $(objtree)/CMakeCache.txt ] &&			\
@@ -94,10 +112,18 @@ dotplat:
 		uname -o >$(DOTPLAT);				\
 	fi
 
-build: dotplat $(RECONFIGURE) $(REDEPCONFIG)
+build: $(build_prereq) dotplat
 	@cmake --build $(objtree) --parallel
 
 all: configure build
+
+.PHONY: install uninstall
+
+install:
+	@cmake --install $(objtree)
+
+uninstall:
+	@xargs rm -vf <$(objtree)/install_manifest.txt
 
 .PHONY: clean distclean
 
@@ -109,30 +135,27 @@ distclean:
 	@rm -f include/arch
 	@rm -f $(USRCONF)*
 	@rm -f $(DOTPLAT)
-	@git ls-files --directory -o $(objtree) | xargs rm -rf
+	@rm -rf $(objtree)
 
-tests := $(wildcard $(objtree)/t/*.t)
-tests := $(patsubst $(objtree)/%,%,$(tests))
+test_src := $(wildcard $(objtree)/tests/unit/*.t $(objtree)/tests/param/*.p)
+test := $(patsubst $(objtree)/tests/%,%,$(test_src))
 
-.PHONY: $(tests)
+.PHONY: tests $(test)
 
-$(tests):
-	@$(objtree)/$@
-
-.PHONY: t/all
-
-t/all:
+tests:
 	@ctest --test-dir $(objtree)/tests --parallel $(shell nproc)
 
-scripts := $(wildcard scripts/*.sh) $(wildcard scripts/*.py)
-args    := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+$(test):
+	@$(objtree)/tests/$@
 
-.PHONY: $(args)
+scripts_src := $(wildcard $(srctree)/scripts/*.sh $(srctree)/scripts/*.py)
+scripts := $(patsubst $(srctree)/%,%,$(scripts_src))
+args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+
+.PHONY: $(args) $(scripts)
 
 $(args):
 	@:
-
-.PHONY: $(scripts)
 
 $(scripts):
 	@./$@ $(args)

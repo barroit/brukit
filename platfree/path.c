@@ -15,12 +15,14 @@ const xchar *pth_prefix(void)
 	static xchar *name;
 
 	if (unlikely(!name)) {
-		const xchar *child = pth_executable();
-		struct strbuf sb = SB_INIT;
+		const xchar *program = pth_executable();
+		struct strbuf *sb;
 
-		sb_puts(&sb, child);
-		sb_pth_legacy_to_dirname(&sb);
-		name = sb_detach(&sb);
+		sb_pth_init(&sb, program);
+		sb_pth_pop(sb);
+		sb_pth_pop(sb);
+
+		name = sb_pth_detach(&sb);
 	}
 
 	return name;
@@ -32,11 +34,12 @@ const xchar *pth_locale(void)
 
 	if (unlikely(!name)) {
 		const xchar *prefix = pth_prefix();
-		struct strbuf sb = SB_INIT;
+		struct strbuf *sb;
 
-		sb_puts(&sb, prefix);
-		sb_pth_legacy_append(&sb, XC("locale"));
-		name = sb_detach(&sb);
+		sb_pth_init(&sb, prefix);
+		sb_pth_push(sb, XC("share/locale"));
+
+		name = sb_pth_detach(&sb);
 	}
 
 	return name;
