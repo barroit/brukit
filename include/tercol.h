@@ -6,7 +6,7 @@
 #ifndef NG39_TERCOL_H
 #define NG39_TERCOL_H
 
-#include "gettext.h"
+#include "i18n.h"
 
 /*
  * \033[<attributes>;<foreground>;<background>m

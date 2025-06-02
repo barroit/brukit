@@ -8,7 +8,7 @@ menuconfig ENABLE_I18N
 if ENABLE_I18N
 
 config TEXT_DOMAIN_NAME
-	string "Text domain name for gettext"
+	string "Text domain of gettext"
 	default $(pg-name)
 
 endif # ENABLE_I18N

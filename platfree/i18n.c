@@ -5,7 +5,7 @@
  * This file is compiled only when CONFIG_ENABLE_I18N is enabled.
  */
 
-#include "gettext.h"
+#include "i18n.h"
 
 #include <errno.h>
 #include <locale.h>
