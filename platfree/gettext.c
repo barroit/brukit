@@ -15,12 +15,6 @@
 #include "init.h"
 #include "path.h"
 
-#ifdef CONFIG_ENABLE_CUSTOM_TEXT_LOCALE
-# define TEXT_LOCALE CONFIG_CUSTOM_TEXT_LOCALE
-#else
-# define TEXT_LOCALE ""
-#endif
-
 const char *__gettext(const char *masid)
 {
 	int errnum = errno;
@@ -32,10 +26,7 @@ const char *__gettext(const char *masid)
 
 static const char *user_locale(void)
 {
-	const char *lang = TEXT_LOCALE;
-
-	if (*lang)
-		return lang;
+	const char *lang;
 
 	lang = getenv("LANGUAGE");
 	if (lang)
