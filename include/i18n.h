@@ -11,23 +11,20 @@
 
 #include "compiler.h"
 
-const char *__gettext(const char *id);
-
-void __gettext_init(void);
+#ifdef CONFIG_DEBUG_INTL
+# define _INTL_REDIRECT_INLINE
+#endif
 
 #ifdef HAVE_INTL
-# ifdef CONFIG_DEBUG_INTL
-#  define _INTL_REDIRECT_INLINE
-# endif
 # include <libintl.h>
 # define _(masid) __gettext(masid)
-# define gettext_init __gettext_init
 #else
 # define _(masid) masid
-# define gettext_init NOOP
 #endif
 
 #define N_(masid) masid
+
+const char *__gettext(const char *id);
 
 #endif /* INTL_PREP_MO */
 #endif /* NG39_I18N_H */

@@ -1,25 +1,37 @@
 {
    "configurations": [
       {
-         "name": "gcc",
+         "name": "linux-gcc",
          "intelliSenseMode": "linux-gcc-x64",
-         "compilerPath": "${env:HOME}/.local/bin/gcc"
+         "compilerPath": "${env:HOME}/.local/bin/gcc",
+         "includePath": [
+            "${default}",
+            "${workspaceFolder}/linux"
+         ]
       },
       {
-         "name": "mingw64",
+         "name": "linux-mingw64",
+         "intelliSenseMode": "windows-gcc-x64",
+         "compilerPath": "/usr/bin/x86_64-w64-mingw32-gcc",
          "defines": [
             "${default}",
             "NTDDI_WIN7",
             "WINVER=_WIN32_WINNT_WIN7",
             "_WIN32_WINNT=_WIN32_WINNT_WIN7"
          ],
-         "intelliSenseMode": "windows-gcc-x64",
-         "compilerPath": "/usr/bin/x86_64-w64-mingw32-gcc"
+         "includePath": [
+            "${default}",
+            "${workspaceFolder}/win32"
+         ]
       },
       {
-         "name": "clang",
+         "name": "macos-clang",
          "intelliSenseMode": "macos-clang-arm64",
-         "compilerPath": "/opt/homebrew/opt/llvm/bin/clang"
+         "compilerPath": "/opt/homebrew/opt/llvm/bin/clang",
+         "includePath": [
+            "${default}",
+            "${workspaceFolder}/darwin"
+         ]
       }
    ],
    "version": 4
