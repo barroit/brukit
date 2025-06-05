@@ -137,6 +137,9 @@ void __noreturn param_show_help(const char **usage,
 	.flags  = OPT_NO_ARG | (f),	\
 }
 
+#define OPT_FLAG(s, l, p, h) __OPT_FLAG(s, l, p, h, 0)
+#define __OPT_FLAG(s, l, p, h, f) __OPT_SWITCH(s, l, p, h, f | OPT_NO_NEG)
+
 #define OPT_NUMBER(s, l, p, h) __OPT_NUMBER(s, l, p, h, 0)
 #define __OPT_NUMBER(s, l, p, h, f) {	\
 	.mode   = OPTION_NUMBER,	\

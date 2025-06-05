@@ -12,7 +12,8 @@
 
 static const char *usage[] = {
 	PROGRAM_NAME " [--termas <dest> | --no-termas] [--no-tercol]"
-		     " [--show-ts] [--show-pid] <command> [<args>]",
+		     " [--show-ts] [--show-pid] [--verbose]"
+		     " <command> [<args>]",
 	NULL,
 	NULL,
 };
@@ -20,14 +21,19 @@ static const char *usage[] = {
 static cmd_cb subcmd;
 
 static struct opt opts[] = {
-	__OPT_STRING(0, "termas", &udef_termas_dest,
-		     N_("specify output destination"), 0),
+	OPT_GROUP(N_("Format options:")),
 	OPT_SWITCH(0, "tercol", &udef_use_tercol,
 		   N_("enable colorized terminal output")),
-	__OPT_SWITCH(0, "show-ts", &udef_termas_ts,
-		     N_("prefix messages with timestamp"), OPT_NO_NEG),
-	__OPT_SWITCH(0, "show-pid", &udef_termas_pid,
-		     N_("prefix messages with current PID"), OPT_NO_NEG),
+	OPT_FLAG(0, "show-ts", &udef_termas_ts,
+		N_("prefix messages with timestamp")),
+	OPT_FLAG(0, "show-pid", &udef_termas_pid,
+		N_("prefix messages with current PID")),
+
+	OPT_GROUP(N_("Output options:")),
+	__OPT_STRING(0, "termas", &udef_termas_dest,
+		     N_("specify output destination"), 0),
+	OPT_FLAG(0, "verbose", &udef_verbose,
+		N_("verbose output")),
 	OPT_COMMAND("version", &subcmd, cmd_version),
 	OPT_END(),
 };

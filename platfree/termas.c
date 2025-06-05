@@ -21,9 +21,18 @@
 #include "timestamp.h"
 #include "udef.h"
 
-struct tm_tag {
+struct tag {
 	const char *name;
 	const char *colored;
+};
+
+static struct tag tags[] = {
+	[TM_LOG]   = { NULL, NULL },
+	[TM_HINT]  = { N_("hint:"),  HN_("hint:",  BOLD, YELLOW) },
+	[TM_WARN]  = { N_("warn:"),  HN_("warn:",  BOLD, MAGENTA) },
+	[TM_ERROR] = { N_("error:"), HN_("error:", BOLD, RED) },
+	[TM_FATAL] = { N_("fatal:"), HN_("fatal:", BOLD, RED) },
+	[TM_BUG]   = { N_("BUG:"),   HN_("BUG:",   BOLD, RED, BG_BLACK) },
 };
 
 static inline int good_cntrl(char c)
@@ -106,31 +115,37 @@ int __termas(const char *file, int line,
 	     const char *func, enum tm_level level,
 	     const char *hint, u32 flags, const char *fmt, ...)
 {
-	static struct tm_tag tags[] = {
-		[TM_LOG]   = { NULL, NULL },
-		[TM_HINT]  = { N_("hint:"),  HN_("hint:",  BOLD, YELLOW) },
-		[TM_WARN]  = { N_("warn:"),  HN_("warn:",  BOLD, MAGENTA) },
-		[TM_ERROR] = { N_("error:"), HN_("error:", BOLD, RED) },
-		[TM_FATAL] = { N_("fatal:"), HN_("fatal:", BOLD, RED) },
-		[TM_BUG]   = { N_("BUG:"),   HN_("BUG:",   BOLD, RED,
-							   BG_BLACK) },
-	};
-	struct tm_tag *tag = &tags[level];
+	int debug = flags & MAS_OUT_DEBUG;
+
+	if (!udef_verbose && debug)
+		return 0;
 
 	char buf[SZ_4K];
 	size_t len = 0;
 	size_t limit = sizeof(buf) - 1;
 
+	struct tag *tag = &tags[level];
 	size_t room = limit;
 	int ret;
 
-	if (udef_termas_ts || !tag->name) {
+	if (udef_termas_ts || !tag->name || debug) {
 		struct timespec ts;
-		const char *ts_fmt = H("[%" PRIu64 ".%" PRIu64 "] ", GREEN);
+		const char *ts_fmt;
+
+		if (!debug) {
+			ts_fmt = H("[%" PRIu64 ".%" PRIu64 "] ", GREEN);
+
+			if (!udef_use_tercol)
+				ts_fmt = "[%" PRIu64 ".%" PRIu64 "] ";
+
+		} else {
+			ts_fmt = H(" %" PRIu64 ".%" PRIu64 " + ", GREEN);
+
+			if (!udef_use_tercol)
+				ts_fmt = "%" PRIu64 ".%" PRIu64 " + ";
+		}
 
 		ts_mono(&ts);
-		if (!udef_use_tercol)
-			ts_fmt = "[%" PRIu64 ".%" PRIu64 "] ";
 
 		ret = snprintf(&buf[len], room + 1, ts_fmt,
 			       ts.tv_sec, ts.tv_nsec / 1000);

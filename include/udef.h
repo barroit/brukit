@@ -21,6 +21,8 @@ extern int udef_termas_ts;	/* prefix message with timestamp */
 
 extern int udef_termas_pid;	/* prefix message with process id */
 
+extern int udef_verbose;	/* verbose output */
+
 extern int udef_no_console;	/* do not allocate console */
 
 #endif /* NG39_UDEF_H */

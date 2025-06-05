@@ -28,6 +28,7 @@ enum tm_level {
 #define MAS_SHOW_FUNC (1 << 1)	/* show function name */
 #define MAS_TO_STDOUT (1 << 2)	/* output to stdout */
 #define MAS_NO_EXIT   (1 << 3)	/* do not exit */
+#define MAS_OUT_DEBUG (1 << 4)	/* output is in debug level */
 
 /*
  * For 'hint' parameter in __warn(), __error(), and __die(). This argument
@@ -82,14 +83,19 @@ extern char *strerror(int errnum);
 #define __strerrno strerror(errno)
 
 #define mas(fmt, ...)       __tm_mas(NULL, 0, fmt, ##__VA_ARGS__)
+#define mas_debug(fmt, ...) __tm_mas(NULL, MAS_OUT_DEBUG, fmt, ##__VA_ARGS__)
 
 #define hint(fmt, ...)       __tm_hint(NULL, 0, fmt, ##__VA_ARGS__)
+#define hint_debug(fmt, ...) __tm_hint(NULL, MAS_OUT_DEBUG, fmt, ##__VA_ARGS__)
 
 #define warn(fmt, ...)       __tm_warn(NULL, 0, fmt, ##__VA_ARGS__)
 #define warn_errno(fmt, ...) __tm_warn(__strerrno, 0, fmt, ##__VA_ARGS__)
+#define warn_debug(fmt, ...) __tm_warn(NULL, MAS_OUT_DEBUG, fmt, ##__VA_ARGS__)
 
 #define error(fmt, ...)       __tm_error(NULL, 0, fmt, ##__VA_ARGS__)
 #define error_errno(fmt, ...) __tm_error(__strerrno, 0, fmt, ##__VA_ARGS__)
+#define error_debug(fmt, ...) \
+	__tm_error(NULL, MAS_OUT_DEBUG, fmt, ##__VA_ARGS__)
 
 #define die(fmt, ...)       __tm_die(NULL, 0, fmt, ##__VA_ARGS__)
 #define die_errno(fmt, ...) __tm_die(__strerrno, 0, fmt, ##__VA_ARGS__)
