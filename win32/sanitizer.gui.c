@@ -14,7 +14,7 @@
 
 #include "init.h"
 
-INIT_ROUTINE(death_cb)
+INITCALL(death_cb)
 {
 	__sanitizer_set_death_callback(__exit_show_confirm);
 }

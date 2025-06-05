@@ -56,7 +56,7 @@ void __gettext_init(void)
 	setlocale(LC_MESSAGES, locale);
 }
 
-INIT_ROUTINE(gettext)
+INITCALL(gettext)
 {
 	gettext_init();
 }

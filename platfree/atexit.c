@@ -46,7 +46,7 @@ static void atexit_apply(void)
 	}
 }
 
-INIT_ROUTINE(mount_chain)
+INITCALL(mount_chain)
 {
 	atexit(atexit_apply);
 }
