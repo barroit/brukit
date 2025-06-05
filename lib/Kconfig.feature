@@ -23,14 +23,9 @@ endif # ENABLE_I18N
 
 menu "Formatting options"
 
-menuconfig ENABLE_UTF8_CNTRL_CHAR_REPL
-	bool "Customize control character replacement (utf-8)"
-	default y
-
-config UTF8_CNTRL_CHAR_REPL
-	string "Control character replacement"
+config CNTRL_SUB
+	string "Control character substitution"
 	default "�"
-	depends on ENABLE_UTF8_CNTRL_CHAR_REPL
 
 config LINE_WRAP
 	int "Line wrap threshold"

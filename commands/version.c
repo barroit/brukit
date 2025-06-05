@@ -36,8 +36,7 @@ static int show_all;
 static u32 show_mode = __show_mask;
 
 static struct opt opts[] = {
-	__OPT_SWITCH('a', "all", &show_all,
-		     N_("display all info"), OPT_NO_NEG),
+	OPT_FLAG('a', "all", &show_all, N_("display all info")),
 	OPT_BIT(0, "build", &show_mode,
 		__mode(SHOW_BUILD), N_("show build platform")),
 	OPT_BIT(0, "prefix", &show_mode,

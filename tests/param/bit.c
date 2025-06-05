@@ -27,8 +27,7 @@ int all;
 u32 show = __show_mask;
 
 struct opt opt[] = {
-	__OPT_SWITCH('a', "all", &all,
-		     N_("display all info"), OPT_NO_NEG),
+	OPT_FLAG('a', "all", &all, N_("display all info")),
 	OPT_BIT(0, "build", &show,
 		__mode(SHOW_BUILD), N_("show build platform")),
 	OPT_BIT(0, "prefix", &show,

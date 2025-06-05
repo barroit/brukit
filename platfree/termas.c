@@ -21,265 +21,269 @@
 #include "timestamp.h"
 #include "udef.h"
 
-struct tm_tag {
+struct tag {
 	const char *name;
 	const char *colored;
 };
 
-#define MAS_BUF_CAP SZ_4K
+static struct tag tags[] = {
+	[TM_LOG]   = { NULL, NULL },
+	[TM_HINT]  = { N_("hint:"),  HN_("hint:",  BOLD, YELLOW) },
+	[TM_WARN]  = { N_("warn:"),  HN_("warn:",  BOLD, MAGENTA) },
+	[TM_ERROR] = { N_("error:"), HN_("error:", BOLD, RED) },
+	[TM_FATAL] = { N_("fatal:"), HN_("fatal:", BOLD, RED) },
+	[TM_BUG]   = { N_("BUG:"),   HN_("BUG:",   BOLD, RED, BG_BLACK) },
+};
 
-#ifdef CONFIG_ENABLE_UTF8_CNTRL_CHAR_REPL
-# define CNTRL_CHAR_REPL CONFIG_UTF8_CNTRL_CHAR_REPL
-#else
-# define CNTRL_CHAR_REPL "?"
-#endif
-
-#define __test_add_buf_size(__nr, __size, __avail)	\
-({							\
-	int __pass = 1;					\
-	if (__nr < *(__avail)) {			\
-		*(__size) += __nr;			\
-		*(__avail) -= __nr;			\
-	} else {					\
-		*(__size) += *(__avail);		\
-		__pass = 0;				\
-	}						\
-	__pass;						\
-})
-
-static inline int char_is_good_cntrl(char c)
+static inline int good_cntrl(char c)
 {
 	return c == '\t' || c == '\n' || c == '\033';
 }
 
-static inline int char_is_bad_cntrl(char c)
+static inline int bad_cntrl(char c)
 {
-	return isascii(c) && iscntrl(c) && !char_is_good_cntrl(c);
+	return isascii(c) && iscntrl(c) && !good_cntrl(c);
 }
 
-static size_t rm_bad_cntrl(char *buf, size_t size, size_t cap)
+static size_t rm_bad_cntrl(char *buf, size_t len, size_t limit)
 {
 	size_t i;
-	uint cnt = 0;
+	size_t dropped = 0;
 
-	idx_for_each(i, size)
-		if (char_is_bad_cntrl(buf[i]))
-			cnt++;
-
-	if (cnt == 0)
-		return size;
-
-	/*
-	 * Minus 1 in here is because bad control characters have already
-	 * reserved 1 char for us.
-	 */
-	size_t len = strlen(CNTRL_CHAR_REPL);
-	size_t unit = len - 1;
-	int do_fast = len == 1;
-	int no_room = unit * cnt > cap - size;
-	char *alt = CNTRL_CHAR_REPL;
-
-	if (no_room)
-		alt = "?";
-	if (do_fast || no_room) {
-		idx_for_each(i, size)
-			if (char_is_bad_cntrl(buf[i]))
-				buf[i] = alt[0];
-		return size;
+	idx_for_each(i, len) {
+		if (bad_cntrl(buf[i]))
+			dropped++;
 	}
 
-	size_t off = cnt * unit;
-	size_t last = size - 1;
-	size_t ret = size + off;
+	if (dropped == 0)
+		return len;
 
-	/*
-	 * Assume the length of bad control character replacement is 3. The '?'
-	 * is the bad control character and ... is the replacement.
-	 *
-	 * str  "?fun?ction?       "
-	 *
-	 * 1-1  "?fun?ction?       "  no move applied
-	 * 1-2  "?fun?ction?   ... "  use negative offset to set replacement
-	 *
-	 * 2-1  "?fun?ctioction... "
-	 * 2-2  "?fun?c...ction... "
-	 *
-	 * 3-1  "?fufun...ction... "
-	 * 3-2  "...fun...ction... "
-	 */
-	idx_for_each_reverse(i, size - 1) {
-		if (!char_is_bad_cntrl(buf[i]))
+	size_t sub_len = strlen(CONFIG_CNTRL_SUB);
+	size_t sub_delta = sub_len - 1;
+	size_t need = sub_delta * dropped;
+
+	int overflow = need > limit - len;
+	char *sub = CONFIG_CNTRL_SUB;
+
+	if (overflow)
+		sub = "?";
+
+	if (sub_len == 1 || overflow) {
+		idx_for_each(i, len) {
+			if (bad_cntrl(buf[i]))
+				buf[i] = sub[0];
+		}
+
+		return len;
+	}
+
+	size_t tail = len - 1;
+	size_t ret = len + need;
+
+	idx_for_each_reverse(i, len - 1) {
+		if (!bad_cntrl(buf[i]))
 			continue;
 
 		size_t good = i + 1;
-		size_t new = good + off;
+		size_t next = good + need;
 
-		if (likely(i != size - 1))
-			memmove(&buf[new], &buf[good], last - i);
+		if (likely(i != len - 1))
+			memmove(&buf[next], &buf[good], tail - i);
 
-		memcpy(&buf[new - len], alt, len);
-		off -= unit;
-		last = i - 1; /* even if i == 0 it's fine */
+		memcpy(&buf[next - sub_len], sub, sub_len);
+		need -= sub_delta;
+		tail = i - 1;
 	}
 
 	return ret;
+}
+
+static int consume_room(size_t len, size_t *used, size_t *room)
+{
+	if (len < *room) {
+		*used += len;
+		*room -= len;
+	} else {
+		*used += *room;
+		*room = 0;
+	}
+
+	return !!*room;
 }
 
 int __termas(const char *file, int line,
 	     const char *func, enum tm_level level,
 	     const char *hint, u32 flags, const char *fmt, ...)
 {
-	static struct tm_tag tags[] = {
-		[TM_LOG]   = { NULL, NULL },
-		[TM_HINT]  = { N_("hint:"),  HN_("hint:",  BOLD, YELLOW) },
-		[TM_WARN]  = { N_("warn:"),  HN_("warn:",  BOLD, MAGENTA) },
-		[TM_ERROR] = { N_("error:"), HN_("error:", BOLD, RED) },
-		[TM_FATAL] = { N_("fatal:"), HN_("fatal:", BOLD, RED) },
-		[TM_BUG]   = { N_("BUG:"),   HN_("BUG:",   BOLD, RED,
-							   BG_BLACK) },
-	};
-	struct tm_tag *tag = &tags[level];
-	va_list ap;
+	int debug = flags & MAS_OUT_DEBUG;
 
-	/*
-	 * Pay attention that we use write(2) to put our message to file. So
-	 * there's no need (and should not) to care about the null terminator
-	 * as it's not required.
-	 */
-	char buf[MAS_BUF_CAP];
-	size_t size = 0;
-	size_t cap = sizeof(buf) - 1;
-	size_t avail = cap;
-	ssize_t nr;
+	if (!udef_verbose && debug)
+		return 0;
 
-	if (udef_termas_ts || !tag->name) {
+	char buf[SZ_4K];
+	size_t len = 0;
+	size_t limit = sizeof(buf) - 1;
+
+	struct tag *tag = &tags[level];
+	size_t room = limit;
+	int ret;
+
+	if (udef_termas_ts || !tag->name || debug) {
 		struct timespec ts;
+		const char *ts_fmt;
+
+		if (!debug) {
+			ts_fmt = H("[%" PRIu64 ".%" PRIu64 "] ", GREEN);
+
+			if (!udef_use_tercol)
+				ts_fmt = "[%" PRIu64 ".%" PRIu64 "] ";
+
+		} else {
+			ts_fmt = H(" %" PRIu64 ".%" PRIu64 " + ", GREEN);
+
+			if (!udef_use_tercol)
+				ts_fmt = "%" PRIu64 ".%" PRIu64 " + ";
+		}
 
 		ts_mono(&ts);
 
-		u64 s = ts.tv_sec;
-		u64 us = ts.tv_nsec / 1000;
-
-		const char *mas = !udef_use_tercol ?
-				  "[%" PRIu64 ".%" PRIu64 "] " :
-				  H("[%" PRIu64 ".%" PRIu64 "] ", GREEN);
-
-		nr = snprintf(&buf[size], avail + 1, mas, s, us);
-		if (!__test_add_buf_size(nr, &size, &avail))
-			goto out;
+		ret = snprintf(&buf[len], room + 1, ts_fmt,
+			       ts.tv_sec, ts.tv_nsec / 1000);
+		consume_room(ret, &len, &room);
 	}
 
 	if (udef_termas_pid) {
 		long pid = getpid();
-		const char *mas = !udef_use_tercol ? ">%ld " :
-						   H(">", BOLD) "%ld ";
+		const char *pid_fmt = H(">", BOLD) "%ld ";
 
-		nr = snprintf(&buf[size], avail + 1, mas, pid);
-		if (!__test_add_buf_size(nr, &size, &avail))
-			goto out;
+		if (!udef_use_tercol)
+			pid_fmt = ">%ld ";
+
+		ret = snprintf(&buf[len], room + 1, pid_fmt, pid);
+		consume_room(ret, &len, &room);
 	}
 
 	if (tag->name) {
-		int show_pos = flags & MAS_SHOW_FILE ||
-			       (flags & MAS_SHOW_FUNC);
-		const char *name = udef_use_tercol ? tag->colored : tag->name;
-		size_t len = !show_pos;
+		int no_pad = flags & (MAS_SHOW_FILE | MAS_SHOW_FUNC);
+		const char *name = tag->colored;
+		size_t n = 1;
+
+		if (no_pad)
+			n = 0;
+		if (!udef_use_tercol)
+			name = tag->name;
 
 		name = _(name);
-		len += strlen(name);
+		n += strlen(name);
 
-		if (len > avail)
-			len = avail;
+		if (n > room)
+			n = room;
 
-		memcpy(&buf[size], name, len);
-		size += len;
-		if (!show_pos)
-			buf[size - 1] = ' ';
+		memcpy(&buf[len], name, n);
+		consume_room(n, &len, &room);
 
-		if (size >= avail)
-			goto out;
-		avail -= size;
+		if (!no_pad)
+			buf[len - 1] = ' ';
 	}
 
 	if (flags & MAS_SHOW_FILE) {
-		const char *mas = !udef_use_tercol ? "%s:%d:%s" :
-						   H("%s:%d:%s", BOLD);
+		const char *pos_fmt = H("%s:%d:%s", BOLD);
+		int no_pad = flags & MAS_SHOW_FUNC;
+		const char *pad = " ";
 
-		nr = snprintf(&buf[size], avail + 1, mas,
-			      file, line, flags & MAS_SHOW_FUNC ? "" : " ");
-		if (!__test_add_buf_size(nr, &size, &avail))
+		if (!udef_use_tercol)
+			pos_fmt = "%s:%d:%s";
+		if (no_pad)
+			pad = "";
+
+		ret = snprintf(&buf[len], room + 1, pos_fmt, pad);
+		if (!consume_room(ret, &len, &room))
 			goto out;
 	}
 
 	if (flags & MAS_SHOW_FUNC) {
-		const char *mas = !udef_use_tercol ? "%s: " : H("%s: ", BOLD);
+		const char *pos_fmt = H("%s:%d:%s", BOLD);
 
-		nr = snprintf(&buf[size], avail + 1, mas, func);
-		if (!__test_add_buf_size(nr, &size, &avail))
+		if (!udef_use_tercol)
+			pos_fmt = "%s: ";
+
+		ret = snprintf(&buf[len], room + 1, pos_fmt, func);
+		if (!consume_room(ret, &len, &room))
 			goto out;
 	}
 
+	/*
+	 * Must have prefix if fmt is empty, or it segfaults.
+	 */
 	if (!fmt[0]) {
-		size_t len = strlen(__fmtcol(RESET));
-		size_t tail;
+		const char *suffix = __fmtcol(RESET);
+		size_t suffix_len = strlen(suffix);
+
+		if (udef_use_tercol)
+			len -= suffix_len;
+
+		while (isspace(buf[len - 1]) || buf[len - 1] == ':')
+			len--;
 
 		if (udef_use_tercol) {
-			size -= len;
-			tail = size;
-		}
-
-		while (isspace(buf[size - 1]) || buf[size - 1] == ':')
-			size--;
-
-		if (udef_use_tercol) {
-			memmove(&buf[size], &buf[tail], len);
-			size += len;
+			memcpy(&buf[len], suffix, suffix_len);
+			len += suffix_len;
 		}
 
 		goto out;
 	}
 
+	va_list ap;
+
 	va_start(ap, fmt);
-	nr = vsnprintf(&buf[size], avail + 1, fmt, ap);
+	ret = vsnprintf(&buf[len], room + 1, fmt, ap);
 	va_end(ap);
-	if (!__test_add_buf_size(nr, &size, &avail))
+
+	if (!consume_room(ret, &len, &room))
 		goto out;
 
 	if (hint) {
-		if (avail <= 2)
+		if (room) {
+			buf[len++] = ';';
+			room--;
+		}
+
+		if (room) {
+			buf[len++] = ' ';
+			room--;
+		}
+
+		if (!room)
 			goto out;
 
-		buf[size++] = ';';
-		buf[size++] = ' ';
-		avail -= 2;
+		size_t hint_len = strlen(hint);
 
-		size_t len = strlen(hint);
+		if (hint_len > room)
+			hint_len = room;
 
-		if (len > avail)
-			len = avail;
-
-		memcpy(&buf[size], hint, len);
-		size += len;
+		memcpy(&buf[len], hint, hint_len);
+		if (!consume_room(hint_len, &len, &room))
+			goto out;
 	}
 
 out:
-	size = rm_bad_cntrl(buf, size, cap);
+	len = rm_bad_cntrl(buf, len, limit);
 
+	int out = -1;
 	int fd = STDERR_FILENO;
-	int ret = -1;
 	FILE *stream = stderr;
 
 	if (flags & MAS_TO_STDOUT) {
 		fd = STDOUT_FILENO;
 		stream = stdout;
-		ret = 0;
+		out = 0;
 	}
 
-	buf[size] = '\n';
-	size += 1;
+	buf[len] = '\n';
+	len += 1;
 
 	fflush(stream);
-	xwrite(fd, buf, size);
+	xwrite(fd, buf, len);
 
 	switch (level) {
 	case TM_BUG:
@@ -288,6 +292,6 @@ out:
 		if (!(flags & MAS_NO_EXIT))
 			exit(128);
 	default:
-		return ret;
+		return out;
 	}
 }
