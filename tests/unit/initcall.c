@@ -11,7 +11,7 @@ static int int39;
 static uint hex39;
 static xchar *str39;
 
-INIT_ROUTINE(init39)
+INITCALL(init39)
 {
 	int39 = 3939;
 	hex39 = 0x3939;

@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 #include "compiler.h"
-#include "gettext.h"
+#include "i18n.h"
 #include "termas.h"
 #include "xc.h"
 #include "xcf.h"

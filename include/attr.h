@@ -45,12 +45,12 @@
 
 #define __used __attr((__used__))
 
-#define __constructor __attr((__constructor__))
-
 #define __section(x) __attr((__section__(x)))
 
 #define __cleanup(x) __attr((__cleanup__(x)))
 
 #define __malloc __attr((__malloc__))
+
+#define __no_asan __attr((__no_sanitize__("address")))
 
 #endif /* NG39_ATTR_H */

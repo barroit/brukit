@@ -8,7 +8,7 @@
 
 #include "attr.h"
 #include "compiler.h"
-#include "gettext.h"
+#include "i18n.h"
 #include "types.h"
 #include "xc.h"
 

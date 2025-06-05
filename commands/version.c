@@ -13,7 +13,7 @@
 #include "strlist.h"
 
 #define VERSION(x)     __VERSION(x)
-#define __VERSION(...) ___VERSION(, ##__VA_ARGS__, no)
+#define __VERSION(...) ___VERSION(, ##__VA_ARGS__, unknown)
 #define ___VERSION(_, x, ...) #x
 
 #define SHOW_BUILD  (1U << 0)

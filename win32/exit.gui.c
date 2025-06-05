@@ -11,7 +11,7 @@
 
 #include "compiler.h"
 #include "console.h"
-#include "gettext.h"
+#include "i18n.h"
 #include "udef.h"
 #include "xalloc.h"
 #include "xc.h"

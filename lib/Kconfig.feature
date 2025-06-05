@@ -8,16 +8,8 @@ menuconfig ENABLE_I18N
 if ENABLE_I18N
 
 config TEXT_DOMAIN_NAME
-	string "Text domain name for gettext"
+	string "Text domain of gettext"
 	default $(pg-name)
-
-menuconfig ENABLE_CUSTOM_TEXT_LOCALE
-	bool "Customize program locale"
-
-config CUSTOM_TEXT_LOCALE
-	string "Specify program locale"
-	default "C.UTF-8"
-	depends on ENABLE_CUSTOM_TEXT_LOCALE
 
 endif # ENABLE_I18N
 

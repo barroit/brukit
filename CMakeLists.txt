@@ -135,7 +135,7 @@ add_dependencies(platspec gen-autoconf gen-features)
 
 file(GLOB platfree_src LIST_DIRECTORIES false platfree/*.c)
 if(NOT Intl_FOUND)
-  list(FILTER platfree_src EXCLUDE REGEX gettext\.c)
+  list(FILTER platfree_src EXCLUDE REGEX i18n\.c)
 endif()
 add_library(platfree OBJECT ${platfree_src})
 add_dependencies(platfree gen-autoconf gen-features)

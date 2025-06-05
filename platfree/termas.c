@@ -13,7 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "gettext.h"
+#include "i18n.h"
 #include "iter.h"
 #include "scio.h"
 #include "size.h"

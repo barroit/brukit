@@ -13,7 +13,7 @@
 #include <unistd.h>
 
 #include "bitopt.h"
-#include "gettext.h"
+#include "i18n.h"
 #include "rio.h"
 #include "strlist.h"
 #include "termas.h"

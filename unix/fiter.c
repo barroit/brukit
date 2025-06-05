@@ -12,7 +12,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "gettext.h"
+#include "i18n.h"
 #include "path.h"
 #include "strbuf.h"
 #include "strlist.h"
