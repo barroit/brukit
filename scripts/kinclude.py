@@ -104,7 +104,7 @@ def cc_info(kconf, name):
 	seg = res.stdout.split()
 	name = seg[0]
 	version = int(seg[1]) * 1000 + int(seg[2])
-	minver = (9 if name == 'GCC' else 6) * 1000
+	minver = (12 if name == 'GCC' else 18) * 1000
 
 	return f"{name}\t{version}\t{minver}"
 
