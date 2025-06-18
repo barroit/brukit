@@ -102,24 +102,24 @@ void sl_init(struct strlist *sl, u32 flags);
 
 void sl_destroy(struct strlist *sl);
 
-uint __sl_push(struct strlist *sl, const xchar *str, int is_que);
+size_t __sl_push(struct strlist *sl, const xchar *str, int is_que);
 
-static inline uint sl_push(struct strlist *sl, const xchar *str)
+static inline size_t sl_push(struct strlist *sl, const xchar *str)
 {
 	return __sl_push(sl, str, 0);
 }
 
-static inline uint sl_push_chr(struct strlist *sl, const char *str)
+static inline size_t sl_push_chr(struct strlist *sl, const char *str)
 {
 	return sl_push(sl, (xchar *)str);
 }
 
-static inline uint sl_push_back(struct strlist *sl, const xchar *str)
+static inline size_t sl_push_back(struct strlist *sl, const xchar *str)
 {
 	return __sl_push(sl, str, 1);
 }
 
-static inline uint sl_push_back_chr(struct strlist *sl, const char *str)
+static inline size_t sl_push_back_chr(struct strlist *sl, const char *str)
 {
 	return sl_push_back(sl, (xchar *)str);
 }

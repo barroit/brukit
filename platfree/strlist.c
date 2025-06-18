@@ -64,9 +64,12 @@ void sl_destroy(struct strlist *sl)
 		__sl_destroy(sl, &sl->idle);
 }
 
-uint __sl_push(struct strlist *sl, const xchar *str, int is_que)
+/*
+ * FIXME: rework this.
+ */
+size_t __sl_push(struct strlist *sl, const xchar *str, int is_que)
 {
-	uint ret = 0;
+	size_t ret = 0;
 	struct strlist_item *item = NULL;
 
 	if (sl->flags & SL_STORE_SBUF && !list_is_empty(&sl->idle)) {
@@ -217,13 +220,13 @@ static inline wchar_t *next_word_wc(const wchar_t *str)
 }
 
 static const char *advance_word_mb(const char *ptr,
-				   const char *tail, uint limit)
+				   const char *tail, size_t limit)
 {
-	uint cnt = 0;
+	size_t cnt = 0;
 
 	while (ptr < tail && cnt < limit) {
 		wchar_t c;
-		uint len = __mbctype(*ptr);
+		size_t len = __mbctype(*ptr);
 
 		switch (len) {
 		case _9D:
@@ -243,14 +246,14 @@ static const char *advance_word_mb(const char *ptr,
 }
 
 static const char *rewind_word_mb(const char *ptr,
-				  const char *head, uint limit)
+				  const char *head, size_t limit)
 {
-	uint cnt = 0;
+	size_t cnt = 0;
 	const char *__ptr = ptr;
 
 	while (ptr > head && cnt < limit) {
 		wchar_t c;
-		uint len = __mbctype(*ptr);
+		size_t len = __mbctype(*ptr);
 
 		switch (len) {
 		case _9D:
@@ -275,7 +278,7 @@ static const char *rewind_word_mb(const char *ptr,
 }
 
 static __maybe_unused void sl_read_line_mb(struct strlist *sl,
-					   const char *str, uint wrap)
+					   const char *str, size_t wrap)
 {
 	size_t len = strlen(str);
 
@@ -321,9 +324,9 @@ static __maybe_unused void sl_read_line_mb(struct strlist *sl,
 }
 
 static const wchar_t *advance_word_wc(const wchar_t *ptr,
-				      const wchar_t *tail, uint limit)
+				      const wchar_t *tail, size_t limit)
 {
-	uint cnt = 0;
+	size_t cnt = 0;
 
 	while (ptr < tail && cnt < limit) {
 		switch (__wcspmask(*ptr)) {
@@ -343,9 +346,9 @@ static const wchar_t *advance_word_wc(const wchar_t *ptr,
 }
 
 static const wchar_t *rewind_word_wc(const wchar_t *ptr,
-				     const wchar_t *head, uint limit)
+				     const wchar_t *head, size_t limit)
 {
-	uint cnt = 0;
+	size_t cnt = 0;
 	const wchar_t *__ptr = ptr;
 
 	while (ptr > head && cnt < limit) {
