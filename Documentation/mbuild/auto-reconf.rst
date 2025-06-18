@@ -1,0 +1,27 @@
+.. SPDX-License-Identifier: GPL-3.0-or-later or MIT
+
+.. _auto_reconf:
+
+================
+Auto Reconfigure
+================
+
+This document describes auto reconfigure. You are not expected to understand
+how it works.
+
+Reconfigure triggers when you change Kconfig. In earlier brukit, ``dotplat``
+also triggered reconfigure, but it's now deprecated and going away.
+
+Reconfigure relies heavily on timestamp-based change detection. It has no
+failure handling. Don't touch or delete any files under ``build.unix/`` or
+``build.win32/``. Doing so can result in undefined behavior during later
+command execution.
+
+Reconfigure uses ``scripts/depconf.py`` to dump config names into build
+directory. It only dumps configs listed in ``scripts/depconf.1``. You must
+handle this file carefully. Any incorrect config name or config missing from
+choice lists can cause annoying BUG.
+
+In CMake, root directory depends on that config dump. This is the core of
+reconfigure. CMake re-runs itself to keep things up-to-date if dump's timestamp
+changes.

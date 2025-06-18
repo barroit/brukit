@@ -4,14 +4,17 @@
 The Brukit Documentation
 ========================
 
-This is top level of documentation tree. Documents in here are for player, not
-end user. I expect you to init your project in documented way. Otherwise, you
-fucked up the entire workflow.
+This is the top level of brukit documentation tree.
 
-I previously called this project utility, but obviously it became framework
-and now relies on `core library`_. You need to make this library exist at
-same level as brukit, or symlinks die and you can't run things like
-scripts/init-repo.sh.
+Documents in here are for players, not end users. You must follow workflows if
+you want to hacking into brukit. Otherwise you fuck up this framework.
 
+This framework relies on `core library`_. You must setup this framework and
+that library. Or symlinks die and you can't build anything.
+
+.. toctree::
+   :maxdepth: 1
+
+   Build system overview <mbuild/index>
 
 .. _`core library`: ../barroit
