@@ -5,11 +5,11 @@
 
 #include "string.h"
 
-#include <ctype.h>
 #include <wctype.h>
 
-#include "mbctype.h"
-#include "wcctype.h"
+#include "ascii.h"
+#include "utf8.h"
+#include "utf16.h"
 
 xchar *strskip(const xchar *s1, const xchar *s2)
 {
@@ -45,7 +45,7 @@ size_t __mbslen(const char *s)
 	size_t len = 0;
 
 	while (*s) {
-		s += __mbctype(*s);
+		s += utf8_class(*s);
 		len++;
 	}
 
@@ -57,18 +57,18 @@ wchar_t __mbtowc(const char *seq)
 	uint shift = 6;
 	uint mask = 0x1F;
 	wchar_t res = 0;
-	uint len = __mbctype(*seq);
+	uint len = utf8_class(*seq);
 
 	switch (len) {
-	case _9D:
+	case UTF8_4B:
 		res |= seq[3] & 0x3F;
 		shift += 6;
 		mask >>= 1;
-	case _9C:
+	case UTF8_3B:
 		res |= (seq[2] & 0x3F) << (shift - 6);
 		shift += 6;
 		mask >>= 1;
-	case _9B:
+	case UTF8_2B:
 		res |= ((seq[0] & mask) << shift) |
 		       ((seq[1] & 0x3F) << (shift - 6));
 		break;
@@ -82,11 +82,11 @@ wchar_t __mbtowc(const char *seq)
 char *mbsws(const char *s)
 {
 	while (*s) {
-		uint len = __mbctype(*s);
+		uint len = utf8_class(*s);
 		wchar_t c;
 
 		switch (len) {
-		case _9A:
+		case UTF8_1B:
 			if (isspace(*s))
 				return (char *)s;
 			break;
@@ -105,7 +105,7 @@ char *mbsws(const char *s)
 wchar_t *wcsws(const wchar_t *s)
 {
 	while (*s) {
-		if (iswcsp(*s))
+		if (wch(*s))
 			s += 2;
 		else if (iswspace(*s))
 			return (wchar_t *)s;

@@ -5,19 +5,18 @@
 
 #include "strlist.h"
 
-#include <ctype.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
 #include <wctype.h>
 
+#include "ascii.h"
 #include "bitopt.h"
 #include "compiler.h"
-#include "mbctype.h"
 #include "strbuf.h"
-#include "unicode.h"
-#include "wcctype.h"
+#include "utf8.h"
+#include "utf16.h"
 #include "xalloc.h"
 #include "xcf.h"
 
@@ -247,24 +246,24 @@ void sl_free(struct strentry *item)
 
 static inline int need_rewind_sb(const char c)
 {
-	return isspace(c) || iseoc(c);
+	return isspace(c) || wc_termchar(c);
 }
 
 static inline int need_rewind_wc(wchar_t c)
 {
-	return iswspace(c) || iseoc(c);
+	return iswspace(c) || wc_termchar(c);
 }
 
 static char *prev_word_mb(const char *seq)
 {
-	while (ismbcb(*--seq));
+	while (mbc(*--seq));
 
 	return (char *)seq;
 }
 
 static char *next_word_mb(const char *seq)
 {
-	while (ismbcb(*++seq));
+	while (mbc(*++seq));
 
 	return (char *)seq;
 }
@@ -273,14 +272,14 @@ static inline wchar_t *prev_word_wc(const wchar_t *str)
 {
 	wchar_t *prev = (wchar_t *)str - 1;
 
-	return prev - iswcspl(*prev);
+	return prev - wcl(*prev);
 }
 
 static inline wchar_t *next_word_wc(const wchar_t *str)
 {
 	wchar_t *prev = (wchar_t *)str;
 
-	return iswcsp(*str) ? &prev[2] : &prev[1];
+	return wch(*str) ? &prev[2] : &prev[1];
 }
 
 static const char *advance_word_mb(const char *ptr,
@@ -290,16 +289,16 @@ static const char *advance_word_mb(const char *ptr,
 
 	while (ptr < tail && cnt < limit) {
 		wchar_t c;
-		size_t len = __mbctype(*ptr);
+		size_t len = utf8_class(*ptr);
 
 		switch (len) {
-		case _9D:
-		case _9C:
+		case UTF8_4B:
+		case UTF8_3B:
 			c = __mbtowc(ptr);
-			cnt += 1 + iswide(c);
+			cnt += 1 + wc_fullwidth(c);
 			break;
-		case _9B:
-		case _9A:
+		case UTF8_2B:
+		case UTF8_1B:
 			cnt++;
 		}
 
@@ -317,19 +316,19 @@ static const char *rewind_word_mb(const char *ptr,
 
 	while (ptr > head && cnt < limit) {
 		wchar_t c;
-		size_t len = __mbctype(*ptr);
+		size_t len = utf8_class(*ptr);
 
 		switch (len) {
-		case _9D:
-		case _9C:
-		case _9B:
+		case UTF8_4B:
+		case UTF8_3B:
+		case UTF8_2B:
 	 		c = __mbtowc(ptr);
 			if (need_rewind_wc(c))
 				return ptr;
 
-			cnt += iswide(c);
+			cnt += wc_fullwidth(c);
 			break;
-		case _9A:
+		case UTF8_1B:
 			if (need_rewind_sb(*ptr))
 				return ptr;
 		}
@@ -393,13 +392,11 @@ static const wchar_t *advance_word_wc(const wchar_t *ptr,
 	size_t cnt = 0;
 
 	while (ptr < tail && cnt < limit) {
-		switch (__wcspmask(*ptr)) {
-		case _3WH:
+		if (wch(*ptr)) {
 			cnt++;
 			ptr++;
-			break;
-		default:
-			cnt += iswide(*ptr);
+		} else {
+			cnt += wc_fullwidth(*ptr);
 		}
 
 		cnt++;
@@ -416,14 +413,12 @@ static const wchar_t *rewind_word_wc(const wchar_t *ptr,
 	const wchar_t *__ptr = ptr;
 
 	while (ptr > head && cnt < limit) {
-		switch (__wcspmask(*ptr)) {
-		case _3WH:
+		if (wch(*ptr)) {
 			cnt++;
-			break;
-		default:
+		} else {
 			if (need_rewind_wc(*ptr))
 				return ptr;
-			cnt += iswide(*ptr);
+			cnt += wc_fullwidth(*ptr);
 		}
 
 		cnt++;
@@ -454,7 +449,7 @@ static __maybe_unused void sl_read_line_wc(struct strlist *sl,
 			next = next_word_wc(prev);
 		}
 
-		while (!iswcsp(*next) && iswspace(*next))
+		while (!wch(*next) && iswspace(*next))
 			next++;
 
 		size_t n = next - str;

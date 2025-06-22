@@ -5,11 +5,11 @@
 
 #include "param.h"
 
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "ascii.h"
 #include "strlist.h"
 #include "termas.h"
 

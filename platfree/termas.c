@@ -5,7 +5,6 @@
 
 #include "termas.h"
 
-#include <ctype.h>
 #include <inttypes.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -13,6 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "ascii.h"
 #include "i18n.h"
 #include "iter.h"
 #include "scio.h"

@@ -46,6 +46,6 @@ HAVE_TOPLEVEL_REORDER = '-ftoplevel-reorder'
 
 __unix__ = """
 #ifndef __APPLE__
-#error not on macos
+# error not on macos
 #endif
 """
