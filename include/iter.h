@@ -8,17 +8,17 @@
 
 #include "calc.h"
 
-#define idx_for_each(idx, step) \
+#define for_each_idx(idx, step) \
 	for (idx = 0; idx < step; idx++)
 
 /*
- * idx_for_each_reverse() handles indices up to the maximum value of type
+ * for_each_idx_reverse() handles indices up to the maximum value of type
  * idx - 1.
  */
-#define idx_for_each_reverse(idx, init) \
+#define for_each_idx_reverse(idx, init) \
 	for (idx = init; idx != maxof(idx); idx--)
 
-#define idx_for_each_from(idx, step) \
+#define for_each_idx_from(idx, step) \
 	for (; idx < step; idx++)
 
 #endif /* NG39_ITER_H */

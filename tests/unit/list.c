@@ -27,7 +27,7 @@ UT_BEGIN(setup)
 	uint i;
 	struct data *ld, *rd;
 
-	idx_for_each(i, DLSIZE) {
+	for_each_idx(i, DLSIZE) {
 		ld = xmalloc(sizeof(*ld));
 		rd = xmalloc(sizeof(*rd));
 

@@ -266,7 +266,7 @@ UT_ROUTINE(sl_read_line)
 	};
 
 	sl_read_line(&sl, XC(miku_jp), 80);
-	idx_for_each(i, sizeof_array(sample_jp)) {
+	for_each_idx(i, sizeof_array(sample_jp)) {
 		line = sl_pop(&sl);
 		UA_NONNULL(line);
 
@@ -275,7 +275,7 @@ UT_ROUTINE(sl_read_line)
 	}
 
 	sl_read_line(&sl, XC(miku_en), 80);
-	idx_for_each(i, sizeof_array(sample_en)) {
+	for_each_idx(i, sizeof_array(sample_en)) {
 		line = sl_pop(&sl);
 		UA_NONNULL(line);
 
@@ -345,13 +345,13 @@ UT_ROUTINE(sl_to_argv)
 	while (*flags) {
 		sl_init(&sl, *flags);
 
-		idx_for_each(i, sizeof_array(cmd))
+		for_each_idx(i, sizeof_array(cmd))
 			sl_push_back(&sl, cmd[i]);
 
 		xchar **__argv = sl_to_argv(&sl);
 		xchar **argv = __argv;
 
-		idx_for_each(i, sizeof_array(cmd)) {
+		for_each_idx(i, sizeof_array(cmd)) {
 			UA_NONNULL(argv[i]);
 			UA_STREQ(argv[i], cmd[i]);
 		}

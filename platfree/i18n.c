@@ -41,7 +41,7 @@ static const char *i18n_locale(void)
 	};
 	uint i;
 
-	idx_for_each(i, sizeof_array(names)) {
+	for_each_idx(i, sizeof_array(names)) {
 		const char *locale = getenv(names[i]);
 
 		if (locale)

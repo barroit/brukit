@@ -50,7 +50,7 @@ static size_t rm_bad_cntrl(char *buf, size_t len, size_t limit)
 	size_t i;
 	size_t dropped = 0;
 
-	idx_for_each(i, len) {
+	for_each_idx(i, len) {
 		if (bad_cntrl(buf[i]))
 			dropped++;
 	}
@@ -69,7 +69,7 @@ static size_t rm_bad_cntrl(char *buf, size_t len, size_t limit)
 		sub = "?";
 
 	if (sub_len == 1 || overflow) {
-		idx_for_each(i, len) {
+		for_each_idx(i, len) {
 			if (bad_cntrl(buf[i]))
 				buf[i] = sub[0];
 		}
@@ -80,7 +80,7 @@ static size_t rm_bad_cntrl(char *buf, size_t len, size_t limit)
 	size_t tail = len - 1;
 	size_t ret = len + need;
 
-	idx_for_each_reverse(i, len - 1) {
+	for_each_idx_reverse(i, len - 1) {
 		if (!bad_cntrl(buf[i]))
 			continue;
 

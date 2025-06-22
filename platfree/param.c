@@ -537,7 +537,7 @@ static void err_huge_arg(int argc, const xchar **argv)
 	const char *fmt = N_("'%s' takes no extra arguments:\n%s\n");
 	struct strbuf sb = SB_INIT;
 
-	idx_for_each(i, argc)
+	for_each_idx(i, argc)
 		sb_printf(&sb, XC("  %s\n"), argv[i]);
 	sb_trunc(&sb, 1);
 
