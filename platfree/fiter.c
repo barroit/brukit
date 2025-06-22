@@ -35,7 +35,7 @@ int fiter(const xchar *root, fiter_entry_cb cb, void *data, u32 flags)
 		BUG_ON(!(flags & (FI_LIST_DIR | FI_RECUR_DIR)));
 
 	struct strbuf sb = SB_INIT;
-	struct strlist sl = SL_INIT(sl, SL_STORE_SBUF);
+	struct strlist sl = SL_INIT(sl, SL_MODE_SB);
 	struct __fiter ctx = {
 		.root  = root,
 		.cb    = cb,
@@ -68,9 +68,9 @@ int fiter(const xchar *root, fiter_entry_cb cb, void *data, u32 flags)
 
 		size_t nlen;
 		size_t plen;
+		struct strentry *item = sl_pop(ctx.sl);
 
-		dir = sl_pop(ctx.sl);
-		if (unlikely(!dir)) {
+		if (unlikely(!item)) {
 			if (!(ctx.flags & FI_RECUR_DIR))
 				goto cleanup;
 
@@ -78,6 +78,9 @@ int fiter(const xchar *root, fiter_entry_cb cb, void *data, u32 flags)
 			nlen = dlen;
 			goto iter_done;
 		}
+
+		sl_put_idle(ctx.sl, item);
+		dir = sl_str(item);
 
 		if (!(ctx.flags & FI_RECUR_DIR))
 			continue;
@@ -116,7 +119,7 @@ iter_done:
 				goto cleanup;
 
 			sb_pth_to_dirname_dumb(ctx.sb);
-			if (ctx.sb->len == nlen && dir)
+			if (ctx.sb->len == nlen && item)
 				break;
 		}
 	}

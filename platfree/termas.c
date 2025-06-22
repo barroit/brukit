@@ -196,13 +196,13 @@ int __termas(const char *file, int line,
 		if (no_pad)
 			pad = "";
 
-		ret = snprintf(&buf[len], room + 1, pos_fmt, pad);
+		ret = snprintf(&buf[len], room + 1, pos_fmt, file, line, pad);
 		if (!consume_room(ret, &len, &room))
 			goto out;
 	}
 
 	if (flags & MAS_SHOW_FUNC) {
-		const char *pos_fmt = H("%s:%d:%s", BOLD);
+		const char *pos_fmt = H("%s: ", BOLD);
 
 		if (!udef_use_tercol)
 			pos_fmt = "%s: ";

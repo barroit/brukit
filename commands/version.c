@@ -60,18 +60,21 @@ static void show_build(void)
 
 static void print_line(const char *fmt, const char *line)
 {
-	static STRLIST(sl, SL__STORE_CHR);
-	char *str;
+	static STRLIST(sl, SL_MODE_MB);
 
 	sl_read_line_chr(&sl, line, CONFIG_LINE_WRAP - 12);
 
-	str = sl_pop_chr(&sl);
-	printf(fmt, str);
-	free(str);
+	struct strentry *item = sl_pop(&sl);
+	const char *str = sl_str_mb(item);
 
-	while ((str = sl_pop_chr(&sl))) {
+	printf(fmt, str);
+	sl_free(item);
+
+	while ((item = sl_pop(&sl))) {
+		str = sl_str_mb(item);
+
 		printf("            %s\n", str);
-		free(str);
+		sl_free(item);
 	}
 }
 

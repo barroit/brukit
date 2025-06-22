@@ -18,7 +18,7 @@ static void show_cmd_usage(FILE *stream, const char **usage)
 	const char *pref = "usage: ";
 	size_t __len = strlen("usage: ");
 
-	STRLIST(sl, SL__STORE_CHR);
+	STRLIST(sl, SL_MODE_MB);
 
 	while (*usage) {
 		const char *line = *usage;
@@ -30,7 +30,6 @@ static void show_cmd_usage(FILE *stream, const char **usage)
 		size_t len = rest - line;
 		size_t pad = __len + len;
 		size_t wrap = CONFIG_LINE_WRAP - __len;
-		char *str;
 
 		if ((CONFIG_LINE_WRAP >> 1) > pad)
 			wrap -= len;
@@ -43,14 +42,18 @@ static void show_cmd_usage(FILE *stream, const char **usage)
 		}
 		sl_read_line_chr(&sl, rest, wrap);
 
-		str = sl_pop_chr(&sl);
+		struct strentry *item = sl_pop(&sl);
+		const char *str = sl_str_mb(item);
+
 		fputs(str, stream);
 		putc('\n', stream);
-		free(str);
+		sl_free(item);
 
-		while ((str = sl_pop_chr(&sl))) {
+		while ((item = sl_pop(&sl))) {
+			str = sl_str_mb(item);
+
 			fprintf(stream, "%*s%s\n", (int)pad, "", str);
-			free(str);
+			sl_free(item);
 		}
 
 next:
@@ -67,7 +70,7 @@ static void show_opt_usage(FILE *stream, struct opt *opts)
 	uint lines = 0;
 	struct opt *opt;
 
-	STRLIST(sl, SL__STORE_CHR);
+	STRLIST(sl, SL_MODE_MB);
 
 	opt_for_each(opt, opts) {
 		switch (opt->mode) {
@@ -114,17 +117,20 @@ static void show_opt_usage(FILE *stream, struct opt *opts)
 		size_t __pad = CONFIG_HELP_OPT_WRAP + 2;
 		size_t pad = __pad - len;
 		size_t wrap = CONFIG_LINE_WRAP - __pad;
-		char *str;
 
 		sl_read_line_chr(&sl, _(opt->usage), wrap);
 
-		str = sl_pop_chr(&sl);
-		fprintf(stream, "%*s%s\n", (int)pad, "", str);
-		free(str);
+		struct strentry *item = sl_pop(&sl);
+		const char *str = sl_str_mb(item);
 
-		while ((str = sl_pop_chr(&sl))) {
+		fprintf(stream, "%*s%s\n", (int)pad, "", str);
+		sl_free(item);
+
+		while ((item = sl_pop(&sl))) {
+			str = sl_str_mb(item);
+
 			fprintf(stream, "%*s%s\n", (int)__pad, "", str);
-			free(str);
+			sl_free(item);
 		}
 
 		lines++;

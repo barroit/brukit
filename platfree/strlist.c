@@ -21,26 +21,26 @@
 #include "xalloc.h"
 #include "xcf.h"
 
-#define __sl_mode_mask (-1U << 28)
-#define __sl_mode(f)   ((f) & __sl_mode_mask)
-
 #define WORD_AVG_LEN 8
+
+#define ALLOC_ITEM(n, memb)				\
+({							\
+	struct strentry *__item = xmalloc(n);		\
+	void *__buf = (void *)__item + sizeof(*__item);	\
+							\
+	__item->memb = __buf;				\
+	__item;						\
+})
 
 void sl_init(struct strlist *sl, u32 flags)
 {
-	if (popcount(__sl_mode(flags)) == 0)
-		flags |= SL_STORE_COPY;
-	if (flags & (SL_STORE_COPY | SL_STORE_CHR))
-		flags |= SL_DUP_ON_POP;
-
-	BUG_ON(popcount(__sl_mode(flags)) > 1);
-	BUG_ON(flags & SL_CALC_SRLEN &&
-	       (flags & (__sl_mode(flags) ^ SL_STORE_REF)));
+	if (popcount(sl_mode(flags)) == 0)
+		flags |= SL_MODE_CP;
 
 	sl->flags = flags;
 	list_head_init(&sl->head);
 
-	if (sl->flags & SL_STORE_SBUF)
+	if (sl->flags & SL_MODE_SB)
 		list_head_init(&sl->idle);
 
 	sl->items = 0;
@@ -48,10 +48,10 @@ void sl_init(struct strlist *sl, u32 flags)
 
 static void __sl_destroy(struct strlist *sl, struct list_head *head)
 {
-	struct strlist_item *item, *tmp;
+	struct strentry *item, *tmp;
 
 	list_for_each_entry_safe(item, tmp, head, list) {
-		if (sl->flags & SL_STORE_SBUF)
+		if (sl->flags & SL_MODE_SB)
 			sb_destroy(item->sb);
 		free(item);
 	}
@@ -60,125 +60,189 @@ static void __sl_destroy(struct strlist *sl, struct list_head *head)
 void sl_destroy(struct strlist *sl)
 {
 	__sl_destroy(sl, &sl->head);
-	if (sl->flags & SL_STORE_SBUF)
+
+	if (sl->flags & SL_MODE_SB)
 		__sl_destroy(sl, &sl->idle);
 }
 
-/*
- * FIXME: rework this.
- */
-size_t __sl_push(struct strlist *sl, const xchar *str, int is_que)
+static inline struct strentry *peek_idle(struct strlist *sl)
 {
-	size_t ret = 0;
-	struct strlist_item *item = NULL;
+	return list_first_entry(&sl->idle, struct strentry, list);
+}
 
-	if (sl->flags & SL_STORE_SBUF && !list_is_empty(&sl->idle)) {
-		item = list_first_entry(&sl->idle, struct strlist_item, list);
+static inline struct strentry *take_idle(struct strlist *sl)
+{
+	struct strentry *item = peek_idle(sl);
+
+	list_del(&item->list);
+	return item;
+}
+
+static struct strentry *make_item_cp(struct strlist *sl,
+				     const xchar *str, size_t len)
+{
+	struct strentry *item;
+	size_t size = sizeof(*item);
+
+	if (len == -1)
+		len = xc_strlen(str);
+	size += (len + 1) * sizeof(*str);
+
+	item = ALLOC_ITEM(size, sc);
+	BUILD_BUG_ON(alignof(*item) < alignof(str));
+
+	memcpy(item->sc, str, (len + 1) * sizeof(*str));
+	item->len = len;
+	return item;
+}
+
+static struct strentry *make_item_mb(struct strlist *sl,
+				     const xchar *str, size_t len)
+{
+	struct strentry *item;
+	size_t size = sizeof(*item);
+
+	if (len == -1)
+		len = xc_strlen(str);
+	size += len + 1;
+
+	item = ALLOC_ITEM(size, __sc);
+	BUILD_BUG_ON(alignof(*item) < alignof(str));
+
+	memcpy(item->__sc, str, len + 1);
+	item->len = len;
+	return item;
+}
+
+static struct strentry *make_item_sb(struct strlist *sl,
+				     const xchar *str, size_t len)
+{
+	struct strentry *item;
+
+	BUILD_BUG_ON(alignof(*item) < alignof(*item->sb));
+
+	if (!list_is_empty(&sl->idle)) {
+		item = take_idle(sl);
 		sb_trunc(item->sb, item->sb->len);
-		list_del(&item->list);
+	} else {
+		item = ALLOC_ITEM(sizeof(*item) + sizeof(*item->sb), sb);
+		sb_init(item->sb);
 	}
 
-	if (!item) {
-		size_t n = sizeof(*item);
-		void *buf;
+	item->len = sb_puts_at(item->sb, item->sb->len, str, len);
+	return item;
+}
 
-		switch (__sl_mode(sl->flags)) {
-		case SL_STORE_COPY:
-			ret = xc_strlen(str);
-			n += (ret + 1) * sizeof(*str);
-			break;
-		case SL_STORE_SBUF:
-			n += sizeof(*item->sb);
-			break;
-		case SL_STORE_CHR:
-			ret = strlen((char *)str);
-			n += ret + 1;
-		}
+static struct strentry *make_item_mv(struct strlist *sl, const xchar *str)
+{
+	struct strentry *item;
 
-		item = xmalloc(n);
-		buf = (void *)item + sizeof(*item);
-		((char *)item)[n - 1] = 0;
+	if (!list_is_empty(&sl->idle))
+		item = take_idle(sl);
+	else
+		item = ALLOC_ITEM(sizeof(*item), sr);
 
-		switch (__sl_mode(sl->flags)) {
-		case SL_STORE_COPY:
-			item->sc = buf;
-			BUILD_BUG_ON(alignof(*item) < alignof(str));
-			break;
-		case SL_STORE_SBUF:
-			item->sb = buf;
-			sb_init(item->sb);
-			BUILD_BUG_ON(alignof(*item) < alignof(*item->sb));
-			break;
-		case SL_STORE_CHR:
-			item->__sc = buf;
-			BUILD_BUG_ON(alignof(*item) < alignof((char *)str));
-		}
+	item->sr = str;
 
-		list_head_init(&item->list);
+	if (sl->flags & SL_CALC_LEN)
+		item->len = xc_strlen(str);
+
+	return item;
+}
+
+static struct strentry *make_item(struct strlist *sl,
+				  const xchar *str, size_t len)
+{
+	struct strentry *item;
+	u32 mode = sl_mode(sl->flags);
+
+	switch (mode) {
+	case SL_MODE_CP:
+		item = make_item_cp(sl, str, len);
+		break;
+
+	case SL_MODE_SB:
+		item = make_item_sb(sl, str, len);
+		break;
+
+	case SL_MODE_MB:
+		item = make_item_mb(sl, (char *)str, len);
+		break;
+
+	case SL_MODE_MV:
+		item = make_item_mv(sl, str);
 	}
 
-	switch (__sl_mode(sl->flags)) {
-	case SL_STORE_COPY:
-		memcpy(item->sc, str, (ret + 1) * sizeof(*str));
-		break;
-	case SL_STORE_SBUF:
-		ret = sb_puts(item->sb, str);
-		break;
-	case SL_STORE_REF:
-		item->sr = str;
-		if (sl->flags & SL_CALC_SRLEN)
-			ret = xc_strlen(str);
-		break;
-	case SL_STORE_CHR:
-		memcpy(item->__sc, (char *)str, ret + 1);
-	}
+	item->mode = mode;
+	list_head_init(&item->list);
+	return item;
+}
 
-	if (is_que)
+struct strentry *__sl_push(struct strlist *sl,
+			   const xchar *str, size_t len, int backward)
+{
+	struct strentry *item = make_item(sl, str, len);
+
+	if (backward)
 		list_add_tail(&item->list, &sl->head);
 	else
 		list_add(&item->list, &sl->head);
 
 	sl->items++;
-	return ret;
+	return item;
 }
 
-xchar *sl_pop(struct strlist *sl)
+struct strentry *sl_pop(struct strlist *sl)
 {
 	if (list_is_empty(&sl->head))
 		return NULL;
 
-	xchar *ret = NULL;
-	struct strlist_item *item = list_first_entry(&sl->head,
-						     typeof(*item), list);
+	struct strentry *item = list_first_entry(&sl->head,
+						 struct strentry, list);
 
 	list_del(&item->list);
+	sl->items--;
+	return item;
+}
 
-	switch (__sl_mode(sl->flags)) {
-	case SL_STORE_COPY:
-		ret = item->sc;
-		break;
-	case SL_STORE_SBUF:
-		ret = item->sb->buf;
-		break;
-	case SL_STORE_REF:
-		ret = (xchar *)item->sr;
-		break;
-	case SL_STORE_CHR:
-		ret = (xchar *)item->__sc;
+const xchar *sl_str(struct strentry *item)
+{
+	switch (item->mode) {
+	case SL_MODE_CP:
+		return item->sc;
+
+	case SL_MODE_SB:
+		return item->sb->buf;
+
+	case SL_MODE_MV:
+		return (xchar *)item->sr;
+
+	case SL_MODE_MB:
+		return (xchar *)item->__sc;
 	}
 
-	if (sl->flags & SL_STORE_CHR)
-		ret = (xchar *)strdup((char *)ret);
-	else if (sl->flags & SL_DUP_ON_POP)
-		ret = xc_xstrdup(ret);
+	trap();
+}
 
-	if (sl->flags & SL_STORE_SBUF)
+void sl_put_idle(struct strlist *sl, struct strentry *item)
+{
+	switch (item->mode) {
+	case SL_MODE_MV:
+	case SL_MODE_SB:
 		list_add(&item->list, &sl->idle);
-	else
-		free(item);
+		break;
 
-	sl->items--;
-	return ret;
+	default:
+		trap();
+	}
+}
+
+void sl_free(struct strentry *item)
+{
+	if (item->mode & SL_MODE_SB)
+		sb_destroy(item->sb);
+
+	free(item);
 }
 
 static inline int need_rewind_sb(const char c)
@@ -316,7 +380,7 @@ static __maybe_unused void sl_read_line_mb(struct strlist *sl,
 		if (iswspace(c))
 			buf[prev - str] = 0;
 
-		sl_push_back_chr(sl, buf);
+		sl_push_back_mb(sl, buf);
 		str = next;
 	}
 
@@ -432,13 +496,31 @@ void sl_read_line_chr(struct strlist *sl, const char *str, uint wrap)
 
 xchar **sl_to_argv(struct strlist *sl)
 {
-	xchar *str;
 	xchar **ret = xmalloc((sl->items + 1) * sizeof(void *));
 	xchar **ptr = ret;
+	struct strentry *item;
 
-	while ((str = sl_pop(sl)) != NULL)
-		*ptr++ = str;
+	while ((item = sl_pop(sl))) {
+		const xchar *str = sl_str(item);
+
+		if (sl->flags & SL_MODE_MB)
+			*ptr++ = strdup((char *)str);
+		else
+			*ptr++ = xc_strdup(str);
+
+		sl_free(item);
+	}
 
 	*ptr = NULL;
 	return ret;
+}
+
+void free_argv(xchar **argv)
+{
+	void *ptr = argv;
+
+	while (*argv)
+		free(*argv++);
+
+	free(ptr);
 }
