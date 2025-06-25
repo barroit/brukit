@@ -85,14 +85,21 @@ const xchar *sl_str(struct strentry *item);
 
 #define sl_str_mb(item) ((const char *)sl_str(item))
 
-/*
- * LC_CTYPE-insensitive implementation for reading a string into lines. Be
- * sure to use this function only on verified strings, as it doesn't handle
- * many edge cases and may encounter unexpected results.
+/**
+ * sl_read_line - split string into lines
+ * @sl:    strlist to add lines to
+ * @str:   input string
+ * @wrap:  line wrap length
+ *
+ * Breaks @str into multiple lines, wrapping at @wrap width, and appends each
+ * line to @sl.
+ *
+ * This algorithm assumes monospace font.
  */
-void sl_read_line(struct strlist *sl, const xchar *str, uint wrap);
+void sl_read_line(struct strlist *sl, const xchar *str, size_t wrap);
 
-void sl_read_line_chr(struct strlist *sl, const char *str, uint wrap);
+void sl_read_line_mb(struct strlist *sl,
+		     const char *str, size_t len, size_t wrap);
 
 xchar **sl_to_argv(struct strlist *sl);
 

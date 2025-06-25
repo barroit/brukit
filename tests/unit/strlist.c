@@ -15,26 +15,34 @@
 #endif
 
 #define miku_jp_1 \
-"初音ミクの魅力は、誰もがプロデュースできるシンガーであることです。 「初音ミク」のリ"
+"初音ミクの魅力は、誰もがプロデュースできるシンガーであることです。「初音ミク」のリ"
 #define miku_jp_2 \
-"リース直後から、アマチュア・プロを問わず、多くのミュージシャンが一斉に初音ミクが歌う"
+"リース直後から、アマチュア・プロを問わず、多くのミュージシャンが一斉に初音ミが歌う"
 #define miku_jp_3 \
-"楽曲を動画投稿サイト「ニコニコ動画」や「Youtube」で発表しました。 すると、今度はその"
+"楽曲を動画投稿サイト「ニコニコ動画」や「Youtube」で発表しました。すると、今度はそ"
 #define miku_jp_4 \
-"曲に刺激されたイラストレーターが初音ミクの絵を描き、気に入った曲にPVをつける映像作家"
+"の曲に刺激されたイラストレーターが初音ミクの絵を描き、気に入った曲にPVをつける映像"
 #define miku_jp_5 \
-"も現れ・・・いつのまにかたくさんのクリエイターたちが初音ミクというバーチャルアイドル"
+"作家も現れ・・・いつのまにかたくさんのクリエイターたちが初音ミクというバーチャルア"
 #define miku_jp_6 \
-"の「プロデュース」を楽しむようになりました。"
+"イドルの「プロデュース」を楽しむようになりました。"
 #define miku_jp miku_jp_1 miku_jp_2 miku_jp_3 miku_jp_4 miku_jp_5 miku_jp_6
 
 #define miku_en_1 \
 "Hatsune Miku, sometimes called Miku Hatsune, officially code-named CV01, is a"
 #define miku_en_2 \
-"Vocaloid software voicebank developed by Crypton Future Media and its official"
+""
 #define miku_en_3 \
+""
+#define miku_en_4 \
+""
+#define miku_en_5 \
+""
+#define miku_en_6 \
+"Vocaloid software voicebank developed by Crypton Future Media and its official"
+#define miku_en_7 \
 "mascot character, a sixteen-year-old girl with long, turquoise twintails."
-#define miku_en miku_en_1 " " miku_en_2 " " miku_en_3
+#define miku_en miku_en_1 "  \n  \n\n \n " miku_en_6 " " miku_en_7
 
 static void __sl_free(struct strentry **item)
 {
@@ -277,18 +285,31 @@ UT_ROUTINE(sl_read_line_en)
 		[0] = XC(miku_en_1),
 		[1] = XC(miku_en_2),
 		[2] = XC(miku_en_3),
+		[3] = XC(miku_en_4),
+		[4] = XC(miku_en_5),
+		[5] = XC(miku_en_6),
+		[6] = XC(miku_en_7),
 	};
-	uint i;
+	uint i = 0;
 
 	sl_read_line(&sl, XC(miku_en), 80);
-	for_each_idx(i, sizeof_array(lines)) {
+
+	while (39) {
 		item = sl_pop(&sl);
+
+		if (!item)
+			break;
+
 		str = sl_str(item);
 
-		UA_NONNULL(str);
-		UA_STREQ(str, lines[i]);
+		UA_LT(i, sizeof_array(lines));
+		UA_STREQ(lines[i], str);
+
+		i++;
 		sl_free(item);
 	}
+
+	UA_EQ(i, sizeof_array(lines));
 
 	item = NULL;
 }
@@ -307,17 +328,26 @@ UT_ROUTINE(sl_read_line_jp)
 		[4] = XC(miku_jp_5),
 		[5] = XC(miku_jp_6),
 	};
-	uint i;
+	uint i = 0;
 
 	sl_read_line(&sl, XC(miku_jp), 80);
-	for_each_idx(i, sizeof_array(lines)) {
+
+	while (39) {
 		item = sl_pop(&sl);
+
+		if (!item)
+			break;
+
 		str = sl_str(item);
 
-		UA_NONNULL(str);
-		UA_STREQ(str, lines[i]);
+		UA_LT(i, sizeof_array(lines));
+		UA_STREQ(lines[i], str);
+
+		i++;
 		sl_free(item);
 	}
+
+	UA_EQ(i, sizeof_array(lines));
 
 	item = NULL;
 }

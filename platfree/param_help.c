@@ -40,7 +40,7 @@ static void show_cmd_usage(FILE *stream, const char **usage)
 			putc('\n', stream);
 			goto next;
 		}
-		sl_read_line_chr(&sl, rest, wrap);
+		sl_read_line_mb(&sl, rest, -1, wrap);
 
 		struct strentry *item = sl_pop(&sl);
 		const char *str = sl_str_mb(item);
@@ -118,7 +118,7 @@ static void show_opt_usage(FILE *stream, struct opt *opts)
 		size_t pad = __pad - len;
 		size_t wrap = CONFIG_LINE_WRAP - __pad;
 
-		sl_read_line_chr(&sl, _(opt->usage), wrap);
+		sl_read_line_mb(&sl, _(opt->usage), -1, wrap);
 
 		struct strentry *item = sl_pop(&sl);
 		const char *str = sl_str_mb(item);
