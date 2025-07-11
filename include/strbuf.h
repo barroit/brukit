@@ -28,8 +28,6 @@ void sb_init(struct strbuf *sb);
 
 void sb_destroy(struct strbuf *sb);
 
-xchar *sb_detach(struct strbuf *sb);
-
 static inline void sb_trunc(struct strbuf *sb, uint len)
 {
 	sb->len -= len;

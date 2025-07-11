@@ -26,18 +26,6 @@ void sb_destroy(struct strbuf *sb)
 	free(sb->buf);
 }
 
-xchar *sb_detach(struct strbuf *sb)
-{
-	xchar *ret = sb->buf;
-	uint used = sb->len + 1;
-	uint unused = align_down(sb->cap - used, 8);
-
-	if (unused >= 64)
-		ret = xrealloc(sb->buf, used);
-
-	return ret;
-}
-
 static inline void sb_grow(struct strbuf *sb, uint new)
 {
 	uint size = sb->len + new + 1;
