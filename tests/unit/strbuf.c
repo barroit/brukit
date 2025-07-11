@@ -61,7 +61,7 @@ UT_ROUTINE(sb_trunc)
 	UA_ZERO(sb.len);
 	UA_ZERO(sb.buf[0]);
 
-	sb_pth_legacy_reinit_cwd(&sb, XC("/path/to/dir"));
+	sb_pth_reinit_cwd_dumb(&sb, XC("/path/to/dir"));
 
 	sb_puts(&sb, XC("/dummy/path"));
 	sb_trunc_to_cwd(&sb);
@@ -117,7 +117,7 @@ UT_ROUTINE(sb_off_ws)
 {
 	struct strbuf __cleanup(sb_destroy) sb;
 
-	sb_pth_legacy_init_cwd(&sb, XC("path/to/root/dir/"));
+	sb_pth_init_cwd_dumb(&sb, XC("path/to/root/dir/"));
 
 	UA_STREQ(sb.buf, XC("path/to/root/dir/"));
 	UA_EQ(sb.off.cwd, xc_strlen(XC("path/to/root/dir/")));
@@ -135,14 +135,14 @@ UT_ROUTINE(sb_off_ws)
 	UA_STREQ(sb.buf, XC("path/to/root/dir/.miku39"));
 }
 
-UT_ROUTINE(sb_pth_legacy_init_cwd)
+UT_ROUTINE(sb_pth_init_cwd_dumb)
 {
 	struct strbuf __cleanup(sb_destroy) sb;
 
-	sb_pth_legacy_init_cwd(&sb, XC("path/to/default/cwd"));
+	sb_pth_init_cwd_dumb(&sb, XC("path/to/default/cwd"));
 	UA_STREQ(sb.buf, XC("path/to/default/cwd"));
 
-	sb_pth_legacy_reinit_cwd(&sb, XC("path/to/new/cwd"));
+	sb_pth_reinit_cwd_dumb(&sb, XC("path/to/new/cwd"));
 	UA_STREQ(sb.buf, XC("path/to/new/cwd"));
 }
 
@@ -150,12 +150,12 @@ UT_ROUTINE(sb_pth_legacy_api)
 {
 	struct strbuf __cleanup(sb_destroy) sb;
 
-	sb_pth_legacy_init_cwd(&sb, XC("path/to/root/dir"));
+	sb_pth_init_cwd_dumb(&sb, XC("path/to/root/dir"));
 
-	sb_pth_legacy_append(&sb, XC("executable"));
+	sb_pth_append_dumb(&sb, XC("executable"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir") SEP XC("executable"));
 
-	sb_pth_legacy_append_at_cwd(&sb, XC("file"));
+	sb_pth_append_at_cwd_dumb(&sb, XC("file"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir") SEP XC("file"));
 }
 

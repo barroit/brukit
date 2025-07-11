@@ -120,14 +120,14 @@ void sb_pth_pop(struct strbuf *sb);
 
 int sb_pth_in_root(struct strbuf *sb);
 
-void sb_pth_legacy_init_cwd(struct strbuf *sb, const xchar *name);
+void sb_pth_init_cwd_dumb(struct strbuf *sb, const xchar *name);
 
-void sb_pth_legacy_reinit_cwd(struct strbuf *sb, const xchar *name);
+void sb_pth_reinit_cwd_dumb(struct strbuf *sb, const xchar *name);
 
-uint sb_pth_legacy_append(struct strbuf *sb, const xchar *name);
+uint sb_pth_append_dumb(struct strbuf *sb, const xchar *name);
 
-uint sb_pth_legacy_append_at_cwd(struct strbuf *sb, const xchar *name);
+uint sb_pth_append_at_cwd_dumb(struct strbuf *sb, const xchar *name);
 
-void sb_pth_legacy_to_dirname(struct strbuf *sb);
+void sb_pth_to_dirname_dumb(struct strbuf *sb);
 
 #endif /* NG39_STRBUF_H */

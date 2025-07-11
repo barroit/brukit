@@ -3,6 +3,9 @@
  * Copyright 2024, 2025 Jiamu Sun <barroit@linux.com>
  */
 
+#define NG39_NAME "strbuf"
+#define pr_fmt(fmt) NG39_NAME ":%s: " fmt, __func__
+
 #include "strbuf.h"
 
 #include <ctype.h>
@@ -13,6 +16,7 @@
 #include "strconv.h"
 #include "path.h"
 #include "pathwalk.h"
+#include "printf.h"
 #include "xalloc.h"
 #include "xcf.h"
 
@@ -80,9 +84,13 @@ retry:
 	avail = sb->cap - sb->len - 1;
 	nr = xc_vsnprintf(&sb->buf[off], avail + 1, fmt, ap[i]);
 
-	BUG_ON(nr < 0);
-	if (nr > avail) {
+	if (nr < 0) {
+		pr_err("xc_vsnprintf returns minus value");
+		return -1;
+
+	} else if (nr > avail) {
 		BUG_ON(i);
+
 		sb_grow(sb, nr);
 		i += 1;
 		goto retry;
@@ -151,19 +159,19 @@ void sb_trim(struct strbuf *sb)
 	sb->buf[sb->len] = 0;
 }
 
-void sb_pth_legacy_init_cwd(struct strbuf *sb, const xchar *name)
+void sb_pth_init_cwd_dumb(struct strbuf *sb, const xchar *name)
 {
 	memset(sb, 0, sizeof(*sb));
 	sb->off.cwd = sb_puts(sb, name);
 }
 
-void sb_pth_legacy_reinit_cwd(struct strbuf *sb, const xchar *name)
+void sb_pth_reinit_cwd_dumb(struct strbuf *sb, const xchar *name)
 {
 	sb_trunc(sb, sb->len);
 	sb->off.cwd = sb_puts(sb, name);
 }
 
-uint sb_pth_legacy_append(struct strbuf *sb, const xchar *name)
+uint sb_pth_append_dumb(struct strbuf *sb, const xchar *name)
 {
 	uint __len = xc_strlen(name);
 	uint len = __len + 1;
@@ -179,7 +187,7 @@ uint sb_pth_legacy_append(struct strbuf *sb, const xchar *name)
 	return len;
 }
 
-uint sb_pth_legacy_append_at_cwd(struct strbuf *sb, const xchar *name)
+uint sb_pth_append_at_cwd_dumb(struct strbuf *sb, const xchar *name)
 {
 	uint __len = xc_strlen(name);
 	uint len = __len + 1;
@@ -199,7 +207,7 @@ uint sb_pth_legacy_append_at_cwd(struct strbuf *sb, const xchar *name)
 	return len;
 }
 
-void sb_pth_legacy_to_dirname(struct strbuf *sb)
+void sb_pth_to_dirname_dumb(struct strbuf *sb)
 {
 	xchar *sep = pth_last_sep(sb->buf);
 
