@@ -45,7 +45,10 @@ uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s)
 	if (len > overlap)
 		sb_grow(sb, len - overlap);
 
-	memcpy(&sb->buf[off], s, (len + 1) * sizeof(*s));
+	if (len)
+		memcpy(&sb->buf[off], s, len * sizeof(*s));
+	sb->buf[off + len] = 0;
+
 	if (len > overlap)
 		sb->len += len - overlap;
 	else
@@ -56,19 +59,23 @@ uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s)
 
 uint sb_putc_at(struct strbuf *sb, uint off, const xchar c)
 {
+	uint len = !!c;
 	uint overlap = sb->len - off;
 
-	if (!overlap)
+	if (len > overlap)
 		sb_grow(sb, 1);
 
 	sb->buf[off] = c;
-	sb->buf[off + 1] = 0;
-	if (!overlap)
-		sb->len += 1;
-	else
-		sb->len -= overlap - 1;
 
-	return 1;
+	if (len)
+		sb->buf[off + 1] = 0;
+
+	if (!overlap)
+		sb->len += len;
+	else
+		sb->len -= overlap - len;
+
+	return len;
 }
 
 static uint __sb_printf_at(struct strbuf *sb, uint off,

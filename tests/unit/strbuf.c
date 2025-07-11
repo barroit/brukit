@@ -22,14 +22,21 @@ UT_ROUTINE(sb_puts)
 
 	sb_puts(&sb, XC("miku"));
 	UA_EQ(xc_strlen(sb.buf), 4);
+	UA_EQ(sb.len, 4);
 	__cap = sb.cap;
 
 	sb_puts_at_cwd(&sb, XC("miku39"));
 	UA_EQ(xc_strlen(sb.buf), 6);
+	UA_EQ(sb.len, 6);
 	UA_EQ(sb.cap, __cap);
 
 	sb_puts_at(&sb, 2, XC("miku"));
 	UA_EQ(xc_strlen(sb.buf), 6);
+	UA_EQ(sb.len, 6);
+
+	sb_puts_at(&sb, 0, XC(""));
+	UA_EQ(xc_strlen(sb.buf), 0);
+	UA_EQ(sb.len, 0);
 }
 
 UT_ROUTINE(sb_putc)
@@ -49,6 +56,10 @@ UT_ROUTINE(sb_putc)
 	sb_puts_at(&sb, 0, XC("miku.39"));
 	sb_putc_at(&sb, 4, XC('_'));
 	UA_STREQ(sb.buf, XC("miku_"));
+
+	sb_putc_at(&sb, 0, 0);
+	UA_EQ(xc_strlen(sb.buf), 0);
+	UA_EQ(sb.len, 0);
 }
 
 UT_ROUTINE(sb_trunc)
