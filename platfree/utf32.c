@@ -11,17 +11,17 @@
 
 static const wchar_t _termchar[] = {
 	0x0021,  /* EXCLAMATION MARK */
-	0x002C,  /* COMMA */
-	0x002E,  /* FULL STOP */
-	0x003F,  /* QUESTION MARK */
+	0x002c,  /* COMMA */
+	0x002e,  /* FULL STOP */
+	0x003f,  /* QUESTION MARK */
 	0x2025,  /* TWO DOT LEADER */
 	0x2026,  /* HORIZONTAL ELLIPSIS */
 	0x3001,  /* IDEOGRAPHIC COMMA */
 	0x3002,  /* IDEOGRAPHIC FULL STOP */
-	0xFF01,  /* FULLWIDTH EXCLAMATION MARK */
-	0xFF0C,  /* FULLWIDTH COMMA */
-	0xFF0E,  /* FULLWIDTH FULL STOP */
-	0xFF1F,  /* FULLWIDTH QUESTION MARK */
+	0xff01,  /* FULLWIDTH EXCLAMATION MARK */
+	0xff0c,  /* FULLWIDTH COMMA */
+	0xff0e,  /* FULLWIDTH FULL STOP */
+	0xff1f,  /* FULLWIDTH QUESTION MARK */
 };
 
 static const wchar_t _fullwidth[][2] = {

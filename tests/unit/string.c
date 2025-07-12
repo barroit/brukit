@@ -44,8 +44,8 @@ UT_ROUTINE(__mbtowc)
 	str[0] = __mbtowc("ミ");
 	UA_STREQ_WC(str, L"ミ");
 
-	str[0] = __mbtowc((char []){ 0xF8, 0x80, 0x80, 0x80, 0 });
-	UA_LT(str[0], 0xFF);
+	str[0] = __mbtowc((char []){ 0xf8, 0x80, 0x80, 0x80, 0 });
+	UA_LT(str[0], 0xff);
 }
 
 UT_ROUTINE(mbsws)

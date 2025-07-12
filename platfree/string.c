@@ -55,22 +55,22 @@ size_t __mbslen(const char *s)
 wchar_t __mbtowc(const char *seq)
 {
 	uint shift = 6;
-	uint mask = 0x1F;
+	uint mask = 0x1f;
 	wchar_t res = 0;
 	uint len = utf8_class(*seq);
 
 	switch (len) {
 	case UTF8_4B:
-		res |= seq[3] & 0x3F;
+		res |= seq[3] & 0x3f;
 		shift += 6;
 		mask >>= 1;
 	case UTF8_3B:
-		res |= (seq[2] & 0x3F) << (shift - 6);
+		res |= (seq[2] & 0x3f) << (shift - 6);
 		shift += 6;
 		mask >>= 1;
 	case UTF8_2B:
 		res |= ((seq[0] & mask) << shift) |
-		       ((seq[1] & 0x3F) << (shift - 6));
+		       ((seq[1] & 0x3f) << (shift - 6));
 		break;
 	default:
 		res = seq[0];
