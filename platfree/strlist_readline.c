@@ -11,6 +11,7 @@
 
 #include "utf8.h"
 #include "utf16.h"
+#include "utf32.h"
 #include "xalloc.h"
 #include "xcf.h"
 
