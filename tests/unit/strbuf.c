@@ -18,37 +18,48 @@ UT_BEGIN();
 UT_ROUTINE(sb_puts)
 {
 	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
-	uint __cap;
+	size_t __cap;
 
 	sb_puts(&sb, XC("miku"));
 	UA_EQ(xc_strlen(sb.buf), 4);
+	UA_EQ(sb.len, 4);
 	__cap = sb.cap;
 
-	sb_puts_at_cwd(&sb, XC("miku39"));
+	sb_cwd_puts(&sb, XC("miku39"));
 	UA_EQ(xc_strlen(sb.buf), 6);
+	UA_EQ(sb.len, 6);
 	UA_EQ(sb.cap, __cap);
 
-	sb_puts_at(&sb, 2, XC("miku"));
+	sb_puts_at(&sb, 2, XC("miku"), -1);
 	UA_EQ(xc_strlen(sb.buf), 6);
+	UA_EQ(sb.len, 6);
+
+	sb_puts_at(&sb, 0, XC(""), -1);
+	UA_EQ(xc_strlen(sb.buf), 0);
+	UA_EQ(sb.len, 0);
 }
 
 UT_ROUTINE(sb_putc)
 {
 	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
-	uint __cap;
+	size_t __cap;
 
 	sb_putc(&sb, XC('a'));
 	UA_EQ(xc_strlen(sb.buf), 1);
 	__cap = sb.cap;
 
-	sb_putc_at_cwd(&sb, XC('b'));
+	sb_cwd_putc(&sb, XC('b'));
 	UA_EQ(xc_strlen(sb.buf), 1);
 	UA_STREQ(sb.buf, XC("b"));
 	UA_EQ(sb.cap, __cap);
 
-	sb_puts_at(&sb, 0, XC("miku.39"));
+	sb_puts_at(&sb, 0, XC("miku.39"), -1);
 	sb_putc_at(&sb, 4, XC('_'));
 	UA_STREQ(sb.buf, XC("miku_"));
+
+	sb_putc_at(&sb, 0, 0);
+	UA_EQ(xc_strlen(sb.buf), 0);
+	UA_EQ(sb.len, 0);
 }
 
 UT_ROUTINE(sb_trunc)
@@ -61,7 +72,7 @@ UT_ROUTINE(sb_trunc)
 	UA_ZERO(sb.len);
 	UA_ZERO(sb.buf[0]);
 
-	sb_pth_legacy_reinit_cwd(&sb, XC("/path/to/dir"));
+	sb_pth_reinit_cwd_dumb(&sb, XC("/path/to/dir"));
 
 	sb_puts(&sb, XC("/dummy/path"));
 	sb_trunc_to_cwd(&sb);
@@ -72,7 +83,7 @@ UT_ROUTINE(sb_trunc)
 UT_ROUTINE(sb_printf)
 {
 	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
-	uint __cap;
+	size_t __cap;
 
 	/* 39 Variable! */
 	int int39 = 39;
@@ -117,7 +128,7 @@ UT_ROUTINE(sb_off_ws)
 {
 	struct strbuf __cleanup(sb_destroy) sb;
 
-	sb_pth_legacy_init_cwd(&sb, XC("path/to/root/dir/"));
+	sb_pth_init_cwd_dumb(&sb, XC("path/to/root/dir/"));
 
 	UA_STREQ(sb.buf, XC("path/to/root/dir/"));
 	UA_EQ(sb.off.cwd, xc_strlen(XC("path/to/root/dir/")));
@@ -128,21 +139,21 @@ UT_ROUTINE(sb_off_ws)
 	sb_puts(&sb, XC("executable"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir/executable"));
 
-	sb_puts_at_cwd(&sb, XC("file"));
+	sb_cwd_puts(&sb, XC("file"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir/file"));
 
 	sb_printf_at_cwd(&sb, XC(".%s%u"), XC("miku"), 39);
 	UA_STREQ(sb.buf, XC("path/to/root/dir/.miku39"));
 }
 
-UT_ROUTINE(sb_pth_legacy_init_cwd)
+UT_ROUTINE(sb_pth_init_cwd_dumb)
 {
 	struct strbuf __cleanup(sb_destroy) sb;
 
-	sb_pth_legacy_init_cwd(&sb, XC("path/to/default/cwd"));
+	sb_pth_init_cwd_dumb(&sb, XC("path/to/default/cwd"));
 	UA_STREQ(sb.buf, XC("path/to/default/cwd"));
 
-	sb_pth_legacy_reinit_cwd(&sb, XC("path/to/new/cwd"));
+	sb_pth_reinit_cwd_dumb(&sb, XC("path/to/new/cwd"));
 	UA_STREQ(sb.buf, XC("path/to/new/cwd"));
 }
 
@@ -150,12 +161,12 @@ UT_ROUTINE(sb_pth_legacy_api)
 {
 	struct strbuf __cleanup(sb_destroy) sb;
 
-	sb_pth_legacy_init_cwd(&sb, XC("path/to/root/dir"));
+	sb_pth_init_cwd_dumb(&sb, XC("path/to/root/dir"));
 
-	sb_pth_legacy_append(&sb, XC("executable"));
+	sb_pth_append_dumb(&sb, XC("executable"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir") SEP XC("executable"));
 
-	sb_pth_legacy_append_at_cwd(&sb, XC("file"));
+	sb_pth_append_at_cwd_dumb(&sb, XC("file"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir") SEP XC("file"));
 }
 

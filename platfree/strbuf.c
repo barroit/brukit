@@ -3,6 +3,9 @@
  * Copyright 2024, 2025 Jiamu Sun <barroit@linux.com>
  */
 
+#define NG39_NAME "strbuf"
+#define pr_fmt(fmt) NG39_NAME ":%s: " fmt, __func__
+
 #include "strbuf.h"
 
 #include <ctype.h>
@@ -13,6 +16,7 @@
 #include "strconv.h"
 #include "path.h"
 #include "pathwalk.h"
+#include "printf.h"
 #include "xalloc.h"
 #include "xcf.h"
 
@@ -26,34 +30,27 @@ void sb_destroy(struct strbuf *sb)
 	free(sb->buf);
 }
 
-xchar *sb_detach(struct strbuf *sb)
+static inline void sb_grow(struct strbuf *sb, size_t new)
 {
-	xchar *ret = sb->buf;
-	uint used = sb->len + 1;
-	uint unused = align_down(sb->cap - used, 8);
-
-	if (unused >= 64)
-		ret = xrealloc(sb->buf, used);
-
-	return ret;
-}
-
-static inline void sb_grow(struct strbuf *sb, uint new)
-{
-	uint size = sb->len + new + 1;
+	size_t size = sb->len + new + 1;
 
 	REALLOCBUF(sb->buf, size, sb->cap);
 }
 
-uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s)
+size_t sb_puts_at(struct strbuf *sb, size_t off, const xchar *s, size_t len)
 {
-	uint len = xc_strlen(s);
-	uint overlap = sb->len - off;
+	size_t overlap = sb->len - off;
+
+	if (len == -1)
+		len = xc_strlen(s);
 
 	if (len > overlap)
 		sb_grow(sb, len - overlap);
 
-	memcpy(&sb->buf[off], s, (len + 1) * sizeof(*s));
+	if (len)
+		memcpy(&sb->buf[off], s, len * sizeof(*s));
+	sb->buf[off + len] = 0;
+
 	if (len > overlap)
 		sb->len += len - overlap;
 	else
@@ -62,28 +59,32 @@ uint sb_puts_at(struct strbuf *sb, uint off, const xchar *s)
 	return len;
 }
 
-uint sb_putc_at(struct strbuf *sb, uint off, const xchar c)
+size_t sb_putc_at(struct strbuf *sb, size_t off, const xchar c)
 {
-	uint overlap = sb->len - off;
+	size_t len = !!c;
+	size_t overlap = sb->len - off;
 
-	if (!overlap)
+	if (len > overlap)
 		sb_grow(sb, 1);
 
 	sb->buf[off] = c;
-	sb->buf[off + 1] = 0;
-	if (!overlap)
-		sb->len += 1;
-	else
-		sb->len -= overlap - 1;
 
-	return 1;
+	if (len)
+		sb->buf[off + 1] = 0;
+
+	if (!overlap)
+		sb->len += len;
+	else
+		sb->len -= overlap - len;
+
+	return len;
 }
 
-static uint __sb_printf_at(struct strbuf *sb, uint off,
-			   const xchar *fmt, va_list *ap)
+static size_t __sb_printf_at(struct strbuf *sb, size_t off,
+			    const xchar *fmt, va_list *ap)
 {
 	int nr;
-	uint avail;
+	size_t avail;
 	uint i = 0;
 
 	sb_grow(sb, 42);
@@ -92,9 +93,13 @@ retry:
 	avail = sb->cap - sb->len - 1;
 	nr = xc_vsnprintf(&sb->buf[off], avail + 1, fmt, ap[i]);
 
-	BUG_ON(nr < 0);
-	if (nr > avail) {
+	if (nr < 0) {
+		pr_err("xc_vsnprintf returns minus value");
+		return -1;
+
+	} else if (nr > avail) {
 		BUG_ON(i);
+
 		sb_grow(sb, nr);
 		i += 1;
 		goto retry;
@@ -107,7 +112,7 @@ retry:
 #define SB_PRINTF(sb, off, fmt)		\
 ({					\
 	va_list ap[2];			\
-	uint ret;			\
+	size_t ret;			\
 					\
 	va_start(ap[0], fmt);		\
 	va_copy(ap[1], ap[0]);		\
@@ -121,17 +126,17 @@ retry:
 	ret;				\
 })
 
-uint sb_printf_at(struct strbuf *sb, uint off, const xchar *fmt, ...)
+size_t sb_printf_at(struct strbuf *sb, size_t off, const xchar *fmt, ...)
 {
 	return SB_PRINTF(sb, off, fmt);
 }
 
-uint sb_printf(struct strbuf *sb, const xchar *fmt, ...)
+size_t sb_printf(struct strbuf *sb, const xchar *fmt, ...)
 {
 	return SB_PRINTF(sb, sb->len, fmt);
 }
 
-uint sb_printf_at_cwd(struct strbuf *sb, const xchar *fmt, ...)
+size_t sb_printf_at_cwd(struct strbuf *sb, const xchar *fmt, ...)
 {
 	return SB_PRINTF(sb, sb->off.cwd, fmt);
 }
@@ -163,22 +168,22 @@ void sb_trim(struct strbuf *sb)
 	sb->buf[sb->len] = 0;
 }
 
-void sb_pth_legacy_init_cwd(struct strbuf *sb, const xchar *name)
+void sb_pth_init_cwd_dumb(struct strbuf *sb, const xchar *name)
 {
 	memset(sb, 0, sizeof(*sb));
 	sb->off.cwd = sb_puts(sb, name);
 }
 
-void sb_pth_legacy_reinit_cwd(struct strbuf *sb, const xchar *name)
+void sb_pth_reinit_cwd_dumb(struct strbuf *sb, const xchar *name)
 {
 	sb_trunc(sb, sb->len);
 	sb->off.cwd = sb_puts(sb, name);
 }
 
-uint sb_pth_legacy_append(struct strbuf *sb, const xchar *name)
+size_t sb_pth_append_dumb(struct strbuf *sb, const xchar *name)
 {
-	uint __len = xc_strlen(name);
-	uint len = __len + 1;
+	size_t __len = xc_strlen(name);
+	size_t len = __len + 1;
 
 	sb_grow(sb, len);
 
@@ -191,11 +196,11 @@ uint sb_pth_legacy_append(struct strbuf *sb, const xchar *name)
 	return len;
 }
 
-uint sb_pth_legacy_append_at_cwd(struct strbuf *sb, const xchar *name)
+size_t sb_pth_append_at_cwd_dumb(struct strbuf *sb, const xchar *name)
 {
-	uint __len = xc_strlen(name);
-	uint len = __len + 1;
-	uint overlap = sb->len - sb->off.cwd;
+	size_t __len = xc_strlen(name);
+	size_t len = __len + 1;
+	size_t overlap = sb->len - sb->off.cwd;
 
 	if (len > overlap)
 		sb_grow(sb, len - overlap);
@@ -211,7 +216,7 @@ uint sb_pth_legacy_append_at_cwd(struct strbuf *sb, const xchar *name)
 	return len;
 }
 
-void sb_pth_legacy_to_dirname(struct strbuf *sb)
+void sb_pth_to_dirname_dumb(struct strbuf *sb)
 {
 	xchar *sep = pth_last_sep(sb->buf);
 
@@ -270,7 +275,7 @@ void sb_pth_init(struct strbuf **__sb, const xchar *name)
 	struct strbuf *sb;
 	struct pathwalk *pw;
 
-	uint size = sizeof(*sb) + sizeof(*pw);
+	size_t size = sizeof(*sb) + sizeof(*pw);
 
 	sb = xmalloc(size);
 	pw = (void *)sb + sizeof(*sb);
@@ -312,7 +317,7 @@ void sb_pth_destroy(struct strbuf **sb)
 	free(buf);
 }
 
-static void __sb_pth_add_no_sep(struct strbuf *sb, const xchar *name, uint len)
+static void __sb_pth_add_no_sep(struct strbuf *sb, const xchar *name, size_t len)
 {
 	memcpy(&sb->buf[sb->len], name, (len + 1) * sizeof(*name));
 	sb->len += len;
@@ -320,7 +325,7 @@ static void __sb_pth_add_no_sep(struct strbuf *sb, const xchar *name, uint len)
 	__pw_init(PW(sb), sb->buf, sb->len, sb->buf, 0);
 }
 
-static void __sb_pth_add(struct strbuf *sb, const xchar *name, uint len)
+static void __sb_pth_add(struct strbuf *sb, const xchar *name, size_t len)
 {
 	if (!pw_in_root(PW(sb))) {
 		sb->buf[sb->len] = PTH_SEP;
@@ -330,16 +335,16 @@ static void __sb_pth_add(struct strbuf *sb, const xchar *name, uint len)
 	__sb_pth_add_no_sep(sb, name, len);
 }
 
-uint sb_pth_push_cwd(struct strbuf *sb, const xchar *name)
+size_t sb_pth_push_cwd(struct strbuf *sb, const xchar *name)
 {
 	if (!sb->off.cwd) {
 		sb_trunc(sb, sb->len);
 		return sb_pth_push_no_sep(sb, name);
 	}
 
-	uint comp_len = xc_strlen(name);
-	uint len = comp_len + 1;
-	uint overlap = sb->len - sb->off.cwd;
+	size_t comp_len = xc_strlen(name);
+	size_t len = comp_len + 1;
+	size_t overlap = sb->len - sb->off.cwd;
 
 	if (len > overlap)
 		sb_grow(sb, len - overlap);
@@ -364,8 +369,8 @@ uint sb_pth_push_cwd(struct strbuf *sb, const xchar *name)
 
 #define SB_PTH_ADD(sb, name, fn)	\
 ({					\
-	uint comp_len = xc_strlen(name);\
-	uint len = comp_len + 1;	\
+	size_t comp_len = xc_strlen(name);\
+	size_t len = comp_len + 1;	\
 					\
 	sb_grow(sb, len);		\
 	fn(sb, name, comp_len);		\
@@ -373,21 +378,21 @@ uint sb_pth_push_cwd(struct strbuf *sb, const xchar *name)
 	len;				\
 })
 
-uint sb_pth_push(struct strbuf *sb, const xchar *name)
+size_t sb_pth_push(struct strbuf *sb, const xchar *name)
 {
 	return SB_PTH_ADD(sb, name, __sb_pth_add);
 }
 
-uint sb_pth_push_no_sep(struct strbuf *sb, const xchar *name)
+size_t sb_pth_push_no_sep(struct strbuf *sb, const xchar *name)
 {
 	return SB_PTH_ADD(sb, name, __sb_pth_add_no_sep);
 }
 
-uint __sb_pth_join(struct strbuf *sb, ...)
+size_t __sb_pth_join(struct strbuf *sb, ...)
 {
 	va_list ap;
 	va_list cp;
-	uint len = 0;
+	size_t len = 0;
 
 	va_start(ap, sb);
 	va_copy(cp, ap);
@@ -410,7 +415,7 @@ uint __sb_pth_join(struct strbuf *sb, ...)
 		if (!str)
 			break;
 
-		uint comp_len = xc_strlen(str);
+		size_t comp_len = xc_strlen(str);
 
 		__sb_pth_add(sb, str, comp_len);
 	}
