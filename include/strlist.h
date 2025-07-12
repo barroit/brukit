@@ -101,6 +101,9 @@ void sl_read_line(struct strlist *sl, const xchar *str, size_t wrap);
 void sl_read_line_mb(struct strlist *sl,
 		     const char *str, size_t len, size_t wrap);
 
+void sl_read_line_wc(struct strlist *sl,
+		     const wchar_t *str, size_t len, size_t wrap);
+
 xchar **sl_to_argv(struct strlist *sl);
 
 void free_argv(xchar **argv);

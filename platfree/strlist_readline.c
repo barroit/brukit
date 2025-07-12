@@ -113,66 +113,77 @@ static void __maybe_unused read_line_once_wc(struct strlist *sl,
 					     const wchar_t **__str,
 					     size_t *__len, size_t wrap)
 {
-// 	size_t len = *__len;
-// 	const wchar_t *str = *__str;
+	const wchar_t *str = *__str;
+	const wchar_t *line = str;
 
-// 	while (*str) {
-// 		int skip = 0;
-// 		size_t class = utf16_class(*str);
+	const wchar_t *sep_end;
+	const wchar_t *sep_start = NULL;
 
-// 		switch (class) {
-// 		case UTF16_HI_BASE:
-// 			break;
+	int prev_alpha = 1;
+	size_t alphas = 0;
 
-// 		default:
-// 			if (iswspace(*str) || *str == '\n')
-// 				skip = 1;
-// 		}
+	while (39) {
+		if (wch(*line))
+			break;
 
-// 		if (!skip)
-// 			break;
+		if (*line == '\n') {
+			line++;
+			str = line;
+			goto out;
+		}
 
-// 		size_t size = class == UTF16_HI_BASE + 1;
+		if (!iswspace(*line))
+			break;
 
-// 		str += size;
-// 		len -= size;
-// 	}
+		line++;
+	}
 
-// 	const wchar_t *ptr = str;
-// 	const wchar_t *sep = NULL;
+	str = line;
 
-// 	size_t chrs = 0;
+	while (*line && alphas <= wrap) {
+		if (wch(*line)) {
+			line++;
+			alphas++;
 
-// 	while (ptr < &str[len] && chrs < wrap) {
-// 		size_t class = utf16_class(*ptr);
-// 		size_t size = class == UTF16_HI_BASE + 1;
+		} else {
+			alphas += wc_fullwidth(*line);
 
-// 		switch (class) {
-// 		case UTF16_HI_BASE:
-// 			chrs++;
-// 			break;
+			if (!iswspace(*line)) {
+				prev_alpha = 1;
 
-// 		default:
-// 			if (iswspace(*ptr) || *ptr == '\n')
-// 				sep = ptr;
-// 			chrs += wc_fullwidth(wc);
-// 		}
+			} else if (*line == '\n') {
+				line--;
+				sep_end = line;
+				goto out;
 
-// 		ptr += size;
-// 		chrs++;
-// 	}
+			} else {
+				sep_end = line + 1;
 
-// 	if (!*ptr || !sep) {
-// 		sep = ptr;
-// 		sep_len = 1;
-// 	}
+				if (prev_alpha) {
+					sep_start = line;
+					prev_alpha = 0;
+				}
+			}
+		}
 
-// 	size_t n = sep - str;
+		line++;
+		alphas++;
+	}
 
-// 	__sl_push(sl, (void *)str, n, 1);
+out:
+	if (!sep_start || !*line) {
+		sep_end = line;
+		sep_start = line;
+	}
 
-// 	*__len -= str - *__str + n + sep_len;
-// 	*__str = sep + sep_len;
+	size_t len = sep_start - str;
+	size_t sep_len = sep_end - sep_start;
+	size_t ws_len = str - *__str;
+
+	__sl_push(sl, (void *)str, len, 1);
+
+	*__len -= ws_len + len + sep_len;
+	*__str = sep_end;
 }
 
 void sl_read_line_mb(struct strlist *sl,
@@ -185,14 +196,13 @@ void sl_read_line_mb(struct strlist *sl,
 		read_line_once_mb(sl, &str, &len, wrap);
 }
 
-static void __maybe_unused sl_read_line_wc(struct strlist *sl,
-					   const wchar_t *str,
-					   size_t len, size_t wrap)
+void sl_read_line_wc(struct strlist *sl,
+		     const wchar_t *str, size_t len, size_t wrap)
 {
 	if (len == -1)
 		len = wcslen(str);
 
-	while (len != -1)
+	while (len)
 		read_line_once_wc(sl, &str, &len, wrap);
 }
 
