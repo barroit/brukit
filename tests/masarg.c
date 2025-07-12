@@ -21,7 +21,7 @@ int main(int argc, const xchar **argv)
 	int i = 1;
 	struct strbuf sb = SB_INIT;
 
-	idx_for_each_from(i, argc) {
+	for_each_idx_from(i, argc) {
 		sb_puts(&sb, argv[i]);
 		sb_putc(&sb, XC(' '));
 	}

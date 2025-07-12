@@ -6,6 +6,7 @@
 #ifndef NG39_TYPES_H
 #define NG39_TYPES_H
 
+#include <stddef.h>
 #include <stdint.h>
 #include <sys/types.h>
 

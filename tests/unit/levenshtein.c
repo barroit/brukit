@@ -42,7 +42,7 @@ UT_ROUTINE(levenshtein1)
 	struct lev_weight wt = { 1, 1, 1, 1 };
 	uint sample[] = { 4, 0, 1, 1, 1, 5, 1, 1, 1, 1, 1 };
 
-	idx_for_each(i, sizeof_array(str)) {
+	for_each_idx(i, sizeof_array(str)) {
 		dist = levenshtein(str[i].s1, str[i].s2, &wt);
 		UA_EQ(dist, sample[i]);
 	}
@@ -60,7 +60,7 @@ UT_ROUTINE(levenshtein2)
 	};
 	uint sample[] = { 4, 0, 1, 1, 2, 10, 1, 1, 2, 1, 1 };
 
-	idx_for_each(i, sizeof_array(str)) {
+	for_each_idx(i, sizeof_array(str)) {
 		dist = levenshtein(str[i].s1, str[i].s2, &wt);
 		UA_EQ(dist, sample[i]);
 	}

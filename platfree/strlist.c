@@ -5,42 +5,41 @@
 
 #include "strlist.h"
 
-#include <ctype.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
 #include <wctype.h>
 
+#include "ascii.h"
 #include "bitopt.h"
 #include "compiler.h"
-#include "mbctype.h"
 #include "strbuf.h"
-#include "unicode.h"
-#include "wcctype.h"
+#include "utf8.h"
+#include "utf16.h"
 #include "xalloc.h"
 #include "xcf.h"
 
-#define __sl_mode_mask (-1U << 28)
-#define __sl_mode(f)   ((f) & __sl_mode_mask)
-
 #define WORD_AVG_LEN 8
+
+#define ALLOC_ITEM(n, memb)				\
+({							\
+	struct strentry *__item = xmalloc(n);		\
+	void *__buf = (void *)__item + sizeof(*__item);	\
+							\
+	__item->memb = __buf;				\
+	__item;						\
+})
 
 void sl_init(struct strlist *sl, u32 flags)
 {
-	if (popcount(__sl_mode(flags)) == 0)
-		flags |= SL_STORE_COPY;
-	if (flags & (SL_STORE_COPY | SL_STORE_CHR))
-		flags |= SL_DUP_ON_POP;
-
-	BUG_ON(popcount(__sl_mode(flags)) > 1);
-	BUG_ON(flags & SL_CALC_SRLEN &&
-	       (flags & (__sl_mode(flags) ^ SL_STORE_REF)));
+	if (popcount(sl_mode(flags)) == 0)
+		flags |= SL_MODE_CP;
 
 	sl->flags = flags;
 	list_head_init(&sl->head);
 
-	if (sl->flags & SL_STORE_SBUF)
+	if (sl->flags & SL_MODE_SB || sl->flags & SL_MODE_MV)
 		list_head_init(&sl->idle);
 
 	sl->items = 0;
@@ -48,10 +47,10 @@ void sl_init(struct strlist *sl, u32 flags)
 
 static void __sl_destroy(struct strlist *sl, struct list_head *head)
 {
-	struct strlist_item *item, *tmp;
+	struct strentry *item, *tmp;
 
 	list_for_each_entry_safe(item, tmp, head, list) {
-		if (sl->flags & SL_STORE_SBUF)
+		if (sl->flags & SL_MODE_SB)
 			sb_destroy(item->sb);
 		free(item);
 	}
@@ -60,382 +59,222 @@ static void __sl_destroy(struct strlist *sl, struct list_head *head)
 void sl_destroy(struct strlist *sl)
 {
 	__sl_destroy(sl, &sl->head);
-	if (sl->flags & SL_STORE_SBUF)
+
+	if (sl->flags & SL_MODE_SB)
 		__sl_destroy(sl, &sl->idle);
 }
 
-uint __sl_push(struct strlist *sl, const xchar *str, int is_que)
+static inline struct strentry *peek_idle(struct strlist *sl)
 {
-	uint ret = 0;
-	struct strlist_item *item = NULL;
+	return list_first_entry(&sl->idle, struct strentry, list);
+}
 
-	if (sl->flags & SL_STORE_SBUF && !list_is_empty(&sl->idle)) {
-		item = list_first_entry(&sl->idle, struct strlist_item, list);
+static inline struct strentry *take_idle(struct strlist *sl)
+{
+	struct strentry *item = peek_idle(sl);
+
+	list_del(&item->list);
+	return item;
+}
+
+static struct strentry *make_item_cp(struct strlist *sl,
+				     const xchar *str, size_t len)
+{
+	struct strentry *item;
+	size_t size = sizeof(*item);
+
+	if (len == -1)
+		len = xc_strlen(str);
+	size += (len + 1) * sizeof(*str);
+
+	item = ALLOC_ITEM(size, sc);
+	BUILD_BUG_ON(alignof(*item) < alignof(str));
+
+	memcpy(item->sc, str, len * sizeof(*str));
+
+	item->sc[len] = 0;
+	item->len = len;
+	return item;
+}
+
+static struct strentry *make_item_mb(struct strlist *sl,
+				     const char *str, size_t len)
+{
+	struct strentry *item;
+	size_t size = sizeof(*item);
+
+	if (len == -1)
+		len = strlen((void *)str);
+	size += len + 1;
+
+	item = ALLOC_ITEM(size, __sc);
+	BUILD_BUG_ON(alignof(*item) < alignof(str));
+
+	memcpy(item->__sc, str, len);
+
+	item->__sc[len] = 0;
+	item->len = len;
+	return item;
+}
+
+static struct strentry *make_item_sb(struct strlist *sl,
+				     const xchar *str, size_t len)
+{
+	struct strentry *item;
+
+	BUILD_BUG_ON(alignof(*item) < alignof(*item->sb));
+
+	if (!list_is_empty(&sl->idle)) {
+		item = take_idle(sl);
 		sb_trunc(item->sb, item->sb->len);
-		list_del(&item->list);
+	} else {
+		item = ALLOC_ITEM(sizeof(*item) + sizeof(*item->sb), sb);
+		sb_init(item->sb);
 	}
 
-	if (!item) {
-		size_t n = sizeof(*item);
-		void *buf;
+	item->len = sb_puts_at(item->sb, item->sb->len, str, len);
+	return item;
+}
 
-		switch (__sl_mode(sl->flags)) {
-		case SL_STORE_COPY:
-			ret = xc_strlen(str);
-			n += (ret + 1) * sizeof(*str);
-			break;
-		case SL_STORE_SBUF:
-			n += sizeof(*item->sb);
-			break;
-		case SL_STORE_CHR:
-			ret = strlen((char *)str);
-			n += ret + 1;
-		}
+static struct strentry *make_item_mv(struct strlist *sl, const xchar *str)
+{
+	struct strentry *item;
 
-		item = xmalloc(n);
-		buf = (void *)item + sizeof(*item);
-		((char *)item)[n - 1] = 0;
+	if (!list_is_empty(&sl->idle))
+		item = take_idle(sl);
+	else
+		item = ALLOC_ITEM(sizeof(*item), sr);
 
-		switch (__sl_mode(sl->flags)) {
-		case SL_STORE_COPY:
-			item->sc = buf;
-			BUILD_BUG_ON(alignof(*item) < alignof(str));
-			break;
-		case SL_STORE_SBUF:
-			item->sb = buf;
-			sb_init(item->sb);
-			BUILD_BUG_ON(alignof(*item) < alignof(*item->sb));
-			break;
-		case SL_STORE_CHR:
-			item->__sc = buf;
-			BUILD_BUG_ON(alignof(*item) < alignof((char *)str));
-		}
+	item->sr = str;
 
-		list_head_init(&item->list);
+	if (sl->flags & SL_CALC_LEN)
+		item->len = xc_strlen(str);
+
+	return item;
+}
+
+static struct strentry *make_item(struct strlist *sl,
+				  const xchar *str, size_t len)
+{
+	struct strentry *item;
+	u32 mode = sl_mode(sl->flags);
+
+	switch (mode) {
+	case SL_MODE_CP:
+		item = make_item_cp(sl, str, len);
+		break;
+
+	case SL_MODE_SB:
+		item = make_item_sb(sl, str, len);
+		break;
+
+	case SL_MODE_MB:
+		item = make_item_mb(sl, (void *)str, len);
+		break;
+
+	case SL_MODE_MV:
+		item = make_item_mv(sl, str);
 	}
 
-	switch (__sl_mode(sl->flags)) {
-	case SL_STORE_COPY:
-		memcpy(item->sc, str, (ret + 1) * sizeof(*str));
-		break;
-	case SL_STORE_SBUF:
-		ret = sb_puts(item->sb, str);
-		break;
-	case SL_STORE_REF:
-		item->sr = str;
-		if (sl->flags & SL_CALC_SRLEN)
-			ret = xc_strlen(str);
-		break;
-	case SL_STORE_CHR:
-		memcpy(item->__sc, (char *)str, ret + 1);
-	}
+	item->mode = mode;
+	list_head_init(&item->list);
+	return item;
+}
 
-	if (is_que)
+struct strentry *__sl_push(struct strlist *sl,
+			   const xchar *str, size_t len, int backward)
+{
+	struct strentry *item = make_item(sl, str, len);
+
+	if (backward)
 		list_add_tail(&item->list, &sl->head);
 	else
 		list_add(&item->list, &sl->head);
 
 	sl->items++;
-	return ret;
+	return item;
 }
 
-xchar *sl_pop(struct strlist *sl)
+struct strentry *sl_pop(struct strlist *sl)
 {
 	if (list_is_empty(&sl->head))
 		return NULL;
 
-	xchar *ret = NULL;
-	struct strlist_item *item = list_first_entry(&sl->head,
-						     typeof(*item), list);
+	struct strentry *item = list_first_entry(&sl->head,
+						 struct strentry, list);
 
 	list_del(&item->list);
-
-	switch (__sl_mode(sl->flags)) {
-	case SL_STORE_COPY:
-		ret = item->sc;
-		break;
-	case SL_STORE_SBUF:
-		ret = item->sb->buf;
-		break;
-	case SL_STORE_REF:
-		ret = (xchar *)item->sr;
-		break;
-	case SL_STORE_CHR:
-		ret = (xchar *)item->__sc;
-	}
-
-	if (sl->flags & SL_STORE_CHR)
-		ret = (xchar *)strdup((char *)ret);
-	else if (sl->flags & SL_DUP_ON_POP)
-		ret = xc_xstrdup(ret);
-
-	if (sl->flags & SL_STORE_SBUF)
-		list_add(&item->list, &sl->idle);
-	else
-		free(item);
-
 	sl->items--;
-	return ret;
+	return item;
 }
 
-static inline int need_rewind_sb(const char c)
+const xchar *sl_str(struct strentry *item)
 {
-	return isspace(c) || iseoc(c);
-}
+	switch (item->mode) {
+	case SL_MODE_CP:
+		return item->sc;
 
-static inline int need_rewind_wc(wchar_t c)
-{
-	return iswspace(c) || iseoc(c);
-}
+	case SL_MODE_SB:
+		return item->sb->buf;
 
-static char *prev_word_mb(const char *seq)
-{
-	while (ismbcb(*--seq));
+	case SL_MODE_MV:
+		return (void *)item->sr;
 
-	return (char *)seq;
-}
-
-static char *next_word_mb(const char *seq)
-{
-	while (ismbcb(*++seq));
-
-	return (char *)seq;
-}
-
-static inline wchar_t *prev_word_wc(const wchar_t *str)
-{
-	wchar_t *prev = (wchar_t *)str - 1;
-
-	return prev - iswcspl(*prev);
-}
-
-static inline wchar_t *next_word_wc(const wchar_t *str)
-{
-	wchar_t *prev = (wchar_t *)str;
-
-	return iswcsp(*str) ? &prev[2] : &prev[1];
-}
-
-static const char *advance_word_mb(const char *ptr,
-				   const char *tail, uint limit)
-{
-	uint cnt = 0;
-
-	while (ptr < tail && cnt < limit) {
-		wchar_t c;
-		uint len = __mbctype(*ptr);
-
-		switch (len) {
-		case _9D:
-		case _9C:
-			c = __mbtowc(ptr);
-			cnt += 1 + iswide(c);
-			break;
-		case _9B:
-		case _9A:
-			cnt++;
-		}
-
-		ptr += len;
+	case SL_MODE_MB:
+		return (void *)item->__sc;
 	}
 
-	return ptr;
+	trap();
 }
 
-static const char *rewind_word_mb(const char *ptr,
-				  const char *head, uint limit)
+void sl_put_idle(struct strlist *sl, struct strentry *item)
 {
-	uint cnt = 0;
-	const char *__ptr = ptr;
+	switch (item->mode) {
+	case SL_MODE_MV:
+	case SL_MODE_SB:
+		list_add(&item->list, &sl->idle);
+		break;
 
-	while (ptr > head && cnt < limit) {
-		wchar_t c;
-		uint len = __mbctype(*ptr);
-
-		switch (len) {
-		case _9D:
-		case _9C:
-		case _9B:
-	 		c = __mbtowc(ptr);
-			if (need_rewind_wc(c))
-				return ptr;
-
-			cnt += iswide(c);
-			break;
-		case _9A:
-			if (need_rewind_sb(*ptr))
-				return ptr;
-		}
-
-		cnt += 1;
-		ptr = prev_word_mb(ptr);
+	default:
+		trap();
 	}
-
-	return __ptr;
 }
 
-static __maybe_unused void sl_read_line_mb(struct strlist *sl,
-					   const char *str, uint wrap)
+void sl_free(struct strentry *item)
 {
-	size_t len = strlen(str);
+	if (item->mode & SL_MODE_SB)
+		sb_destroy(item->sb);
 
-	const char *tail = &str[len];
-	const char *prev;
-	const char *next = str;
-
-	size_t size = (wrap + 1) * 4 + 1;
-	size_t __size = strlen(str) + 1;
-
-	if (size > __size)
-		size = __size;
-
-	char *buf = xmalloc(size);
-
-	while (next < tail) {
-		next = advance_word_mb(next, tail, wrap + 1);
-		prev = next;
-
-		if (*prev) {
-			prev = rewind_word_mb(prev, str, WORD_AVG_LEN);
-			next = next_word_mb(prev);
-		}
-
-		while (isspace(*next))
-			next++;
-
-		size_t n = next - str;
-
-		memcpy(buf, str, n);
-		buf[n] = 0;
-
-		wchar_t c = __mbtowc(prev);
-
-		if (iswspace(c))
-			buf[prev - str] = 0;
-
-		sl_push_back_chr(sl, buf);
-		str = next;
-	}
-
-	free(buf);
-}
-
-static const wchar_t *advance_word_wc(const wchar_t *ptr,
-				      const wchar_t *tail, uint limit)
-{
-	uint cnt = 0;
-
-	while (ptr < tail && cnt < limit) {
-		switch (__wcspmask(*ptr)) {
-		case _3WH:
-			cnt++;
-			ptr++;
-			break;
-		default:
-			cnt += iswide(*ptr);
-		}
-
-		cnt++;
-		ptr++;
-	}
-
-	return ptr;
-}
-
-static const wchar_t *rewind_word_wc(const wchar_t *ptr,
-				     const wchar_t *head, uint limit)
-{
-	uint cnt = 0;
-	const wchar_t *__ptr = ptr;
-
-	while (ptr > head && cnt < limit) {
-		switch (__wcspmask(*ptr)) {
-		case _3WH:
-			cnt++;
-			break;
-		default:
-			if (need_rewind_wc(*ptr))
-				return ptr;
-			cnt += iswide(*ptr);
-		}
-
-		cnt++;
-		ptr = prev_word_wc(ptr);
-	}
-
-	return __ptr;
-}
-
-static __maybe_unused void sl_read_line_wc(struct strlist *sl,
-					   const wchar_t *str, uint wrap)
-{
-	size_t len = wcslen(str);
-
-	const wchar_t *tail = &str[len];
-	const wchar_t *prev;
-	const wchar_t *next = str;
-
-	size_t size = (wrap + 1 + 1) * sizeof(*str);
-	wchar_t *buf = xmalloc(size);
-
-	while (next < tail) {
-		next = advance_word_wc(next, tail, wrap + 1);
-		prev = next;
-
-		if (*prev) {
-			prev = rewind_word_wc(prev, str, WORD_AVG_LEN);
-			next = next_word_wc(prev);
-		}
-
-		while (!iswcsp(*next) && iswspace(*next))
-			next++;
-
-		size_t n = next - str;
-
-		memcpy(buf, str, n * sizeof(*str));
-		buf[n] = 0;
-
-		if (iswspace(*prev))
-			buf[prev - str] = 0;
-
-		sl_push_back(sl, (xchar *)buf);
-		str = next;
-	}
-
-	free(buf);
-}
-
-#ifdef CONFIG_ENABLE_WCHAR
-# define __sl_read_line sl_read_line_wc
-#else
-# define __sl_read_line sl_read_line_mb
-#endif
-
-void sl_read_line(struct strlist *sl, const xchar *str, uint wrap)
-{
-	if (wrap == -1)
-		wrap = CONFIG_LINE_WRAP;
-
-	__sl_read_line(sl, str, wrap);
-}
-
-void sl_read_line_chr(struct strlist *sl, const char *str, uint wrap)
-{
-	if (wrap == -1)
-		wrap = CONFIG_LINE_WRAP;
-
-	sl_read_line_mb(sl, str, wrap);
+	free(item);
 }
 
 xchar **sl_to_argv(struct strlist *sl)
 {
-	xchar *str;
 	xchar **ret = xmalloc((sl->items + 1) * sizeof(void *));
 	xchar **ptr = ret;
+	struct strentry *item;
 
-	while ((str = sl_pop(sl)) != NULL)
-		*ptr++ = str;
+	while ((item = sl_pop(sl))) {
+		const xchar *str = sl_str(item);
+
+		if (sl->flags & SL_MODE_MB)
+			*ptr++ = (void *)strdup((void *)str);
+		else
+			*ptr++ = xc_strdup(str);
+
+		sl_free(item);
+	}
 
 	*ptr = NULL;
 	return ret;
+}
+
+void free_argv(xchar **argv)
+{
+	void *ptr = argv;
+
+	while (*argv)
+		free(*argv++);
+
+	free(ptr);
 }

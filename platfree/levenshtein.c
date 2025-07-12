@@ -29,14 +29,14 @@ uint levenshtein(const xchar *s1, const xchar *s2, const struct lev_weight *wt)
 
 	uint i;
 
-	idx_for_each(i, len2 + 1)
+	for_each_idx(i, len2 + 1)
 		row[1][i] = i * wt->add;
 
-	idx_for_each(i, len1) {
+	for_each_idx(i, len1) {
 		uint j;
 
 		row[2][0] = (i + 1) * wt->del;
-		idx_for_each(j, len2) {
+		for_each_idx(j, len2) {
 			uint del = row[1][j + 1] + wt->del;
 			uint add = row[2][j] + wt->add;
 			uint sub = row[1][j] + (s1[i] != s2[j]) * wt->sub;

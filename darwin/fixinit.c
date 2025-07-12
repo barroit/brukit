@@ -37,7 +37,7 @@ static void __cold __attr((__constructor__)) run_init(void)
 
 	uint i;
 
-	idx_for_each(i, nr) {
+	for_each_idx(i, nr) {
 		struct init_data *data = &copy[i];
 
 		data->cb();

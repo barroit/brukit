@@ -8,11 +8,11 @@
 
 #include "strbuf.h"
 
-#include <ctype.h>
 #include <wctype.h>
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "ascii.h"
 #include "strconv.h"
 #include "path.h"
 #include "pathwalk.h"

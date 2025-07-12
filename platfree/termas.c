@@ -5,7 +5,6 @@
 
 #include "termas.h"
 
-#include <ctype.h>
 #include <inttypes.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -13,6 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "ascii.h"
 #include "i18n.h"
 #include "iter.h"
 #include "scio.h"
@@ -50,7 +50,7 @@ static size_t rm_bad_cntrl(char *buf, size_t len, size_t limit)
 	size_t i;
 	size_t dropped = 0;
 
-	idx_for_each(i, len) {
+	for_each_idx(i, len) {
 		if (bad_cntrl(buf[i]))
 			dropped++;
 	}
@@ -69,7 +69,7 @@ static size_t rm_bad_cntrl(char *buf, size_t len, size_t limit)
 		sub = "?";
 
 	if (sub_len == 1 || overflow) {
-		idx_for_each(i, len) {
+		for_each_idx(i, len) {
 			if (bad_cntrl(buf[i]))
 				buf[i] = sub[0];
 		}
@@ -80,7 +80,7 @@ static size_t rm_bad_cntrl(char *buf, size_t len, size_t limit)
 	size_t tail = len - 1;
 	size_t ret = len + need;
 
-	idx_for_each_reverse(i, len - 1) {
+	for_each_idx_reverse(i, len - 1) {
 		if (!bad_cntrl(buf[i]))
 			continue;
 
@@ -196,13 +196,13 @@ int __termas(const char *file, int line,
 		if (no_pad)
 			pad = "";
 
-		ret = snprintf(&buf[len], room + 1, pos_fmt, pad);
+		ret = snprintf(&buf[len], room + 1, pos_fmt, file, line, pad);
 		if (!consume_room(ret, &len, &room))
 			goto out;
 	}
 
 	if (flags & MAS_SHOW_FUNC) {
-		const char *pos_fmt = H("%s:%d:%s", BOLD);
+		const char *pos_fmt = H("%s: ", BOLD);
 
 		if (!udef_use_tercol)
 			pos_fmt = "%s: ";

@@ -28,14 +28,14 @@ UT_ROUTINE(proc_exec_wait)
 	proc_t proc[sizeof_array(flags)];
 	uint i;
 
-	idx_for_each(i, sizeof_array(flags)) {
+	for_each_idx(i, sizeof_array(flags)) {
 		int err;
 
 		err = proc_exec(flags[i], &proc[i], file, file, NULL);
 		UA_EQ(err, 0);
 	}
 
-	idx_for_each(i, sizeof_array(flags)) {
+	for_each_idx(i, sizeof_array(flags)) {
 		int ret;
 		int err;
 

@@ -5,10 +5,10 @@
 
 #include "strtox.h"
 
-#include <ctype.h>
 #include <errno.h>
 #include <limits.h>
 
+#include "ascii.h"
 #include "attr.h"
 #include "compiler.h"
 #include "xc.h"

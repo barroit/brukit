@@ -74,7 +74,7 @@ int proc_exec(u32 flags, proc_t *proc, const xchar *file, ...)
 	}
 
 	va_list ap;
-	struct strlist sl = SL_INIT(sl, SL_STORE_REF);
+	struct strlist sl = SL_INIT(sl, SL_MODE_MV);
 
 	va_start(ap, file);
 

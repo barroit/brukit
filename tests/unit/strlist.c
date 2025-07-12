@@ -15,281 +15,200 @@
 #endif
 
 #define miku_jp_1 \
-"初音ミクの魅力は、誰もがプロデュースできるシンガーであることです。 「初音ミク」のリ"
+"初音ミクの魅力は、誰もがプロデュースできるシンガーであることです。「初音ミク」のリ"
 #define miku_jp_2 \
-"リース直後から、アマチュア・プロを問わず、多くのミュージシャンが一斉に初音ミクが歌う"
+"リース直後から、アマチュア・プロを問わず、多くのミュージシャンが一斉に初音ミが歌う"
 #define miku_jp_3 \
-"楽曲を動画投稿サイト「ニコニコ動画」や「Youtube」で発表しました。 すると、今度はその"
+"楽曲を動画投稿サイト「ニコニコ動画」や「Youtube」で発表しました。すると、今度はそ"
 #define miku_jp_4 \
-"曲に刺激されたイラストレーターが初音ミクの絵を描き、気に入った曲にPVをつける映像作家"
+"の曲に刺激されたイラストレーターが初音ミクの絵を描き、気に入った曲にPVをつける映像"
 #define miku_jp_5 \
-"も現れ・・・いつのまにかたくさんのクリエイターたちが初音ミクというバーチャルアイドル"
+"作家も現れ・・・いつのまにかたくさんのクリエイターたちが初音ミクというバーチャルア"
 #define miku_jp_6 \
-"の「プロデュース」を楽しむようになりました。"
+"イドルの「プロデュース」を楽しむようになりました。"
 #define miku_jp miku_jp_1 miku_jp_2 miku_jp_3 miku_jp_4 miku_jp_5 miku_jp_6
 
 #define miku_en_1 \
 "Hatsune Miku, sometimes called Miku Hatsune, officially code-named CV01, is a"
 #define miku_en_2 \
-"Vocaloid software voicebank developed by Crypton Future Media and its official"
+""
 #define miku_en_3 \
+""
+#define miku_en_4 \
+""
+#define miku_en_5 \
+""
+#define miku_en_6 \
+"Vocaloid software voicebank developed by Crypton Future Media and its official"
+#define miku_en_7 \
 "mascot character, a sixteen-year-old girl with long, turquoise twintails."
-#define miku_en miku_en_1 " " miku_en_2 " " miku_en_3
+#define miku_en miku_en_1 "  \n  \n\n \n " miku_en_6 " " miku_en_7
+
+static void __sl_free(struct strentry **item)
+{
+	if (!*item)
+		return;
+
+	sl_free(*item);
+}
 
 UT_BEGIN(setup)
 {
 	setlocale(LC_ALL, "C.UTF-8");
 }
 
-UT_ROUTINE(sl__0)
+UT_ROUTINE(sl_mode_cp)
 {
-	xchar __cleanup(__free) *res;
 	struct strlist __cleanup(sl_destroy) sl;
+	struct strentry __cleanup(__sl_free) *item;
+	const xchar *str;
 
-	sl_init(&sl, 0);
+	sl_init(&sl, SL_MODE_CP);
 
 	sl_push(&sl, XC("miku"));
 	sl_push(&sl, XC("3939"));
 
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("3939"));
-	free(res);
+	item = sl_pop(&sl);
+	str = sl_str(item);
 
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("miku"));
-	free(res);
+	UA_NONNULL(str);
+	UA_STREQ(str, XC("3939"));
+	sl_free(item);
 
-	sl_push_back(&sl, XC("miku"));
-	sl_push_back(&sl, XC("3939"));
+	item = sl_pop(&sl);
+	str = sl_str(item);
 
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("miku"));
-	free(res);
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("3939"));
-	free(res);
-
-	res = NULL;
-}
-
-UT_ROUTINE(sl__SL_STORE_SBUF)
-{
-	xchar *res;
-	struct strlist __cleanup(sl_destroy) sl;
-
-	sl_init(&sl, SL_STORE_SBUF);
-
-	sl_push(&sl, XC("miku"));
-	sl_push(&sl, XC("3939"));
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("3939"));
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("miku"));
+	UA_NONNULL(str);
+	UA_STREQ(str, XC("miku"));
+	sl_free(item);
 
 	sl_push_back(&sl, XC("miku"));
 	sl_push_back(&sl, XC("3939"));
 
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("miku"));
+	item = sl_pop(&sl);
+	str = sl_str(item);
 
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("3939"));
+	UA_NONNULL(str);
+	UA_STREQ(str, XC("miku"));
+	sl_free(item);
+
+	item = sl_pop(&sl);
+	str = sl_str(item);
+
+	UA_NONNULL(str);
+	UA_STREQ(str, XC("3939"));
 }
 
-UT_ROUTINE(sl__SL_STORE_REF)
+UT_ROUTINE(sl_mode_cache)
 {
-	xchar *res;
 	struct strlist __cleanup(sl_destroy) sl;
+	struct strentry __cleanup(__sl_free) *item;
+	const xchar *str;
 
-	sl_init(&sl, SL_STORE_REF);
-
-	sl_push(&sl, XC("miku"));
-	sl_push(&sl, XC("3939"));
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("3939"));
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("miku"));
-
-	sl_push_back(&sl, XC("miku"));
-	sl_push_back(&sl, XC("3939"));
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("miku"));
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("3939"));
-}
-
-UT_ROUTINE(sl__SL_STORE_CHR)
-{
-	char __cleanup(__free) *res;
-	struct strlist __cleanup(sl_destroy) sl;
-
-	sl_init(&sl, SL__STORE_CHR);
-
-	sl_push_chr(&sl, "miku");
-	sl_push_chr(&sl, "3939");
-
-	res = sl_pop_chr(&sl);
-	UA_NONNULL(res);
-	UA_STREQ_MB(res, "3939");
-	free(res);
-
-	res = sl_pop_chr(&sl);
-	UA_NONNULL(res);
-	UA_STREQ_MB(res, "miku");
-	free(res);
-
-	sl_push_back_chr(&sl, "miku");
-	sl_push_back_chr(&sl, "3939");
-
-	res = sl_pop_chr(&sl);
-	UA_NONNULL(res);
-	UA_STREQ_MB(res, "miku");
-	free(res);
-
-	res = sl_pop_chr(&sl);
-	UA_NONNULL(res);
-	UA_STREQ_MB(res, "3939");
-	free(res);
-
-	res = NULL;
-}
-
-UT_ROUTINE(sl__SL_STORE_REF__SL_DUP_ON_POP)
-{
-	xchar __cleanup(__free) *res;
-	struct strlist __cleanup(sl_destroy) sl;
-
-	sl_init(&sl, SL_STORE_REF | SL_DUP_ON_POP);
-
-	sl_push(&sl, XC("miku"));
-	sl_push(&sl, XC("3939"));
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("3939"));
-	free(res);
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("miku"));
-	free(res);
-
-	sl_push_back(&sl, XC("miku"));
-	sl_push_back(&sl, XC("3939"));
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("miku"));
-	free(res);
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("3939"));
-	free(res);
-
-	res = NULL;
-}
-
-UT_ROUTINE(sl__SL_STORE_SBUF__SL_DUP_ON_POP)
-{
-	xchar __cleanup(__free) *res;
-	struct strlist __cleanup(sl_destroy) sl;
-
-	sl_init(&sl, SL_STORE_SBUF | SL_DUP_ON_POP);
-
-	sl_push(&sl, XC("miku"));
-	sl_push(&sl, XC("3939"));
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("3939"));
-	free(res);
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("miku"));
-	free(res);
-
-	sl_push_back(&sl, XC("miku"));
-	sl_push_back(&sl, XC("3939"));
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("miku"));
-	free(res);
-
-	res = sl_pop(&sl);
-	UA_NONNULL(res);
-	UA_STREQ(res, XC("3939"));
-	free(res);
-
-	res = NULL;
-}
-
-UT_ROUTINE(sl_read_line)
-{
+	u32 flags[] = {
+		SL_MODE_MV,
+		SL_MODE_SB,
+	};
 	uint i;
-	struct strlist __cleanup(sl_destroy) sl = SL_INIT(sl);
-	xchar __cleanup(__free) *line = NULL;
 
-	xchar *sample_jp[] = {
-		[0] = XC(miku_jp_1),
-		[1] = XC(miku_jp_2),
-		[2] = XC(miku_jp_3),
-		[3] = XC(miku_jp_4),
-		[4] = XC(miku_jp_5),
-		[5] = XC(miku_jp_6),
-	};
-	xchar *sample_en[] = {
-		[0] = XC(miku_en_1),
-		[1] = XC(miku_en_2),
-		[2] = XC(miku_en_3),
-	};
+	for_each_idx(i, sizeof_array(flags)) {
+		sl_init(&sl, flags[i]);
 
-	sl_read_line(&sl, XC(miku_jp), 80);
-	idx_for_each(i, sizeof_array(sample_jp)) {
-		line = sl_pop(&sl);
-		UA_NONNULL(line);
+		sl_push(&sl, XC("miku"));
+		sl_push(&sl, XC("3939"));
 
-		UA_STREQ(line, sample_jp[i]);
-		free(line);
+		item = sl_pop(&sl);
+		str = sl_str(item);
+
+		UA_NONNULL(str);
+		UA_STREQ(str, XC("3939"));
+
+		sl_put_idle(&sl, item);
+		UA_PASS(list_is_first(&item->list, &sl.idle));
+
+		item = sl_pop(&sl);
+		str = sl_str(item);
+
+		UA_NONNULL(str);
+		UA_STREQ(str, XC("miku"));
+
+		sl_put_idle(&sl, item);
+		UA_PASS(list_is_first(&item->list, &sl.idle));
+
+		item = NULL;
+
+		sl_push_back(&sl, XC("miku"));
+		sl_push_back(&sl, XC("3939"));
+
+		UA_PASS(list_is_empty(&sl.idle));
+
+		item = sl_pop(&sl);
+		str = sl_str(item);
+
+		UA_NONNULL(str);
+		UA_STREQ(str, XC("miku"));
+		sl_free(item);
+
+		item = sl_pop(&sl);
+		str = sl_str(item);
+
+		UA_NONNULL(str);
+		UA_STREQ(str, XC("3939"));
+
+		if (i + 1 == sizeof_array(flags))
+			break;
+
+		sl_free(item);
+		sl_destroy(&sl);
 	}
+}
 
-	sl_read_line(&sl, XC(miku_en), 80);
-	idx_for_each(i, sizeof_array(sample_en)) {
-		line = sl_pop(&sl);
-		UA_NONNULL(line);
+UT_ROUTINE(sl_mode_mb)
+{
+	struct strlist __cleanup(sl_destroy) sl;
+	struct strentry __cleanup(__sl_free) *item;
+	const char *str;
 
-		UA_STREQ(line, sample_en[i]);
-		free(line);
-	}
+	sl_init(&sl, SL_MODE_MB);
 
-	line = NULL;
+	sl_push_mb(&sl, "miku");
+	sl_push_mb(&sl, "3939");
+
+	item = sl_pop(&sl);
+	str = sl_str_mb(item);
+
+	UA_NONNULL(str);
+	UA_STREQ_MB(str, "3939");
+	sl_free(item);
+
+	item = sl_pop(&sl);
+	str = sl_str_mb(item);
+
+	UA_NONNULL(str);
+	UA_STREQ_MB(str, "miku");
+	sl_free(item);
+
+	sl_push_back_mb(&sl, "miku");
+	sl_push_back_mb(&sl, "3939");
+
+	item = sl_pop(&sl);
+	str = sl_str_mb(item);
+
+	UA_NONNULL(str);
+	UA_STREQ_MB(str, "miku");
+	sl_free(item);
+
+	item = sl_pop(&sl);
+	str = sl_str_mb(item);
+
+	UA_NONNULL(str);
+	UA_STREQ_MB(str, "3939");
 }
 
 UT_ROUTINE(sl_items)
 {
-	xchar __cleanup(__free) *res;
 	struct strlist __cleanup(sl_destroy) sl = SL_INIT(sl);
+	struct strentry __cleanup(__sl_free) *item;
 
 	sl_push(&sl, XC("miku"));
 	UA_EQ(sl.items, 1);
@@ -297,13 +216,13 @@ UT_ROUTINE(sl_items)
 	sl_push(&sl, XC("3939"));
 	UA_EQ(sl.items, 2);
 
-	res = sl_pop(&sl);
+	item = sl_pop(&sl);
 	UA_EQ(sl.items, 1);
-	free(res);
+	sl_free(item);
 
-	res = sl_pop(&sl);
+	item = sl_pop(&sl);
 	UA_EQ(sl.items, 0);
-	free(res);
+	sl_free(item);
 
 	sl_push_back(&sl, XC("miku"));
 	UA_EQ(sl.items, 1);
@@ -311,15 +230,12 @@ UT_ROUTINE(sl_items)
 	sl_push_back(&sl, XC("3939"));
 	UA_EQ(sl.items, 2);
 
-	res = sl_pop(&sl);
+	item = sl_pop(&sl);
 	UA_EQ(sl.items, 1);
-	free(res);
+	sl_free(item);
 
-	res = sl_pop(&sl);
+	item = sl_pop(&sl);
 	UA_EQ(sl.items, 0);
-	free(res);
-
-	res = NULL;
 }
 
 UT_ROUTINE(sl_to_argv)
@@ -330,43 +246,110 @@ UT_ROUTINE(sl_to_argv)
 		XC("run"),
 		XC("dev"),
 	};
-	uint i;
-	u32 __flags[] = {
-		SL_STORE_COPY,
-		SL_STORE_COPY | SL_DUP_ON_POP,
-		SL_STORE_SBUF,
-		SL_STORE_SBUF | SL_DUP_ON_POP,
-		SL_STORE_REF,
-		SL_STORE_REF | SL_DUP_ON_POP,
-		0,
+
+	u32 flags[] = {
+		SL_MODE_CP,
+		SL_MODE_SB,
+		SL_MODE_MV,
 	};
-	u32 *flags = __flags;
+	uint i, j;
 
-	while (*flags) {
-		sl_init(&sl, *flags);
+	for_each_idx(i, sizeof_array(flags)) {
+		sl_init(&sl, flags[i]);
 
-		idx_for_each(i, sizeof_array(cmd))
+		for_each_idx(j, sizeof_array(cmd))
 			sl_push_back(&sl, cmd[i]);
 
 		xchar **__argv = sl_to_argv(&sl);
 		xchar **argv = __argv;
 
-		idx_for_each(i, sizeof_array(cmd)) {
+		for_each_idx(j, sizeof_array(cmd)) {
 			UA_NONNULL(argv[i]);
 			UA_STREQ(argv[i], cmd[i]);
 		}
 
-		if (sl.flags & SL_DUP_ON_POP) {
-			while (*argv)
-				free(*argv++);
-		}
-
-		free(__argv);
+		free_argv(__argv);
 		sl_destroy(&sl);
-		flags++;
 	}
 
 	sl_init(&sl, 0);
+}
+
+UT_ROUTINE(sl_read_line_en)
+{
+	struct strlist __cleanup(sl_destroy) sl = SL_INIT(sl);
+	struct strentry __cleanup(__sl_free) *item;
+	const xchar *str;
+
+	xchar *lines[] = {
+		[0] = XC(miku_en_1),
+		[1] = XC(miku_en_2),
+		[2] = XC(miku_en_3),
+		[3] = XC(miku_en_4),
+		[4] = XC(miku_en_5),
+		[5] = XC(miku_en_6),
+		[6] = XC(miku_en_7),
+	};
+	uint i = 0;
+
+	sl_read_line(&sl, XC(miku_en), 80);
+
+	while (39) {
+		item = sl_pop(&sl);
+
+		if (!item)
+			break;
+
+		str = sl_str(item);
+
+		UA_LT(i, sizeof_array(lines));
+		UA_STREQ(lines[i], str);
+
+		i++;
+		sl_free(item);
+	}
+
+	UA_EQ(i, sizeof_array(lines));
+
+	item = NULL;
+}
+
+UT_ROUTINE(sl_read_line_jp)
+{
+	struct strlist __cleanup(sl_destroy) sl = SL_INIT(sl);
+	struct strentry __cleanup(__sl_free) *item;
+	const xchar *str;
+
+	xchar *lines[] = {
+		[0] = XC(miku_jp_1),
+		[1] = XC(miku_jp_2),
+		[2] = XC(miku_jp_3),
+		[3] = XC(miku_jp_4),
+		[4] = XC(miku_jp_5),
+		[5] = XC(miku_jp_6),
+	};
+	uint i = 0;
+
+	sl_read_line(&sl, XC(miku_jp), 80);
+
+	while (39) {
+		item = sl_pop(&sl);
+
+		if (!item)
+			break;
+
+		str = sl_str(item);
+
+		UA_LT(i, sizeof_array(lines));
+		UA_STREQ(lines[i], str);
+
+		i++;
+		sl_free(item);
+	}
+
+	UA_EQ(i, sizeof_array(lines));
+
+	item = NULL;
 }
 
 UT_END();

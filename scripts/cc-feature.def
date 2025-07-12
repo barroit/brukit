@@ -46,6 +46,14 @@ HAVE_TOPLEVEL_REORDER = '-ftoplevel-reorder'
 
 __unix__ = """
 #ifndef __APPLE__
-#error not on macos
+# error not on macos
+#endif
+"""
+
+HAVE_2BYTE_WCHAR = """
+#include <stdint.h>
+
+#if !(WCHAR_MAX <= 0xffff)
+# error 4-byte wchar_t
 #endif
 """

@@ -35,7 +35,7 @@ int main(void)
 	if (__ut_setup)
 		__ut_setup();
 
-	idx_for_each(i, n)
+	for_each_idx(i, n)
 		func[i]();
 
 	if (!__ut_fail_cnt)
