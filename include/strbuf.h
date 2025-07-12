@@ -40,16 +40,16 @@ static inline void sb_trunc_to_cwd(struct strbuf *sb)
 	sb->buf[sb->len] = 0;
 }
 
-size_t sb_puts_at(struct strbuf *sb, size_t off, const xchar *s);
+size_t sb_puts_at(struct strbuf *sb, size_t off, const xchar *s, size_t len);
 
 static inline size_t sb_puts(struct strbuf *sb, const xchar *s)
 {
-	return sb_puts_at(sb, sb->len, s);
+	return sb_puts_at(sb, sb->len, s, -1);
 }
 
 static inline size_t sb_cwd_puts(struct strbuf *sb, const xchar *s)
 {
-	return sb_puts_at(sb, sb->off.cwd, s);
+	return sb_puts_at(sb, sb->off.cwd, s, -1);
 }
 
 size_t sb_putc_at(struct strbuf *sb, size_t off, xchar c);

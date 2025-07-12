@@ -37,10 +37,12 @@ static inline void sb_grow(struct strbuf *sb, size_t new)
 	REALLOCBUF(sb->buf, size, sb->cap);
 }
 
-size_t sb_puts_at(struct strbuf *sb, size_t off, const xchar *s)
+size_t sb_puts_at(struct strbuf *sb, size_t off, const xchar *s, size_t len)
 {
-	size_t len = xc_strlen(s);
 	size_t overlap = sb->len - off;
+
+	if (len == -1)
+		len = xc_strlen(s);
 
 	if (len > overlap)
 		sb_grow(sb, len - overlap);

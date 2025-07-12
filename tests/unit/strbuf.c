@@ -30,11 +30,11 @@ UT_ROUTINE(sb_puts)
 	UA_EQ(sb.len, 6);
 	UA_EQ(sb.cap, __cap);
 
-	sb_puts_at(&sb, 2, XC("miku"));
+	sb_puts_at(&sb, 2, XC("miku"), -1);
 	UA_EQ(xc_strlen(sb.buf), 6);
 	UA_EQ(sb.len, 6);
 
-	sb_puts_at(&sb, 0, XC(""));
+	sb_puts_at(&sb, 0, XC(""), -1);
 	UA_EQ(xc_strlen(sb.buf), 0);
 	UA_EQ(sb.len, 0);
 }
@@ -53,7 +53,7 @@ UT_ROUTINE(sb_putc)
 	UA_STREQ(sb.buf, XC("b"));
 	UA_EQ(sb.cap, __cap);
 
-	sb_puts_at(&sb, 0, XC("miku.39"));
+	sb_puts_at(&sb, 0, XC("miku.39"), -1);
 	sb_putc_at(&sb, 4, XC('_'));
 	UA_STREQ(sb.buf, XC("miku_"));
 
