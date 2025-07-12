@@ -18,14 +18,14 @@ UT_BEGIN();
 UT_ROUTINE(sb_puts)
 {
 	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
-	uint __cap;
+	size_t __cap;
 
 	sb_puts(&sb, XC("miku"));
 	UA_EQ(xc_strlen(sb.buf), 4);
 	UA_EQ(sb.len, 4);
 	__cap = sb.cap;
 
-	sb_puts_at_cwd(&sb, XC("miku39"));
+	sb_cwd_puts(&sb, XC("miku39"));
 	UA_EQ(xc_strlen(sb.buf), 6);
 	UA_EQ(sb.len, 6);
 	UA_EQ(sb.cap, __cap);
@@ -42,13 +42,13 @@ UT_ROUTINE(sb_puts)
 UT_ROUTINE(sb_putc)
 {
 	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
-	uint __cap;
+	size_t __cap;
 
 	sb_putc(&sb, XC('a'));
 	UA_EQ(xc_strlen(sb.buf), 1);
 	__cap = sb.cap;
 
-	sb_putc_at_cwd(&sb, XC('b'));
+	sb_cwd_putc(&sb, XC('b'));
 	UA_EQ(xc_strlen(sb.buf), 1);
 	UA_STREQ(sb.buf, XC("b"));
 	UA_EQ(sb.cap, __cap);
@@ -83,7 +83,7 @@ UT_ROUTINE(sb_trunc)
 UT_ROUTINE(sb_printf)
 {
 	struct strbuf __cleanup(sb_destroy) sb = SB_INIT;
-	uint __cap;
+	size_t __cap;
 
 	/* 39 Variable! */
 	int int39 = 39;
@@ -139,7 +139,7 @@ UT_ROUTINE(sb_off_ws)
 	sb_puts(&sb, XC("executable"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir/executable"));
 
-	sb_puts_at_cwd(&sb, XC("file"));
+	sb_cwd_puts(&sb, XC("file"));
 	UA_STREQ(sb.buf, XC("path/to/root/dir/file"));
 
 	sb_printf_at_cwd(&sb, XC(".%s%u"), XC("miku"), 39);
