@@ -182,24 +182,24 @@ UT_ROUTINE(sl_mode_mb)
 	sl_free(item);
 
 	item = sl_pop(&sl);
-	str = sl_str(item);
+	str = sl_str_mb(item);
 
 	UA_NONNULL(str);
 	UA_STREQ_MB(str, "miku");
 	sl_free(item);
 
-	sl_push_back(&sl, "miku");
-	sl_push_back(&sl, "3939");
+	sl_push_back_mb(&sl, "miku");
+	sl_push_back_mb(&sl, "3939");
 
 	item = sl_pop(&sl);
-	str = sl_str(item);
+	str = sl_str_mb(item);
 
 	UA_NONNULL(str);
 	UA_STREQ_MB(str, "miku");
 	sl_free(item);
 
 	item = sl_pop(&sl);
-	str = sl_str(item);
+	str = sl_str_mb(item);
 
 	UA_NONNULL(str);
 	UA_STREQ_MB(str, "3939");

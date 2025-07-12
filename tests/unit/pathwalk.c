@@ -141,8 +141,6 @@ UT_ROUTINE(pw_dirname_shr_rtb_abs_path)
 	UA_STREQ(dir, XC("/"));
 }
 
-#include "stdio.h"
-
 UT_ROUTINE(pw_basename_abs)
 {
 	struct pathwalk __cleanup(pw_destroy) pw;

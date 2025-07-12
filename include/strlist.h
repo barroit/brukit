@@ -69,11 +69,11 @@ struct strentry *__sl_push(struct strlist *sl,
 
 #define sl_push(sl, str) __sl_push(sl, str, -1, 0)
 
-#define sl_push_mb(sl, str) sl_push(sl, (xchar *)str)
+#define sl_push_mb(sl, str) sl_push(sl, (void *)str)
 
 #define sl_push_back(sl, str) __sl_push(sl, str, -1, 1)
 
-#define sl_push_back_mb(sl, str) sl_push_back(sl, (xchar *)str)
+#define sl_push_back_mb(sl, str) sl_push_back(sl, (void *)str)
 
 struct strentry *sl_pop(struct strlist *sl);
 

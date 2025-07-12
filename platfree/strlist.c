@@ -39,7 +39,7 @@ void sl_init(struct strlist *sl, u32 flags)
 	sl->flags = flags;
 	list_head_init(&sl->head);
 
-	if (sl->flags & SL_MODE_SB)
+	if (sl->flags & SL_MODE_SB || sl->flags & SL_MODE_MV)
 		list_head_init(&sl->idle);
 
 	sl->items = 0;
@@ -98,13 +98,13 @@ static struct strentry *make_item_cp(struct strlist *sl,
 }
 
 static struct strentry *make_item_mb(struct strlist *sl,
-				     const xchar *str, size_t len)
+				     const char *str, size_t len)
 {
 	struct strentry *item;
 	size_t size = sizeof(*item);
 
 	if (len == -1)
-		len = xc_strlen(str);
+		len = strlen((void *)str);
 	size += len + 1;
 
 	item = ALLOC_ITEM(size, __sc);
@@ -169,7 +169,7 @@ static struct strentry *make_item(struct strlist *sl,
 		break;
 
 	case SL_MODE_MB:
-		item = make_item_mb(sl, (char *)str, len);
+		item = make_item_mb(sl, (void *)str, len);
 		break;
 
 	case SL_MODE_MV:
@@ -218,10 +218,10 @@ const xchar *sl_str(struct strentry *item)
 		return item->sb->buf;
 
 	case SL_MODE_MV:
-		return (xchar *)item->sr;
+		return (void *)item->sr;
 
 	case SL_MODE_MB:
-		return (xchar *)item->__sc;
+		return (void *)item->__sc;
 	}
 
 	trap();
@@ -258,7 +258,7 @@ xchar **sl_to_argv(struct strlist *sl)
 		const xchar *str = sl_str(item);
 
 		if (sl->flags & SL_MODE_MB)
-			*ptr++ = strdup((char *)str);
+			*ptr++ = (void *)strdup((void *)str);
 		else
 			*ptr++ = xc_strdup(str);
 
