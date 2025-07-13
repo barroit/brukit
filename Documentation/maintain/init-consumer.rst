@@ -49,10 +49,10 @@ with ``$readme``. It records ``$name`` in NAME, but uses lowercase when
 generating files with ``$name`` prefix.
 
 ``$license`` is new license to use in consumer. It only affects source code
-works, not documents, GitHub workflows, or artworks. Check brukit README for
-available licenses. As of writing this document, brukit source code works are
-dual-licensed under GPL-3.0-or-later and MIT. You can choose whichever one you
-want, but not others.
+works, not documents, GitHub workflows, or artworks. Check :ref:`licenses-def`
+for available licenses. As of writing this document, brukit source code works
+are dual-licensed under GPL-3.0-or-later and MIT. You can choose whichever one
+you want, but not others.
 
 This script generates .pickignore and .licensefix, which are read by
 `merge tool`_. ``.pickignore`` tells which files to ignore when merging

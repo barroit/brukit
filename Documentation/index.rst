@@ -20,6 +20,8 @@ the code.
 .. toctree::
    :maxdepth: 1
 
+   Licenses <maintain/licenses>
+
    Maintenance workflow <maintain/index>
 
 .. _`core library`: ../barroit
