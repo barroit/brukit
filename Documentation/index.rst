@@ -4,14 +4,22 @@
 The Brukit Documentation
 ========================
 
-This is top level of documentation tree. Documents in here are for player, not
-end user. I expect you to init your project in documented way. Otherwise, you
-fucked up the entire workflow.
+This is the top level of brukit documentation. Stuff here is for players, not
+end users.
 
-I previously called this project utility, but obviously it became framework
-and now relies on `core library`_. You need to make this library exist at
-same level as brukit, or symlinks die and you can't run things like
-scripts/init-repo.sh.
+Brukit comes with some not so dumb maintenance tooling. So follow the rules, or
+you'll scrawl it up. It depends on `core library`_ to maintain and build. These
+two repositories must sit side by side. Otherwise, symlinks won't work right.
 
+You must be familiar with git. Without it, you don't ever understand how to
+maintain histories; you're also expected to read the code. This document never
+explains how functions flow. It only tells what the functions do; this is not
+a tutorial. If something breaks and you do not know why, you probably skipped
+the code.
+
+.. toctree::
+   :maxdepth: 1
+
+   Maintenance workflow <maintain/index>
 
 .. _`core library`: ../barroit
