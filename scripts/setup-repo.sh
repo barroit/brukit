@@ -19,4 +19,8 @@ ln -snf ../locale share/locale
 
 if [ -f brukit ]; then
 	ln -sf VERSION.1 VERSION
+else
+	if ! git remote | grep -qxF 'brukit'; then
+		git remote add brukit git@github.com:barroit/brukit.git
+	fi
 fi
