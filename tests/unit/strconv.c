@@ -26,7 +26,7 @@ UT_ROUTINE(wcstombs)
 	UA_STREQ_MB(__res, "ミク");
 
 	char *res;
-	wchar_t eseq[] = { L'ミ', 0xD800, L'ク', 0 };
+	wchar_t eseq[] = { L'ミ', 0xd800, L'ク', 0 };
 
 	len = mb_wcstombs(&res, eseq);
 	UA_EQ(len, maxof(len));
@@ -46,9 +46,9 @@ UT_ROUTINE(mbstowcs)
 
 	wchar_t *res;
 	char eseq[] = {
-		0xE3, 0x83, 0x9F,
-		0xED, 0xA0, 0x80,
-		0xE3, 0x82, 0xAF,
+		0xe3, 0x83, 0x9f,
+		0xed, 0xa0, 0x80,
+		0xe3, 0x82, 0xaf,
 		0x00,
 	};
 

@@ -5,24 +5,24 @@ set -e
 
 . scripts/use-posix-libkit.sh
 
-if [ ! -f .program.in ]; then
-	die 'missing .program.in'
+if [ ! -f .consumer.in ]; then
+	die 'missing .consumer.in'
 fi
 
 rm -f VERSION
 printf '0.0\n' >VERSION
 
-ini_section_st name .program.in >NAME
+ini_section_st name .consumer.in >NAME
 
 name=$(readlower <NAME)
-conf=$(ini_section conf .program.in)
-icon=$(ini_section icon .program.in)
-repo=$(ini_section_st repo .program.in)
+conf=$(ini_section conf .consumer.in)
+icon=$(ini_section icon .consumer.in)
+repo=$(ini_section_st repo .consumer.in)
 
 git remote set-url origin $repo
 
 fhc_key='"fileHeaderComment.parameter"."*"'
-license_new=$(ini_section_st license .program.in)
+license_new=$(ini_section_st license .consumer.in)
 license_old=$(jq -r ".$fhc_key.license" .vscode/settings.json)
 
 jq ".$fhc_key.license = \"$license_new\"" .vscode/settings.json >$$.tmp
@@ -31,7 +31,7 @@ mv $$.tmp .vscode/settings.json
 perl -i -ne 'last if /^# みくみくにしてあげる♪$/; print' .gitignore
 printf '%s\n' "$(cat .gitignore)" >.gitignore
 
-ini_section readme .program.in >README
+ini_section readme .consumer.in >README
 
 eval "$(cat .manifest.1)" >$name.manifest.in
 
@@ -59,24 +59,32 @@ scripts/init-consumer.sh
 EOF
 
 if [ "$license_new" != "$license_old" ]; then
-	cat <<-EOF >FIXLICENSE
+	cat <<-EOF >.licensefix
 	new	$license_new
 	old	$license_old
 	EOF
+
+	if [ "$license_new" = GPL-3.0-or-later ]; then
+		rm LICENSES/MIT
+	elif [ "$license_new" = MIT ]; then
+		rm LICENSES/GPL-3.0-or-later
+	else
+		die "unknown license '$license_new'"
+	fi
 
 	git add .
 	scripts/fix-license.sh "$license_old" "$license_new"
 fi
 
 rm .manifest.1
-rm .program.in*
+rm .consumer.in
 rm brukit
 
 (rm $0) &
 
 scripts/setup-repo.sh
 
-make scripts/bump-locale.sh
+make scripts/bump-locale.sh || true
 
 git add .
 git commit -sm 'INITIAL CONSUMER'

@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later or MIT
 /*
  * Copyright 2025 Jiamu Sun <barroit@linux.com>
- *
- * This file is compiled only when CONFIG_ENABLE_I18N is enabled.
+ */
+
+/*
+ * Only built when CONFIG_ENABLE_I18N is set.
  */
 
 #include "i18n.h"
@@ -16,8 +18,6 @@
 #include "init.h"
 #include "iter.h"
 #include "path.h"
-#include "termas.h"
-#include "xalloc.h"
 
 #define try_set_lc(lc, locale, ...) \
 	__try_set_lc(lc, locale, ##__VA_ARGS__, NULL)
