@@ -1,8 +1,8 @@
 .. SPDX-License-Identifier: MPL-2.0
 
-==============
-Consumer Setup
-==============
+==============================
+Initialize Consumer Repository
+==============================
 
 ``scripts/init-consumer.sh`` turns provider to consumer in irreversible way. It
 drops junk, generates files from .consumer.in, and commits changes with message
