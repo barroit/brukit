@@ -15,7 +15,7 @@ printf '0.0\n' >VERSION
 ini_section_st name .consumer.in >NAME
 
 name=$(readlower <NAME)
-conf=$(ini_section conf .consumer.in)
+# conf=$(ini_section conf .consumer.in)
 icon=$(ini_section icon .consumer.in)
 repo=$(ini_section_st repo .consumer.in)
 
@@ -42,7 +42,8 @@ cat <<EOF >$name.rc
 PROG_ICON	ICON	"$icon"
 EOF
 
-if ! printf '%s\n' "$conf" | grep -wq no_arch; then
+# if ! printf '%s\n' "$conf" | grep -wq no_arch; then
+if test; then
 	mkdir arch arch/x86 arch/arm64 arch/riscv
 
 	cat <<-EOF >arch/.map
@@ -54,7 +55,6 @@ fi
 
 cat <<EOF >.pickignore
 .manifest.1
-.program.in.example
 scripts/init-consumer.sh
 EOF
 

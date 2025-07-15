@@ -1,17 +1,32 @@
-.. SPDX-License-Identifier: GPL-3.0-or-later or MIT
+.. SPDX-License-Identifier: MPL-2.0
 
 ========================
 The Brukit Documentation
 ========================
 
-This is top level of documentation tree. Documents in here are for player, not
-end user. I expect you to init your project in documented way. Otherwise, you
-fucked up the entire workflow.
+This is the top level of brukit documentation.
 
-I previously called this project utility, but obviously it became framework
-and now relies on `core library`_. You need to make this library exist at
-same level as brukit, or symlinks die and you can't run things like
-scripts/init-repo.sh.
+User guide
+==========
 
+Brukit hacking
+==============
+
+This framework comes with some not so dumb maintenance tooling. So follow the
+rules, or you'll scrawl it up. It depends on `core library`_ to maintain. These
+two repositories must sit side by side. Otherwise, symlinks won't work right.
+
+You must be familiar with git. Without it, you don't ever understand how to
+maintain histories; you're also expected to read the code. This document never
+explains how functions flow. It only tells what the functions do.
+
+This is not tutorial. If something breaks and you don't know why, you probably
+didn't follow the rules or skipped the code. The following documents explain
+how to use and hack into this framework. Read them before you start.
+
+.. toctree::
+   :maxdepth: 3
+
+   maintain/index
 
 .. _`core library`: ../barroit
