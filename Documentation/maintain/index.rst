@@ -37,7 +37,7 @@ Consumer Basics
 ===============
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    commit-style
 
@@ -47,8 +47,10 @@ Consumer Workflow
 =================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    init-consumer
 
    update-brukit
+
+   bump-version

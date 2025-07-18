@@ -25,8 +25,10 @@ didn't follow the rules or skipped the code. The following documents explain
 how to use and hack into this framework. Read them before you start.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
    maintain/index
+
+   buildsys/index
 
 .. _`core library`: ../barroit
