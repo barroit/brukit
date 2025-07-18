@@ -16,9 +16,10 @@ to .config.unix or .config.win32. This file defines constants control build and
 program behavior. It's read by the ``configure`` target. Linux documents usage
 and specification of the Kconfig language. Check it in `Kconfig Language`_.
 
-You can change build tools by adding LLVM=1 or MAKEFILE=Ninja when running this
-target, but you can't change them after menuconfig. gmake script dumps these
-tool names to build/tools.
+You can change build tools by adding LLVM=1 or MAKEFILE='Unix Makefiles' when
+running this target, but you can't change them after menuconfig. gmake script
+dumps these tool names to build/tools. The default build tool is Ninja, and
+preferred compiler and linker are gcc and ld.bfd.
 
 Configure
 =========
